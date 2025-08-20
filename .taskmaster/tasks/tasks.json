@@ -1,0 +1,141 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Initialize Open Source Project Repository",
+        "description": "Set up the foundational structure for the open-source podcast host contact scraper, ensuring reproducibility and community contribution.",
+        "details": "Create a public GitHub repository with a clear README, MIT license, and contribution guidelines. Use Python 3.11+ as the primary language. Set up a virtual environment (e.g., venv or poetry). Add .gitignore for Python, and pre-configure linting (ruff or flake8) and formatting (black). Document the tech stack: Botasaurus for scraping, email-validator, CSV output, and OpenAI API integration.",
+        "testStrategy": "Verify repository can be cloned, environment setup instructions work, and linting/formatting pass on initial commit.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Apple Podcasts Scraper Using Botasaurus",
+        "description": "Develop a scraper to extract podcast metadata from Apple Podcasts charts and directories.",
+        "details": "Use Botasaurus (latest version, 2025) for anti-detection scraping. Target Apple Podcasts top charts and category pages. Parse RSS feeds for podcast metadata (name, host, website, description, RSS link). Store raw results in memory for downstream processing. Handle rate limiting and respect robots.txt. Use user-agent rotation and built-in delays.",
+        "testStrategy": "Run scraper on multiple Apple Podcasts categories; validate extraction of at least 100 podcasts with correct metadata fields.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "in-progress",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Develop Website and Contact Page Discovery Module",
+        "description": "Extract podcast website URLs and potential contact/booking/about pages from podcast metadata and RSS feeds.",
+        "details": "Parse <link> tags and description URLs from RSS feeds. Use regex and BeautifulSoup to identify website URLs. Crawl discovered websites for /contact, /about, /booking, and footer sections. Use Botasaurus for crawling with anti-bot measures. Store discovered URLs for contact extraction.",
+        "testStrategy": "Given a sample of 100 podcast RSS feeds, verify that at least 85% of valid website/contact URLs are discovered and stored.",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Contact Information Extraction and Email Validation",
+        "description": "Scrape discovered pages for emails, contact forms, and booking addresses; validate emails using the email-validator library.",
+        "details": "Use BeautifulSoup and regex to extract emails from HTML and text. Identify and parse contact forms (capture action URLs and input fields). Use the latest version of the email-validator Python library for syntax and domain validation. Store all found emails and contact methods with source URLs.",
+        "testStrategy": "For a set of 100 discovered contact pages, extract and validate emails; ensure at least 85% extraction and 95%+ email format validity.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Integrate Spotify and Google Podcasts Scraping",
+        "description": "Expand podcast discovery to include Spotify and Google Podcasts using their APIs and web scraping.",
+        "details": "For Spotify, use the Spotify Web API (2025, free tier) to search and retrieve podcast metadata (respect 100 requests/hour limit). For Google Podcasts, use Botasaurus to scrape search results and directory listings. Parse and normalize metadata to match Apple Podcasts schema. Implement rate limiting and error handling.",
+        "testStrategy": "Scrape at least 100 podcasts each from Spotify and Google Podcasts; validate metadata completeness and deduplication.",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Social Media Profile and Alternative Contact Discovery",
+        "description": "Enrich contact data by discovering host social media profiles and alternative contact methods.",
+        "details": "From podcast metadata and website bios, extract Twitter, LinkedIn, Instagram, and YouTube links using regex and OpenGraph tags. For each profile, attempt to extract public contact info (e.g., Twitter bio email, LinkedIn public profile, Instagram business contact). Use Botasaurus for scraping and respect platform rate limits.",
+        "testStrategy": "For a sample of 100 podcasts, extract at least one valid social media profile for 90%+ of hosts; validate extracted contact info.",
+        "priority": "medium",
+        "dependencies": [
+          14,
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Podcast Intelligence Gathering and AI Relevance Scoring",
+        "description": "Collect podcast metrics (downloads, frequency, guest types) and score AI/tech relevance using OpenAI API.",
+        "details": "Estimate downloads using public metrics (Apple/Spotify ratings, reviews, chart position). Parse episode lists for frequency and guest analysis. Use OpenAI API (latest model, e.g., GPT-4.5) to analyze show notes/descriptions for AI/tech relevance. Store all metrics in the defined schema.",
+        "testStrategy": "For 100 podcasts, verify that metrics are populated and AI relevance scores are consistent with manual review.",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Contact Enrichment, Confidence Scoring, and Deduplication",
+        "description": "Cross-reference contact info from multiple sources, rate confidence, and remove duplicates.",
+        "details": "For each podcast, aggregate emails and contacts from website, RSS, and social. Assign confidence levels (High/Medium/Low) based on source reliability and validation. Implement deduplication logic for emails and social profiles. Use fuzzy matching for near-duplicates.",
+        "testStrategy": "For a batch of 200 podcasts, ensure no duplicate contacts and that confidence scores align with source reliability.",
+        "priority": "medium",
+        "dependencies": [
+          16,
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "CSV Output Generation and Data Schema Enforcement",
+        "description": "Export all collected and enriched data to CSV files matching the specified schema.",
+        "details": "Implement CSV export using Python's built-in csv module or pandas. Validate that all fields in the schema are present and correctly formatted. Handle Unicode and special characters. Include last_updated timestamp. Ensure output is clean and ready for import into CRM tools.",
+        "testStrategy": "Generate CSV for 500 podcasts; validate schema compliance and data integrity using automated tests.",
+        "priority": "medium",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Bulk Processing, Error Handling, and Rate Limiting Optimization",
+        "description": "Enable processing of 1,000+ podcasts per search, with robust error handling, retry logic, and compliance with rate limits.",
+        "details": "Implement batch processing with progress tracking. Add retry logic for failed requests (exponential backoff). Monitor and respect API and website rate limits (Spotify, Google, Apple). Log errors and provide summary reports. Optimize memory usage for large-scale runs.",
+        "testStrategy": "Run end-to-end processing for 1,000+ podcasts; verify completion within 10 minutes, error rates <5%, and no rate limit violations.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-19T15:35:53.275Z",
+      "updated": "2025-08-19T18:44:00.608Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

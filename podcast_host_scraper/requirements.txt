@@ -1,0 +1,21 @@
+# Core scraping
+botasaurus>=4.0.88
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Email validation  
+email-validator>=2.0.0
+
+# Data processing
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# AI integration (optional)
+openai>=1.0.0
+
+# Spotify API (optional)
+spotipy>=2.22.0
+
+# Google API (optional)
+google-api-python-client>=2.0.0
