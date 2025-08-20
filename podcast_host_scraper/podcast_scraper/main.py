@@ -13,6 +13,8 @@ from .base import PodcastData
 from .platforms.apple_podcasts import ApplePodcastsScraper
 from .platforms.spotify import SpotifyPodcastsScraper
 from .platforms.google_podcasts import GooglePodcastsScraper, PodcastIndexScraper
+from .platforms.learnoutloud import LearnOutLoudScraper
+from .platforms.itunes_api import ITunesApiScraper
 from .contact_discovery import ContactPageDiscovery
 from .intelligence_analysis import PodcastIntelligenceAnalyzer, TopicRelevanceAnalyzer
 from .advanced_contact_enrichment import AdvancedContactEnricher, ContactQualityScorer
@@ -35,7 +37,9 @@ class PodcastHostScraper:
             "apple_podcasts": ApplePodcastsScraper(),
             "spotify": SpotifyPodcastsScraper(),
             "youtube": GooglePodcastsScraper(),
-            "podcast_index": PodcastIndexScraper()
+            "podcast_index": PodcastIndexScraper(),
+            "learnoutloud": LearnOutLoudScraper(),
+            "itunes_api": ITunesApiScraper(),
         }
         
         # Initialize contact discovery

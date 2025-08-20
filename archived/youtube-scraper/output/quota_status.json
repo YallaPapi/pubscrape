@@ -1,0 +1,79 @@
+{
+  "used": 630,
+  "date": "2025-08-19",
+  "operations": [
+    {
+      "timestamp": "2025-08-19T12:07:56.272398",
+      "cost": 100,
+      "operation": "",
+      "total_used": 100
+    },
+    {
+      "timestamp": "2025-08-19T12:07:56.373582",
+      "cost": 5,
+      "operation": "",
+      "total_used": 105
+    },
+    {
+      "timestamp": "2025-08-19T12:15:09.826207",
+      "cost": 100,
+      "operation": "",
+      "total_used": 205
+    },
+    {
+      "timestamp": "2025-08-19T12:15:09.952216",
+      "cost": 5,
+      "operation": "",
+      "total_used": 210
+    },
+    {
+      "timestamp": "2025-08-19T12:16:30.125652",
+      "cost": 100,
+      "operation": "",
+      "total_used": 310
+    },
+    {
+      "timestamp": "2025-08-19T12:16:30.240659",
+      "cost": 5,
+      "operation": "",
+      "total_used": 315
+    },
+    {
+      "timestamp": "2025-08-19T12:37:46.574001",
+      "cost": 100,
+      "operation": "",
+      "total_used": 415
+    },
+    {
+      "timestamp": "2025-08-19T12:37:46.681059",
+      "cost": 5,
+      "operation": "",
+      "total_used": 420
+    },
+    {
+      "timestamp": "2025-08-19T13:00:50.127963",
+      "cost": 100,
+      "operation": "",
+      "total_used": 520
+    },
+    {
+      "timestamp": "2025-08-19T13:00:50.293971",
+      "cost": 5,
+      "operation": "",
+      "total_used": 525
+    },
+    {
+      "timestamp": "2025-08-19T13:19:10.881737",
+      "cost": 100,
+      "operation": "",
+      "total_used": 625
+    },
+    {
+      "timestamp": "2025-08-19T13:19:11.057046",
+      "cost": 5,
+      "operation": "",
+      "total_used": 630
+    }
+  ],
+  "last_reset": "2025-08-19T12:07:55.232090"
+}

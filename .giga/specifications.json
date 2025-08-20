@@ -1,0 +1,22 @@
+[
+  {
+    "fileName": "main-overview.mdc",
+    "description": "Complete system overview documenting the task management system's architecture, key components, and interaction patterns between AI providers and task orchestration"
+  },
+  {
+    "fileName": "task-data-models.mdc",
+    "description": "Detailed documentation of the task data models including status flows, dependency relationships, tag management, and hierarchical task structures with parent-child relationships"
+  },
+  {
+    "fileName": "ai-provider-integration.mdc",
+    "description": "Technical documentation of AI provider integration including the provider registry system, model-specific adaptations, response handling, and failover mechanisms"
+  },
+  {
+    "fileName": "task-complexity-algorithms.mdc",
+    "description": "Detailed documentation of the AI-driven task complexity analysis algorithms, scoring system, and task breakdown logic based on complexity thresholds"
+  },
+  {
+    "fileName": "dependency-management.mdc",
+    "description": "Documentation of the dependency resolution system including circular dependency detection, dependency chain validation, and automated progression logic"
+  }
+]

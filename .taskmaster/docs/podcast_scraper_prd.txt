@@ -1,0 +1,60 @@
+# Podcast Host Contact Scraper - PRD
+
+## Product Overview
+
+Build a 100% free, open-source scraper that finds contact information for popular podcast hosts who would be interested in AI services and cross-promotion opportunities.
+
+## Business Objectives
+
+1. Cross-Promotion: Get podcast hosts with large audiences on your show
+2. AI Service Sales: Target hosts interested in AI tools/services
+3. SEO/Traffic: Leverage search volume around popular podcast hosts
+4. Network Growth: Build relationships with influential podcasters
+
+## Target Users
+
+- Primary: Podcast creators seeking high-profile guests
+- Secondary: AI service providers targeting influential podcasters
+- Tertiary: Marketing agencies booking podcast appearances
+
+## Success Metrics
+
+- Contact Success Rate: 85%+ of scraped hosts have valid contact info
+- Response Rate: 10%+ response rate to outreach emails
+- Data Quality: 95%+ accuracy on podcast metadata
+- Scale: Ability to process 1,000+ podcasts per search
+
+## Technical Requirements
+
+### Core Features
+
+1. Multi-Platform Podcast Discovery
+   - Apple Podcasts directory scraping
+   - Spotify podcast discovery
+   - Google Podcasts search results
+   - PodcastAddict/Stitcher directories
+
+2. Host Contact Extraction
+   - Scrape podcast website contact pages
+   - Extract emails from show notes/descriptions
+   - Find social media profiles (Twitter, LinkedIn)
+   - Identify booking agents/management companies
+
+3. Podcast Intelligence Gathering
+   - Download numbers/popularity metrics
+   - Episode frequency and consistency
+   - Guest types and interview style
+   - AI/tech topic relevance scoring
+
+4. Contact Enrichment
+   - Cross-reference multiple sources
+   - Validate email addresses (format checking)
+   - Find alternative contact methods
+   - Rate contact quality/confidence
+
+## Implementation Plan
+
+- Phase 1: Build Apple Podcasts scraper, contact extraction, CSV output
+- Phase 2: Add Spotify/Google scrapers, social discovery, confidence scoring
+- Phase 3: AI relevance scoring, download estimation, validation
+- Phase 4: Bulk optimization, retries, duplicate detection, reporting

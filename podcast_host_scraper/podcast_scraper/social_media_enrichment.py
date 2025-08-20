@@ -44,7 +44,13 @@ def scrape_social_profile(driver: Driver, data: Dict[str, Any]):
         driver.get(url)
         driver.sleep(3)
         
-        page_source = driver.page_source
+        try:
+            page_source = driver.page_source
+        except Exception:
+            try:
+                page_source = driver.execute_script("return document.documentElement.outerHTML")
+            except Exception:
+                page_source = ""
         
         if platform == 'twitter':
             result['profile_data'] = _extract_twitter_data(page_source)

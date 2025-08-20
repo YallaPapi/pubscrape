@@ -2,131 +2,252 @@
   "master": {
     "tasks": [
       {
-        "id": 11,
-        "title": "Initialize Open Source Project Repository",
-        "description": "Set up the foundational structure for the open-source podcast host contact scraper, ensuring reproducibility and community contribution.",
-        "details": "Create a public GitHub repository with a clear README, MIT license, and contribution guidelines. Use Python 3.11+ as the primary language. Set up a virtual environment (e.g., venv or poetry). Add .gitignore for Python, and pre-configure linting (ruff or flake8) and formatting (black). Document the tech stack: Botasaurus for scraping, email-validator, CSV output, and OpenAI API integration.",
-        "testStrategy": "Verify repository can be cloned, environment setup instructions work, and linting/formatting pass on initial commit.",
+        "id": 21,
+        "title": "Setup Project Structure and Dependencies",
+        "description": "Initialize the project repository with the required structure and install all necessary dependencies for the podcast scraper.",
+        "details": "Create a new GitHub repository for the open-source project. Set up the basic project structure with directories for scrapers, utilities, and output. Install required packages including Botasaurus for anti-detection scraping, email-validator for email validation, and other necessary libraries. Create a requirements.txt file listing all dependencies. Initialize configuration files for different podcast platforms. Set up a basic README.md with project description and setup instructions.",
+        "testStrategy": "Verify all dependencies install correctly with a clean environment test. Ensure project structure follows best practices. Confirm Botasaurus and other key libraries are properly configured.",
         "priority": "high",
         "dependencies": [],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 12,
-        "title": "Implement Apple Podcasts Scraper Using Botasaurus",
-        "description": "Develop a scraper to extract podcast metadata from Apple Podcasts charts and directories.",
-        "details": "Use Botasaurus (latest version, 2025) for anti-detection scraping. Target Apple Podcasts top charts and category pages. Parse RSS feeds for podcast metadata (name, host, website, description, RSS link). Store raw results in memory for downstream processing. Handle rate limiting and respect robots.txt. Use user-agent rotation and built-in delays.",
-        "testStrategy": "Run scraper on multiple Apple Podcasts categories; validate extraction of at least 100 podcasts with correct metadata fields.",
+        "id": 22,
+        "title": "Implement Apple Podcasts Directory Scraper",
+        "description": "Build a scraper to extract podcast information from Apple Podcasts directory, focusing on top podcasts by category.",
+        "details": "Use Botasaurus to create a scraper for Apple Podcasts. Target the charts and category pages to find popular podcasts. Extract podcast name, host name, RSS feed URL, and other available metadata. Implement pagination to navigate through multiple pages of results. Handle rate limiting and anti-bot detection. Store results in an intermediate format for further processing. Focus on AI, technology, and business categories first, then expand to others. Parse RSS feeds to extract additional podcast metadata not available on the directory pages.",
+        "testStrategy": "Test with multiple podcast categories to ensure consistent data extraction. Verify RSS feed parsing works correctly. Check for rate limiting issues and implement appropriate delays. Validate data schema compliance for extracted podcasts.",
         "priority": "high",
         "dependencies": [
-          11
+          21
         ],
-        "status": "in-progress",
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 13,
-        "title": "Develop Website and Contact Page Discovery Module",
-        "description": "Extract podcast website URLs and potential contact/booking/about pages from podcast metadata and RSS feeds.",
-        "details": "Parse <link> tags and description URLs from RSS feeds. Use regex and BeautifulSoup to identify website URLs. Crawl discovered websites for /contact, /about, /booking, and footer sections. Use Botasaurus for crawling with anti-bot measures. Store discovered URLs for contact extraction.",
-        "testStrategy": "Given a sample of 100 podcast RSS feeds, verify that at least 85% of valid website/contact URLs are discovered and stored.",
+        "id": 23,
+        "title": "Develop Spotify Podcast Discovery Module",
+        "description": "Create a module to discover podcasts from Spotify using their Web API with the free tier (100 requests/hour).",
+        "details": "Implement authentication with Spotify Web API using client credentials flow. Create functions to search for podcasts by keywords related to AI, technology, and business. Extract podcast details including name, publisher, description, and episode information. Handle API rate limits (100 requests/hour) with appropriate backoff strategies. Implement caching to minimize duplicate requests. Extract show URLs and other metadata that can be used for further contact discovery. Store results in a consistent format compatible with other platform scrapers.",
+        "testStrategy": "Test API authentication and request handling. Verify rate limit compliance and backoff strategy. Compare results with manual Spotify searches to ensure accuracy. Validate data schema compliance for extracted podcasts.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Build Google Podcasts Search Scraper",
+        "description": "Develop a scraper to extract podcast information from Google Podcasts search results.",
+        "details": "Use Botasaurus to scrape Google Podcasts search results. Implement search functionality for relevant keywords (AI, technology, business, etc.). Extract podcast name, creator, description, and episode information. Handle pagination to process multiple pages of results. Implement anti-detection measures to avoid blocking. Extract URLs that can lead to podcast websites or contact information. Store results in a format consistent with other platform scrapers. Use Google Custom Search API (free tier: 100 searches/day) as a fallback if direct scraping becomes challenging.",
+        "testStrategy": "Test with various search terms to ensure consistent extraction. Verify pagination works correctly. Test anti-detection measures by running multiple searches. Validate data schema compliance for extracted podcasts.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Implement PodcastAddict and Stitcher Directory Scrapers",
+        "description": "Create scrapers for PodcastAddict and Stitcher directories to expand podcast discovery sources.",
+        "details": "Develop Botasaurus scrapers for both PodcastAddict and Stitcher platforms. Target browse pages and category listings to find relevant podcasts. Extract podcast name, creator, description, and available metadata. Implement pagination to navigate through multiple pages. Handle rate limiting and anti-bot detection for each platform. Extract URLs that can lead to podcast websites or contact information. Store results in a format consistent with other platform scrapers. Implement platform-specific error handling and retry logic.",
+        "testStrategy": "Test with multiple categories on both platforms. Verify pagination works correctly. Test rate limiting and anti-detection measures. Validate data schema compliance for extracted podcasts from both sources.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Develop Website Discovery Module",
+        "description": "Create a module to discover podcast websites from the metadata collected in the podcast discovery phase.",
+        "details": "Implement functions to extract website URLs from podcast metadata across all platforms. Parse RSS feed <link> tags to find official websites. Extract URLs from podcast descriptions. Process social media links to find associated websites. Use Google Custom Search API to find websites when direct links are not available. Implement URL validation and normalization. Handle redirects and canonical URL resolution. Store discovered website URLs with their source podcast information. Implement retry logic for failed website discovery attempts.",
+        "testStrategy": "Test with a sample of podcasts from each platform. Verify URL extraction from different metadata sources. Check URL validation and normalization. Measure success rate of website discovery across platforms.",
         "priority": "high",
         "dependencies": [
-          12
+          22,
+          23,
+          24,
+          25
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 14,
-        "title": "Implement Contact Information Extraction and Email Validation",
-        "description": "Scrape discovered pages for emails, contact forms, and booking addresses; validate emails using the email-validator library.",
-        "details": "Use BeautifulSoup and regex to extract emails from HTML and text. Identify and parse contact forms (capture action URLs and input fields). Use the latest version of the email-validator Python library for syntax and domain validation. Store all found emails and contact methods with source URLs.",
-        "testStrategy": "For a set of 100 discovered contact pages, extract and validate emails; ensure at least 85% extraction and 95%+ email format validity.",
+        "id": 27,
+        "title": "Implement Contact Page Scraper",
+        "description": "Build a scraper to extract contact information from podcast websites' contact, about, and booking pages.",
+        "details": "Develop a Botasaurus scraper to navigate to common contact page URLs (/contact, /about, /booking, etc.). Implement email extraction using regex patterns and HTML parsing. Extract contact form URLs and submission endpoints. Identify booking agent or management company information. Extract phone numbers using regex patterns. Implement heuristics to distinguish between different types of contact information (general, booking, press, etc.). Handle various website structures and content management systems. Store extracted contact information with confidence scores based on the source context.",
+        "testStrategy": "Test with a diverse set of podcast websites. Verify email and phone number extraction accuracy. Check contact form URL extraction. Measure contact information extraction success rate across different website structures.",
         "priority": "high",
         "dependencies": [
-          13
+          26
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 15,
-        "title": "Integrate Spotify and Google Podcasts Scraping",
-        "description": "Expand podcast discovery to include Spotify and Google Podcasts using their APIs and web scraping.",
-        "details": "For Spotify, use the Spotify Web API (2025, free tier) to search and retrieve podcast metadata (respect 100 requests/hour limit). For Google Podcasts, use Botasaurus to scrape search results and directory listings. Parse and normalize metadata to match Apple Podcasts schema. Implement rate limiting and error handling.",
-        "testStrategy": "Scrape at least 100 podcasts each from Spotify and Google Podcasts; validate metadata completeness and deduplication.",
+        "id": 28,
+        "title": "Create Social Media Profile Extractor",
+        "description": "Develop a module to discover and extract information from podcast hosts' social media profiles.",
+        "details": "Implement functions to extract social media links from podcast metadata and websites. Create platform-specific scrapers for Twitter, LinkedIn, Instagram, and YouTube. Extract contact information from social media bios and about pages. Identify business contact buttons and messaging options. Handle rate limiting and anti-detection measures for each platform. Extract additional website links from social profiles. Implement profile matching heuristics to ensure profiles belong to the podcast host. Store social media profile information with confidence scores.",
+        "testStrategy": "Test with a sample of podcast hosts across different platforms. Verify profile matching accuracy. Check contact information extraction from social bios. Measure success rate of finding valid social profiles for podcast hosts.",
+        "priority": "medium",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Implement Email Validation and Verification",
+        "description": "Create a module to validate and verify extracted email addresses to ensure they are properly formatted and potentially active.",
+        "details": "Use Python's email-validator library to check email format validity. Implement MX record checking to verify domain mail server existence. Create functions to detect disposable email domains. Implement syntax and format standardization for emails. Develop confidence scoring based on email source and validation results. Handle common obfuscation patterns (e.g., 'name [at] domain [dot] com'). Create deduplication logic for multiple discovered emails. Store validation results with each email address. Implement privacy-compliant verification that doesn't send actual emails.",
+        "testStrategy": "Test with a diverse set of extracted emails including valid, invalid, and edge cases. Verify MX record checking works correctly. Test deduplication logic with similar emails. Measure validation accuracy against a manually verified sample.",
+        "priority": "medium",
+        "dependencies": [
+          27,
+          28
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Develop Podcast Metrics Collection Module",
+        "description": "Create a module to gather and estimate podcast metrics including download numbers, episode count, frequency, and ratings.",
+        "details": "Implement functions to count total episodes from RSS feeds and platform data. Calculate publishing frequency and consistency based on episode dates. Extract ratings and review counts from platform data. Develop algorithms to estimate download numbers based on ratings, reviews, and social engagement. Implement chart position tracking for popularity estimation. Create functions to analyze episode titles and descriptions for guest patterns. Store metrics with confidence scores and estimation methods. Handle missing data with reasonable defaults or ranges.",
+        "testStrategy": "Test with podcasts having known metrics to calibrate estimation algorithms. Verify episode counting across different platforms. Test frequency calculation with various publishing patterns. Measure accuracy of download estimation against publicly available figures when possible.",
+        "priority": "medium",
+        "dependencies": [
+          22,
+          23,
+          24,
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Implement AI Relevance Scoring",
+        "description": "Develop a scoring system to evaluate podcasts' relevance to AI topics and services.",
+        "details": "Use existing OpenAI API from the main project to analyze podcast descriptions and episode titles. Create a scoring algorithm based on AI-related keywords and topics. Implement content analysis for recent episodes to detect AI discussions. Develop scoring for tech-friendliness based on topics and guests. Create functions to analyze guest history for AI experts and technologists. Implement weighted scoring that considers recency of AI topics. Store relevance scores with component subscores and confidence levels. Create threshold recommendations for outreach prioritization.",
+        "testStrategy": "Test with a manually categorized set of podcasts with known AI relevance. Verify scoring consistency across similar podcasts. Test with edge cases of partially relevant content. Measure correlation between scores and manual categorization.",
         "priority": "high",
         "dependencies": [
-          12
+          30
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 16,
-        "title": "Social Media Profile and Alternative Contact Discovery",
-        "description": "Enrich contact data by discovering host social media profiles and alternative contact methods.",
-        "details": "From podcast metadata and website bios, extract Twitter, LinkedIn, Instagram, and YouTube links using regex and OpenGraph tags. For each profile, attempt to extract public contact info (e.g., Twitter bio email, LinkedIn public profile, Instagram business contact). Use Botasaurus for scraping and respect platform rate limits.",
-        "testStrategy": "For a sample of 100 podcasts, extract at least one valid social media profile for 90%+ of hosts; validate extracted contact info.",
+        "id": 32,
+        "title": "Create Contact Confidence Scoring System",
+        "description": "Develop a system to score the confidence level of extracted contact information based on multiple factors.",
+        "details": "Implement a weighted scoring algorithm considering contact source reliability. Create functions to cross-reference contacts across multiple sources. Develop recency scoring based on last verification date. Implement directness scoring (direct vs. indirect contact methods). Create functions to evaluate contact specificity to the host vs. general podcast contacts. Develop a composite confidence score with 'High', 'Medium', and 'Low' classifications. Store confidence scores with component subscores and reasoning. Implement threshold recommendations for outreach prioritization.",
+        "testStrategy": "Test with a sample of contacts with known reliability. Verify scoring consistency across similar contact types. Test with edge cases of ambiguous contact information. Measure correlation between confidence scores and actual contact success in a small test batch.",
         "priority": "medium",
         "dependencies": [
-          14,
-          15
+          27,
+          28,
+          29
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 17,
-        "title": "Podcast Intelligence Gathering and AI Relevance Scoring",
-        "description": "Collect podcast metrics (downloads, frequency, guest types) and score AI/tech relevance using OpenAI API.",
-        "details": "Estimate downloads using public metrics (Apple/Spotify ratings, reviews, chart position). Parse episode lists for frequency and guest analysis. Use OpenAI API (latest model, e.g., GPT-4.5) to analyze show notes/descriptions for AI/tech relevance. Store all metrics in the defined schema.",
-        "testStrategy": "For 100 podcasts, verify that metrics are populated and AI relevance scores are consistent with manual review.",
-        "priority": "medium",
+        "id": 33,
+        "title": "Implement Data Integration and Deduplication",
+        "description": "Create a module to integrate data from multiple sources, resolve conflicts, and remove duplicates.",
+        "details": "Develop podcast matching algorithms based on name, host, and feed URL similarities. Implement contact information merging with preference for higher confidence sources. Create functions to resolve conflicts in podcast metadata across platforms. Develop entity resolution for hosts with slightly different name formats. Implement deduplication for similar or identical podcasts. Create functions to merge social profiles from different discovery methods. Develop a unified data model matching the required JSON schema. Implement data completeness checking and gap filling from secondary sources.",
+        "testStrategy": "Test with intentionally duplicated podcast data. Verify conflict resolution with contradicting information. Test entity resolution with name variations. Measure deduplication accuracy and data completeness after integration.",
+        "priority": "high",
         "dependencies": [
-          15
+          29,
+          30,
+          31,
+          32
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 18,
-        "title": "Contact Enrichment, Confidence Scoring, and Deduplication",
-        "description": "Cross-reference contact info from multiple sources, rate confidence, and remove duplicates.",
-        "details": "For each podcast, aggregate emails and contacts from website, RSS, and social. Assign confidence levels (High/Medium/Low) based on source reliability and validation. Implement deduplication logic for emails and social profiles. Use fuzzy matching for near-duplicates.",
-        "testStrategy": "For a batch of 200 podcasts, ensure no duplicate contacts and that confidence scores align with source reliability.",
+        "id": 34,
+        "title": "Develop CSV Export Module",
+        "description": "Create a module to export the collected and processed data to CSV format for easy consumption.",
+        "details": "Implement functions to convert the internal data structure to CSV format. Create column mappings from the JSON schema to CSV headers. Develop functions to flatten nested data (like social links) for CSV compatibility. Implement UTF-8 encoding handling for international characters. Create functions for custom CSV formatting options (delimiters, quoting, etc.). Develop file naming conventions with timestamps. Implement data filtering options for export (by confidence, relevance, etc.). Create functions for splitting large datasets into multiple CSV files if needed.",
+        "testStrategy": "Test with a diverse dataset including all field types. Verify UTF-8 handling with international podcast names. Test with large datasets to ensure performance. Validate CSV output can be correctly imported into common spreadsheet applications.",
         "priority": "medium",
         "dependencies": [
-          16,
-          17
+          33
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 19,
-        "title": "CSV Output Generation and Data Schema Enforcement",
-        "description": "Export all collected and enriched data to CSV files matching the specified schema.",
-        "details": "Implement CSV export using Python's built-in csv module or pandas. Validate that all fields in the schema are present and correctly formatted. Handle Unicode and special characters. Include last_updated timestamp. Ensure output is clean and ready for import into CRM tools.",
-        "testStrategy": "Generate CSV for 500 podcasts; validate schema compliance and data integrity using automated tests.",
-        "priority": "medium",
+        "id": 35,
+        "title": "Implement Rate Limiting and Anti-Detection Measures",
+        "description": "Enhance the scraper with comprehensive rate limiting and anti-detection measures to ensure ethical scraping and avoid blocks.",
+        "details": "Implement configurable delay between requests for each platform. Create exponential backoff strategies for rate limit errors. Develop request fingerprint randomization (user agents, headers, etc.). Implement proxy rotation capabilities (optional, using free proxies). Create functions to respect robots.txt directives. Develop session persistence to maintain cookies where needed. Implement request distribution over time for large scraping jobs. Create logging and monitoring for rate limit issues. Develop platform-specific anti-detection measures based on known patterns.",
+        "testStrategy": "Test with extended scraping sessions to verify no blocking occurs. Verify robots.txt compliance with test websites. Test backoff strategies with simulated rate limiting. Measure request distribution patterns to ensure they appear natural.",
+        "priority": "high",
         "dependencies": [
-          18
+          22,
+          23,
+          24,
+          25,
+          27,
+          28
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 20,
-        "title": "Bulk Processing, Error Handling, and Rate Limiting Optimization",
-        "description": "Enable processing of 1,000+ podcasts per search, with robust error handling, retry logic, and compliance with rate limits.",
-        "details": "Implement batch processing with progress tracking. Add retry logic for failed requests (exponential backoff). Monitor and respect API and website rate limits (Spotify, Google, Apple). Log errors and provide summary reports. Optimize memory usage for large-scale runs.",
-        "testStrategy": "Run end-to-end processing for 1,000+ podcasts; verify completion within 10 minutes, error rates <5%, and no rate limit violations.",
+        "id": 36,
+        "title": "Create Error Handling and Recovery System",
+        "description": "Develop a robust error handling and recovery system to ensure the scraper can handle exceptions and continue operation.",
+        "details": "Implement comprehensive exception handling throughout the codebase. Create a centralized error logging system. Develop automatic retry logic for transient errors. Implement checkpoint saving to resume interrupted scraping jobs. Create functions to skip problematic items without failing the entire process. Develop health checking for external services and APIs. Implement graceful degradation when certain data sources are unavailable. Create detailed error reporting in the output. Develop self-healing mechanisms for common failure patterns.",
+        "testStrategy": "Test with intentionally induced errors at various stages. Verify retry logic works correctly for different error types. Test checkpoint resumption after interruption. Measure overall resilience by running with limited or failing data sources.",
         "priority": "medium",
         "dependencies": [
-          19
+          33
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 37,
+        "title": "Develop Command Line Interface",
+        "description": "Create a user-friendly command line interface for running the scraper with various options and configurations.",
+        "details": "Implement argument parsing for command line options. Create configuration file support for persistent settings. Develop commands for different scraping phases and targets. Implement filtering options for podcast types and categories. Create output formatting and destination options. Develop verbosity levels for logging and debugging. Implement progress reporting during long-running operations. Create help documentation and usage examples. Develop batch processing capabilities for multiple queries.",
+        "testStrategy": "Test all command line options with various inputs. Verify configuration file loading works correctly. Test with different verbosity levels. Measure usability with sample user tasks and command sequences.",
+        "priority": "medium",
+        "dependencies": [
+          34,
+          35,
+          36
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 38,
+        "title": "Create Documentation and Usage Examples",
+        "description": "Develop comprehensive documentation including installation instructions, usage examples, and ethical guidelines.",
+        "details": "Create detailed README.md with project overview and quick start. Develop step-by-step installation instructions for different platforms. Create usage examples for common scenarios. Document all command line options and configurations. Develop API documentation for key modules and functions. Create ethical usage guidelines emphasizing legitimate outreach. Implement documentation for data schema and output formats. Develop troubleshooting guides for common issues. Create contribution guidelines for the open-source community.",
+        "testStrategy": "Test documentation clarity with users unfamiliar with the project. Verify installation instructions work on different platforms. Test usage examples to ensure they work as documented. Measure documentation completeness against all implemented features.",
+        "priority": "medium",
+        "dependencies": [
+          37
         ],
         "status": "pending",
         "subtasks": []
@@ -134,7 +255,7 @@
     ],
     "metadata": {
       "created": "2025-08-19T15:35:53.275Z",
-      "updated": "2025-08-19T18:44:00.608Z",
+      "updated": "2025-08-20T13:06:06.823Z",
       "description": "Tasks for master context"
     }
   }

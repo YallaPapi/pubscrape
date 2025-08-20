@@ -12,12 +12,60 @@ import logging
 import sys
 import os
 from pathlib import Path
+from datetime import datetime
+import json
+import threading
+import time
 
 # Add the package to Python path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from podcast_scraper.main import PodcastHostScraper
 from podcast_scraper.config import config
+
+
+class ProgressReporter:
+    def __init__(self, enabled: bool):
+        self.enabled = enabled
+        self._stop = False
+        self._thread = None
+        self.progress_path = config.get_output_path("progress.json")
+        self._lock = threading.Lock()
+
+    def start(self):
+        if not self.enabled:
+            return
+        def loop():
+            beat = 0
+            while not self._stop:
+                beat += 1
+                self._write({"heartbeat": beat, "timestamp": datetime.now().isoformat()})
+                print("[LIVE] working...", flush=True)
+                time.sleep(2)
+        self._thread = threading.Thread(target=loop, daemon=True)
+        self._thread.start()
+
+    def update(self, **fields):
+        if not self.enabled:
+            return
+        payload = {"timestamp": datetime.now().isoformat(), **fields}
+        self._write(payload)
+        msg = fields.get("message")
+        if msg:
+            print(f"[LIVE] {msg}", flush=True)
+
+    def stop(self):
+        self._stop = True
+        if self._thread:
+            self._thread.join(timeout=1)
+
+    def _write(self, data):
+        try:
+            with self._lock:
+                with open(self.progress_path, 'w', encoding='utf-8') as f:
+                    json.dump(data, f)
+        except Exception:
+            pass
 
 
 def setup_logging(log_level: str = "INFO"):
@@ -28,7 +76,8 @@ def setup_logging(log_level: str = "INFO"):
         handlers=[
             logging.StreamHandler(sys.stdout),
             logging.FileHandler(config.get_output_path("scraper.log"))
-        ]
+        ],
+        force=True
     )
 
 
@@ -81,7 +130,7 @@ Available topics: artificial intelligence, business, technology, health, educati
         "--platforms",
         nargs="+",
         default=["apple_podcasts"],
-        choices=["apple_podcasts", "spotify", "youtube", "podcast_index", "all"],
+        choices=["apple_podcasts", "itunes_api", "spotify", "youtube", "podcast_index", "learnoutloud", "all"],
         help="Platforms to scrape (default: apple_podcasts, use 'all' for all platforms)"
     )
     
@@ -150,6 +199,12 @@ Available topics: artificial intelligence, business, technology, health, educati
         default="INFO",
         help="Logging level (default: INFO)"
     )
+
+    parser.add_argument(
+        "--progress",
+        action="store_true",
+        help="Show live progress and write output/progress.json"
+    )
     
     parser.add_argument(
         "--version",
@@ -213,30 +268,37 @@ def main():
     
     setup_logging(args.log_level)
     logger = logging.getLogger(__name__)
+
+    reporter = ProgressReporter(args.progress)
+    reporter.start()
     
-    # Print banner and config
-    print_banner()
-    print_config_info()
-    
-    # Initialize scraper
     try:
-        print(f"\n[INIT] Initializing Podcast Host Contact Scraper...")
-        scraper = PodcastHostScraper()
+        # Print banner and config
+        print_banner()
+        print_config_info()
+        reporter.update(message="Initialized and printed config")
         
-        # Start performance monitoring if requested
-        if args.monitor_performance:
-            print(f"[MONITOR] Starting performance monitoring...")
-            scraper.start_performance_monitoring()
+        # Initialize scraper
+        try:
+            print(f"\n[INIT] Initializing Podcast Host Contact Scraper...")
+            scraper = PodcastHostScraper()
+            if args.monitor_performance:
+                print(f"[MONITOR] Starting performance monitoring...")
+                scraper.start_performance_monitoring()
+        except Exception as init_err:
+            reporter.update(message=f"Init error: {init_err}")
+            raise
         
         print(f"\n[SEARCH] Searching for '{args.topic}' podcasts...")
         print(f"   • Platforms: {', '.join(args.platforms)}")
         print(f"   • Limit: {args.limit} podcasts per platform")
         print(f"   • Output: {config.OUTPUT_DIR}/")
+        reporter.update(stage="search", topic=args.topic, platforms=args.platforms, limit=args.limit)
         
         # Handle "all" platforms option
         platforms = args.platforms
         if "all" in platforms:
-            platforms = ["apple_podcasts", "spotify", "youtube"]  # Exclude podcast_index as it's placeholder
+            platforms = ["apple_podcasts", "learnoutloud", "spotify", "youtube"]  # Exclude podcast_index as it's placeholder
         
         # Scrape podcasts
         podcasts = scraper.scrape_podcasts(
@@ -244,6 +306,7 @@ def main():
             limit=args.limit,
             platforms=platforms
         )
+        reporter.update(stage="scrape_done", total=len(podcasts))
         
         if not podcasts:
             print(f"\n[ERROR] No podcasts found for topic: {args.topic}")
@@ -256,14 +319,18 @@ def main():
         if args.enrich_contacts:
             print(f"\n[ENRICH] Discovering contact information...")
             print("   This may take a few minutes as we discover websites and extract contacts...")
+            reporter.update(stage="enrich_start", count=len(podcasts))
             podcasts = scraper.enrich_with_contact_info(podcasts)
+            reporter.update(stage="enrich_done")
             print(f"[ENRICH] Contact enrichment completed!")
         
         # Analyze intelligence if requested
         if args.analyze_intelligence:
             print(f"\n[ANALYZE] Performing podcast intelligence analysis...")
             print("   Analyzing popularity, authority, relevance, and guest potential...")
+            reporter.update(stage="analyze_start")
             podcasts = scraper.analyze_podcast_intelligence(podcasts, args.topic)
+            reporter.update(stage="analyze_done")
             print(f"[ANALYZE] Intelligence analysis completed!")
         
         # Export to CSV (enhanced or standard)
@@ -273,21 +340,25 @@ def main():
             csv_path = scraper.export_enhanced_csv(podcasts, args.output)
         else:
             csv_path = scraper.export_to_csv(podcasts, args.output)
+        reporter.update(stage="export_done", csv=csv_path)
         
         # Generate comprehensive report if requested
         if args.comprehensive_report and (args.enrich_contacts or args.analyze_intelligence):
             print(f"[REPORT] Generating comprehensive analytics report...")
             comprehensive_report_path = scraper.generate_comprehensive_report(podcasts, args.topic)
+            reporter.update(stage="report_done", report=comprehensive_report_path)
         
         # Generate standard report (unless disabled or comprehensive report generated)
         if not args.no_report and not args.comprehensive_report:
             print(f"[REPORT] Generating summary report...")
             report_path = scraper.generate_report(podcasts)
+            reporter.update(stage="report_done", report=report_path)
         
         # Export JSON data if requested
         if args.export_json:
             print(f"[JSON] Exporting data to JSON format...")
             json_path = scraper.export_json_data(podcasts)
+            reporter.update(stage="json_done", json=json_path)
         
         # Optimize memory if requested
         if args.optimize_memory:
@@ -336,7 +407,6 @@ def main():
         
         print(f"\n[DONE] Scraping completed successfully!")
         print(f"[TIP] Open {os.path.basename(csv_path)} to see all contact details")
-        
     except KeyboardInterrupt:
         print(f"\n[STOP] Scraping interrupted by user")
         sys.exit(1)
@@ -345,6 +415,8 @@ def main():
         print(f"\n[ERROR] Error: {e}")
         print(f"[TIP] Check the log file for details: {config.get_output_path('scraper.log')}")
         sys.exit(1)
+    finally:
+        reporter.stop()
 
 
 if __name__ == "__main__":

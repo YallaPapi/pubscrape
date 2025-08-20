@@ -61,10 +61,6 @@ output/*.json
 output/*.csv
 !output/.gitkeep
 
-# Task files
-# tasks.json
-# tasks/
-
 # Temporary files
 *.tmp
 *.temp
@@ -85,3 +81,9 @@ htmlcov/
 
 # pyenv
 .python-version 
+
+# Environment variables
+
+# Task files
+# tasks.json
+# tasks/ 

@@ -57,12 +57,18 @@ class ContactPageDiscovery:
         # Try to extract from Apple Podcasts page description
         if podcast.apple_podcasts_url:
             website_url = self._extract_website_from_apple_page(podcast.apple_podcasts_url)
-            if website_url:
+            # Avoid falsely treating Apple Podcasts domain as the podcast website
+            if website_url and 'podcasts.apple.com' not in website_url:
                 return website_url
         
         # Try Google search as fallback (if API keys available)
         if config.has_google_search_keys():
             website_url = self._google_search_for_website(podcast.podcast_name)
+            if website_url:
+                return website_url
+        else:
+            # Fallback: DuckDuckGo HTML search (no API key needed)
+            website_url = self._duckduckgo_search_for_website(podcast.podcast_name)
             if website_url:
                 return website_url
         
@@ -280,18 +286,26 @@ class ContactPageDiscovery:
         try:
             response = self.session.get(apple_url, timeout=10)
             response.raise_for_status()
+            html = response.text
             
-            # Look for website links in the page
+            # Prefer explicit "Website" anchors pointing off Apple/Spotify domains
             website_patterns = [
-                r'<a[^>]+href=["\'](https?://(?:www\.)?[^"\']+\.(?:com|org|net|io|co)[^"\']*)["\'][^>]*>.*?website',
-                r'<a[^>]+href=["\'](https?://[^"\']+)["\'][^>]*>.*?(?:official|website|site)',
-                r'Website:.*?<a[^>]+href=["\'](https?://[^"\']+)["\']'
+                r'<a[^>]+href=["\'](https?://[^"\']+)["\'][^>]*>[^<]*(?:website|official|site)[^<]*</a>',
+                r'Website:\s*<a[^>]+href=["\'](https?://[^"\']+)["\']'
             ]
-            
             for pattern in website_patterns:
-                match = re.search(pattern, response.text, re.IGNORECASE | re.DOTALL)
-                if match:
-                    return match.group(1)
+                m = re.search(pattern, html, re.IGNORECASE | re.DOTALL)
+                if m:
+                    url = m.group(1)
+                    if not any(domain in url for domain in ['podcasts.apple.com', 'apple.com', 'spotify.com']):
+                        return url
+            
+            # Fallback: first external link on the page that is not Apple/Spotify
+            link_pattern = r'<a[^>]+href=["\'](https?://[^"\']+)["\']'
+            for m in re.finditer(link_pattern, html, re.IGNORECASE):
+                url = m.group(1)
+                if not any(domain in url for domain in ['podcasts.apple.com', 'apple.com', 'spotify.com']):
+                    return url
         
         except Exception as e:
             self.logger.debug(f"Error extracting website from Apple page {apple_url}: {e}")
@@ -328,11 +342,27 @@ class ContactPageDiscovery:
         
         return None
     
+    def _duckduckgo_search_for_website(self, podcast_name: str) -> Optional[str]:
+        """Use DuckDuckGo HTML search to find likely official website (no API key)."""
+        try:
+            q = f"{podcast_name} podcast official website"
+            ddg_url = f"https://duckduckgo.com/html/?q={requests.utils.quote(q)}"
+            resp = self.session.get(ddg_url, timeout=10)
+            resp.raise_for_status()
+            # Extract first external result link
+            links = re.findall(r'<a[^>]+class="result__a"[^>]+href="([^"]+)"', resp.text)
+            for url in links:
+                if not any(b in url for b in ['duckduckgo.com', 'apple.com', 'spotify.com', 'podcasts.apple.com']):
+                    return url
+        except Exception as e:
+            self.logger.debug(f"DuckDuckGo search failed for {podcast_name}: {e}")
+        return None
+
     def _is_valid_contact_page(self, url: str) -> bool:
         """Check if a URL is a valid contact page."""
         try:
-            response = self.session.head(url, timeout=5)
-            return response.status_code == 200
+            response = self.session.head(url, timeout=5, allow_redirects=True)
+            return 200 <= response.status_code < 400
         except:
             return False
     
