@@ -2,252 +2,202 @@
   "master": {
     "tasks": [
       {
-        "id": 21,
-        "title": "Setup Project Structure and Dependencies",
-        "description": "Initialize the project repository with the required structure and install all necessary dependencies for the podcast scraper.",
-        "details": "Create a new GitHub repository for the open-source project. Set up the basic project structure with directories for scrapers, utilities, and output. Install required packages including Botasaurus for anti-detection scraping, email-validator for email validation, and other necessary libraries. Create a requirements.txt file listing all dependencies. Initialize configuration files for different podcast platforms. Set up a basic README.md with project description and setup instructions.",
-        "testStrategy": "Verify all dependencies install correctly with a clean environment test. Ensure project structure follows best practices. Confirm Botasaurus and other key libraries are properly configured.",
+        "id": 49,
+        "title": "Project Initialization and Environment Setup",
+        "description": "Set up the project repository, initialize Python environment, and configure Botasaurus for anti-detection scraping.",
+        "details": "Create a new Python project with a virtual environment. Install Botasaurus (latest version via pip), and set up project structure with directories for core modules (search, anti-detection, extraction, data, config). Add Dockerfile for containerization. Ensure compatibility with Windows, Mac, and Linux. Prepare .env for secure config and secrets. Use Python 3.10+ for best library support. Add pre-commit hooks for linting and formatting.",
+        "testStrategy": "Verify environment setup by running a sample Botasaurus script that opens a browser and navigates to a test page. Confirm Docker container builds and runs locally.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
-        "id": 22,
-        "title": "Implement Apple Podcasts Directory Scraper",
-        "description": "Build a scraper to extract podcast information from Apple Podcasts directory, focusing on top podcasts by category.",
-        "details": "Use Botasaurus to create a scraper for Apple Podcasts. Target the charts and category pages to find popular podcasts. Extract podcast name, host name, RSS feed URL, and other available metadata. Implement pagination to navigate through multiple pages of results. Handle rate limiting and anti-bot detection. Store results in an intermediate format for further processing. Focus on AI, technology, and business categories first, then expand to others. Parse RSS feeds to extract additional podcast metadata not available on the directory pages.",
-        "testStrategy": "Test with multiple podcast categories to ensure consistent data extraction. Verify RSS feed parsing works correctly. Check for rate limiting issues and implement appropriate delays. Validate data schema compliance for extracted podcasts.",
+        "id": 50,
+        "title": "Implement Anti-Detection Engine",
+        "description": "Develop the AntiDetectionManager to manage user agent rotation, browser fingerprinting, proxy rotation, and resource blocking using Botasaurus.",
+        "status": "in-progress",
+        "dependencies": [
+          49
+        ],
+        "priority": "high",
+        "details": "Leverage Botasaurus's AntiDetectDriver with @browser(user_agent_rotation=True) for user agent rotation. For consistent fingerprinting, use user_agent=UserAgent.HASHED. Integrate proxy rotation with built-in proxy support (proxy='http://user:pass@host:port') for residential proxies, configurable via YAML/JSON with environment variable templating. Block unnecessary resources using Botasaurus parameters (block_images=True, block_css=True, etc.). Implement session profile management for isolation with profile='profile_name'. Add human-like jittered delays (3-6 seconds random) and implement exponential backoff on 429/403 errors (5s, 10s, 20s, up to 2 minutes). Always respect Retry-After headers and mark proxies unhealthy on repeated blocks. Store proxy credentials securely in .env files (PROXY_USER, PROXY_PASS, etc.).",
+        "testStrategy": "Unit test anti-detection features by scraping a honeypot site and verifying no detection. Log user agent and IP for each session. Confirm resource blocking via network logs. Test rate limiting with Bing (15-20 requests/minute) to ensure staying under detection thresholds.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement user agent rotation with Botasaurus",
+            "description": "Set up @browser(user_agent_rotation=True) and UserAgent.HASHED for consistent fingerprinting",
+            "status": "in-progress",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Integrate proxy rotation system",
+            "description": "Implement proxy rotation using Botasaurus's built-in proxy support with proxy='http://user:pass@host:port' format",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Set up resource blocking",
+            "description": "Configure Botasaurus resource blocking with block_images=True, block_css=True parameters",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement session profile management",
+            "description": "Use profile='campaign_name' for session isolation and consistent fingerprinting across sessions",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Add human-like delays and backoff strategy",
+            "description": "Implement jittered delays (3-6 seconds) and exponential backoff on 429/403 errors (5s, 10s, 20s, up to 2 minutes)",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create proxy health monitoring",
+            "description": "Implement system to mark proxies as unhealthy after repeated blocks and respect Retry-After headers",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Set up secure credential storage",
+            "description": "Store proxy credentials in .env files and implement environment variable templating for config files",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Create YAML/JSON configuration system",
+            "description": "Develop configuration system with environment variable templating for anti-detection parameters",
+            "status": "todo",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 51,
+        "title": "Develop Bing Search Interface",
+        "description": "Create BingSearchScraper to perform Bing queries, handle pagination, and extract business website URLs using stable CSS selectors.",
+        "details": "Use Botasaurus browser automation to navigate Bing search results. Parse results with CSS selectors (e.g., 'li.b_algo h2 a' for URLs). Handle Bing's redirect patterns (/url?q=). Support pagination (next page navigation, up to configurable max pages). Filter out non-business results using a blacklist (Wikipedia, social, etc.). Accept search queries from config files. Implement concurrency limits (max 1-2 sessions for Bing).",
+        "testStrategy": "Unit test extraction logic with static Bing HTML. Integration test with live Bing queries, verifying correct URLs and pagination. Validate filtering of non-business results.",
         "priority": "high",
         "dependencies": [
-          21
+          50
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 23,
-        "title": "Develop Spotify Podcast Discovery Module",
-        "description": "Create a module to discover podcasts from Spotify using their Web API with the free tier (100 requests/hour).",
-        "details": "Implement authentication with Spotify Web API using client credentials flow. Create functions to search for podcasts by keywords related to AI, technology, and business. Extract podcast details including name, publisher, description, and episode information. Handle API rate limits (100 requests/hour) with appropriate backoff strategies. Implement caching to minimize duplicate requests. Extract show URLs and other metadata that can be used for further contact discovery. Store results in a consistent format compatible with other platform scrapers.",
-        "testStrategy": "Test API authentication and request handling. Verify rate limit compliance and backoff strategy. Compare results with manual Spotify searches to ensure accuracy. Validate data schema compliance for extracted podcasts.",
-        "priority": "medium",
-        "dependencies": [
-          21
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 24,
-        "title": "Build Google Podcasts Search Scraper",
-        "description": "Develop a scraper to extract podcast information from Google Podcasts search results.",
-        "details": "Use Botasaurus to scrape Google Podcasts search results. Implement search functionality for relevant keywords (AI, technology, business, etc.). Extract podcast name, creator, description, and episode information. Handle pagination to process multiple pages of results. Implement anti-detection measures to avoid blocking. Extract URLs that can lead to podcast websites or contact information. Store results in a format consistent with other platform scrapers. Use Google Custom Search API (free tier: 100 searches/day) as a fallback if direct scraping becomes challenging.",
-        "testStrategy": "Test with various search terms to ensure consistent extraction. Verify pagination works correctly. Test anti-detection measures by running multiple searches. Validate data schema compliance for extracted podcasts.",
-        "priority": "medium",
-        "dependencies": [
-          21
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 25,
-        "title": "Implement PodcastAddict and Stitcher Directory Scrapers",
-        "description": "Create scrapers for PodcastAddict and Stitcher directories to expand podcast discovery sources.",
-        "details": "Develop Botasaurus scrapers for both PodcastAddict and Stitcher platforms. Target browse pages and category listings to find relevant podcasts. Extract podcast name, creator, description, and available metadata. Implement pagination to navigate through multiple pages. Handle rate limiting and anti-bot detection for each platform. Extract URLs that can lead to podcast websites or contact information. Store results in a format consistent with other platform scrapers. Implement platform-specific error handling and retry logic.",
-        "testStrategy": "Test with multiple categories on both platforms. Verify pagination works correctly. Test rate limiting and anti-detection measures. Validate data schema compliance for extracted podcasts from both sources.",
-        "priority": "medium",
-        "dependencies": [
-          21
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 26,
-        "title": "Develop Website Discovery Module",
-        "description": "Create a module to discover podcast websites from the metadata collected in the podcast discovery phase.",
-        "details": "Implement functions to extract website URLs from podcast metadata across all platforms. Parse RSS feed <link> tags to find official websites. Extract URLs from podcast descriptions. Process social media links to find associated websites. Use Google Custom Search API to find websites when direct links are not available. Implement URL validation and normalization. Handle redirects and canonical URL resolution. Store discovered website URLs with their source podcast information. Implement retry logic for failed website discovery attempts.",
-        "testStrategy": "Test with a sample of podcasts from each platform. Verify URL extraction from different metadata sources. Check URL validation and normalization. Measure success rate of website discovery across platforms.",
+        "id": 52,
+        "title": "Implement Rate Limiting and Block Handling",
+        "description": "Develop RateLimiter to enforce Bing's request limits, handle HTTP 429 errors, and adaptively manage delays and retries.",
+        "details": "Monitor request rates (max 15-20/minute). On 429 or block, trigger exponential backoff (e.g., 30s, 60s, 120s). Adjust delays based on response times. Limit concurrent sessions to 1-2. Detect blocks via response content and switch proxies or tactics. Log all rate limiting and block events for analytics.",
+        "testStrategy": "Simulate high-frequency requests to trigger rate limiting. Verify backoff and recovery. Unit test adaptive delay logic. Integration test with Bing to confirm low block rates.",
         "priority": "high",
         "dependencies": [
-          22,
-          23,
-          24,
-          25
+          51
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 27,
-        "title": "Implement Contact Page Scraper",
-        "description": "Build a scraper to extract contact information from podcast websites' contact, about, and booking pages.",
-        "details": "Develop a Botasaurus scraper to navigate to common contact page URLs (/contact, /about, /booking, etc.). Implement email extraction using regex patterns and HTML parsing. Extract contact form URLs and submission endpoints. Identify booking agent or management company information. Extract phone numbers using regex patterns. Implement heuristics to distinguish between different types of contact information (general, booking, press, etc.). Handle various website structures and content management systems. Store extracted contact information with confidence scores based on the source context.",
-        "testStrategy": "Test with a diverse set of podcast websites. Verify email and phone number extraction accuracy. Check contact form URL extraction. Measure contact information extraction success rate across different website structures.",
+        "id": 53,
+        "title": "Develop Website Email Extraction Engine",
+        "description": "Build EmailExtractor to visit business websites, bypass Cloudflare, and extract/validate emails using multiple strategies.",
+        "details": "Use Botasaurus with anti-detect features to visit each website. Implement Cloudflare bypass (Botasaurus supports this natively). Extract emails via regex, mailto links, and parsing contact sections. Discover and scrape contact pages (look for '/contact', '/about'). Validate emails (regex, domain checks, filter test/fake emails). Score email quality (e.g., presence on contact page, domain match). Support Shopify, WordPress, and custom site structures.",
+        "testStrategy": "Unit test extraction on static HTML samples (Shopify, WP, custom). Integration test on live sites. Validate email scoring and filtering accuracy.",
         "priority": "high",
         "dependencies": [
-          26
+          52
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 28,
-        "title": "Create Social Media Profile Extractor",
-        "description": "Develop a module to discover and extract information from podcast hosts' social media profiles.",
-        "details": "Implement functions to extract social media links from podcast metadata and websites. Create platform-specific scrapers for Twitter, LinkedIn, Instagram, and YouTube. Extract contact information from social media bios and about pages. Identify business contact buttons and messaging options. Handle rate limiting and anti-detection measures for each platform. Extract additional website links from social profiles. Implement profile matching heuristics to ensure profiles belong to the podcast host. Store social media profile information with confidence scores.",
-        "testStrategy": "Test with a sample of podcast hosts across different platforms. Verify profile matching accuracy. Check contact information extraction from social bios. Measure success rate of finding valid social profiles for podcast hosts.",
+        "id": 54,
+        "title": "Implement Data Pipeline and CSV Export",
+        "description": "Create DataExporter to process, deduplicate, validate, and export results to CSV and JSON formats with required fields.",
+        "details": "Aggregate extracted emails with metadata (email, source_website, search_query, found_date, confidence_score, website_type, business_name, phone, address). Remove duplicates. Clean and validate data. Export to CSV (using pandas or csv module) and JSON (for campaign summary, proxy stats, error logs). Ensure output matches required schema. Support batch and streaming export modes.",
+        "testStrategy": "Unit test data cleaning, deduplication, and export functions. Validate CSV/JSON output against schema. Integration test with full pipeline.",
         "priority": "medium",
         "dependencies": [
-          26
+          53
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 29,
-        "title": "Implement Email Validation and Verification",
-        "description": "Create a module to validate and verify extracted email addresses to ensure they are properly formatted and potentially active.",
-        "details": "Use Python's email-validator library to check email format validity. Implement MX record checking to verify domain mail server existence. Create functions to detect disposable email domains. Implement syntax and format standardization for emails. Develop confidence scoring based on email source and validation results. Handle common obfuscation patterns (e.g., 'name [at] domain [dot] com'). Create deduplication logic for multiple discovered emails. Store validation results with each email address. Implement privacy-compliant verification that doesn't send actual emails.",
-        "testStrategy": "Test with a diverse set of extracted emails including valid, invalid, and edge cases. Verify MX record checking works correctly. Test deduplication logic with similar emails. Measure validation accuracy against a manually verified sample.",
+        "id": 55,
+        "title": "Configuration and Campaign Management",
+        "description": "Implement configuration system for campaign settings, search queries, proxies, and anti-detection parameters.",
+        "details": "Support YAML/JSON config files for campaign setup. Allow template-based query generation (with city, industry, etc.). Enable proxy pool and rotation settings. Expose anti-detection and rate limiting parameters for tuning. Secure sensitive config (proxy creds) via .env and encrypted storage. Provide CLI for campaign selection and config validation.",
+        "testStrategy": "Unit test config parsing and validation. Integration test campaign switching and parameter overrides. Fuzz test with malformed configs.",
         "priority": "medium",
         "dependencies": [
-          27,
-          28
+          54
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 30,
-        "title": "Develop Podcast Metrics Collection Module",
-        "description": "Create a module to gather and estimate podcast metrics including download numbers, episode count, frequency, and ratings.",
-        "details": "Implement functions to count total episodes from RSS feeds and platform data. Calculate publishing frequency and consistency based on episode dates. Extract ratings and review counts from platform data. Develop algorithms to estimate download numbers based on ratings, reviews, and social engagement. Implement chart position tracking for popularity estimation. Create functions to analyze episode titles and descriptions for guest patterns. Store metrics with confidence scores and estimation methods. Handle missing data with reasonable defaults or ranges.",
-        "testStrategy": "Test with podcasts having known metrics to calibrate estimation algorithms. Verify episode counting across different platforms. Test frequency calculation with various publishing patterns. Measure accuracy of download estimation against publicly available figures when possible.",
+        "id": 56,
+        "title": "Monitoring, Logging, and Analytics",
+        "description": "Add comprehensive logging, error tracking, and real-time analytics dashboard for campaign performance and proxy health.",
+        "details": "Implement structured logging (JSON logs, error_log.csv). Track key metrics (queries/hour, emails/hour, block rates, proxy stats). Export campaign_summary.json and proxy_performance.json. Integrate with monitoring tools (Prometheus, Grafana, or lightweight dashboard using Dash/Streamlit). Alert on high block rates or proxy failures.",
+        "testStrategy": "Unit test logging and metric collection. Integration test dashboard with simulated campaigns. Validate alert triggers.",
         "priority": "medium",
         "dependencies": [
-          22,
-          23,
-          24,
-          25
+          55
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 31,
-        "title": "Implement AI Relevance Scoring",
-        "description": "Develop a scoring system to evaluate podcasts' relevance to AI topics and services.",
-        "details": "Use existing OpenAI API from the main project to analyze podcast descriptions and episode titles. Create a scoring algorithm based on AI-related keywords and topics. Implement content analysis for recent episodes to detect AI discussions. Develop scoring for tech-friendliness based on topics and guests. Create functions to analyze guest history for AI experts and technologists. Implement weighted scoring that considers recency of AI topics. Store relevance scores with component subscores and confidence levels. Create threshold recommendations for outreach prioritization.",
-        "testStrategy": "Test with a manually categorized set of podcasts with known AI relevance. Verify scoring consistency across similar podcasts. Test with edge cases of partially relevant content. Measure correlation between scores and manual categorization.",
-        "priority": "high",
-        "dependencies": [
-          30
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 32,
-        "title": "Create Contact Confidence Scoring System",
-        "description": "Develop a system to score the confidence level of extracted contact information based on multiple factors.",
-        "details": "Implement a weighted scoring algorithm considering contact source reliability. Create functions to cross-reference contacts across multiple sources. Develop recency scoring based on last verification date. Implement directness scoring (direct vs. indirect contact methods). Create functions to evaluate contact specificity to the host vs. general podcast contacts. Develop a composite confidence score with 'High', 'Medium', and 'Low' classifications. Store confidence scores with component subscores and reasoning. Implement threshold recommendations for outreach prioritization.",
-        "testStrategy": "Test with a sample of contacts with known reliability. Verify scoring consistency across similar contact types. Test with edge cases of ambiguous contact information. Measure correlation between confidence scores and actual contact success in a small test batch.",
+        "id": 57,
+        "title": "Testing Suite: Unit, Integration, and Performance Tests",
+        "description": "Develop comprehensive test suite covering all modules, including anti-detection, extraction, rate limiting, and full pipeline.",
+        "details": "Use pytest for unit and integration tests. Mock Bing and website responses for deterministic tests. Add performance tests (load 100+ queries, memory profiling, long-running stability). Test proxy rotation and failover. Validate multi-vertical campaign support. Ensure >90% code coverage.",
+        "testStrategy": "Run automated tests on CI. Review coverage reports. Manually verify edge cases and error recovery.",
         "priority": "medium",
         "dependencies": [
-          27,
-          28,
-          29
+          56
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 33,
-        "title": "Implement Data Integration and Deduplication",
-        "description": "Create a module to integrate data from multiple sources, resolve conflicts, and remove duplicates.",
-        "details": "Develop podcast matching algorithms based on name, host, and feed URL similarities. Implement contact information merging with preference for higher confidence sources. Create functions to resolve conflicts in podcast metadata across platforms. Develop entity resolution for hosts with slightly different name formats. Implement deduplication for similar or identical podcasts. Create functions to merge social profiles from different discovery methods. Develop a unified data model matching the required JSON schema. Implement data completeness checking and gap filling from secondary sources.",
-        "testStrategy": "Test with intentionally duplicated podcast data. Verify conflict resolution with contradicting information. Test entity resolution with name variations. Measure deduplication accuracy and data completeness after integration.",
-        "priority": "high",
-        "dependencies": [
-          29,
-          30,
-          31,
-          32
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 34,
-        "title": "Develop CSV Export Module",
-        "description": "Create a module to export the collected and processed data to CSV format for easy consumption.",
-        "details": "Implement functions to convert the internal data structure to CSV format. Create column mappings from the JSON schema to CSV headers. Develop functions to flatten nested data (like social links) for CSV compatibility. Implement UTF-8 encoding handling for international characters. Create functions for custom CSV formatting options (delimiters, quoting, etc.). Develop file naming conventions with timestamps. Implement data filtering options for export (by confidence, relevance, etc.). Create functions for splitting large datasets into multiple CSV files if needed.",
-        "testStrategy": "Test with a diverse dataset including all field types. Verify UTF-8 handling with international podcast names. Test with large datasets to ensure performance. Validate CSV output can be correctly imported into common spreadsheet applications.",
+        "id": 58,
+        "title": "Production Deployment and Cloud Scaling",
+        "description": "Containerize application with Docker, enable cloud deployment, and support distributed scraping across multiple machines.",
+        "details": "Write Dockerfile for reproducible builds. Support environment-based config (dev, prod). Enable deployment to AWS/GCP/Azure (ECS, GKE, etc.). Implement distributed scraping via message queue (e.g., Redis, RabbitMQ) or orchestrator. Document deployment steps. Integrate monitoring and alerting in production.",
+        "testStrategy": "Deploy to cloud test environment. Run distributed scraping campaign. Monitor resource usage, scaling, and recovery from failures.",
         "priority": "medium",
         "dependencies": [
-          33
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 35,
-        "title": "Implement Rate Limiting and Anti-Detection Measures",
-        "description": "Enhance the scraper with comprehensive rate limiting and anti-detection measures to ensure ethical scraping and avoid blocks.",
-        "details": "Implement configurable delay between requests for each platform. Create exponential backoff strategies for rate limit errors. Develop request fingerprint randomization (user agents, headers, etc.). Implement proxy rotation capabilities (optional, using free proxies). Create functions to respect robots.txt directives. Develop session persistence to maintain cookies where needed. Implement request distribution over time for large scraping jobs. Create logging and monitoring for rate limit issues. Develop platform-specific anti-detection measures based on known patterns.",
-        "testStrategy": "Test with extended scraping sessions to verify no blocking occurs. Verify robots.txt compliance with test websites. Test backoff strategies with simulated rate limiting. Measure request distribution patterns to ensure they appear natural.",
-        "priority": "high",
-        "dependencies": [
-          22,
-          23,
-          24,
-          25,
-          27,
-          28
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 36,
-        "title": "Create Error Handling and Recovery System",
-        "description": "Develop a robust error handling and recovery system to ensure the scraper can handle exceptions and continue operation.",
-        "details": "Implement comprehensive exception handling throughout the codebase. Create a centralized error logging system. Develop automatic retry logic for transient errors. Implement checkpoint saving to resume interrupted scraping jobs. Create functions to skip problematic items without failing the entire process. Develop health checking for external services and APIs. Implement graceful degradation when certain data sources are unavailable. Create detailed error reporting in the output. Develop self-healing mechanisms for common failure patterns.",
-        "testStrategy": "Test with intentionally induced errors at various stages. Verify retry logic works correctly for different error types. Test checkpoint resumption after interruption. Measure overall resilience by running with limited or failing data sources.",
-        "priority": "medium",
-        "dependencies": [
-          33
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 37,
-        "title": "Develop Command Line Interface",
-        "description": "Create a user-friendly command line interface for running the scraper with various options and configurations.",
-        "details": "Implement argument parsing for command line options. Create configuration file support for persistent settings. Develop commands for different scraping phases and targets. Implement filtering options for podcast types and categories. Create output formatting and destination options. Develop verbosity levels for logging and debugging. Implement progress reporting during long-running operations. Create help documentation and usage examples. Develop batch processing capabilities for multiple queries.",
-        "testStrategy": "Test all command line options with various inputs. Verify configuration file loading works correctly. Test with different verbosity levels. Measure usability with sample user tasks and command sequences.",
-        "priority": "medium",
-        "dependencies": [
-          34,
-          35,
-          36
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 38,
-        "title": "Create Documentation and Usage Examples",
-        "description": "Develop comprehensive documentation including installation instructions, usage examples, and ethical guidelines.",
-        "details": "Create detailed README.md with project overview and quick start. Develop step-by-step installation instructions for different platforms. Create usage examples for common scenarios. Document all command line options and configurations. Develop API documentation for key modules and functions. Create ethical usage guidelines emphasizing legitimate outreach. Implement documentation for data schema and output formats. Develop troubleshooting guides for common issues. Create contribution guidelines for the open-source community.",
-        "testStrategy": "Test documentation clarity with users unfamiliar with the project. Verify installation instructions work on different platforms. Test usage examples to ensure they work as documented. Measure documentation completeness against all implemented features.",
-        "priority": "medium",
-        "dependencies": [
-          37
+          57
         ],
         "status": "pending",
         "subtasks": []
@@ -255,7 +205,7 @@
     ],
     "metadata": {
       "created": "2025-08-19T15:35:53.275Z",
-      "updated": "2025-08-20T13:06:06.823Z",
+      "updated": "2025-08-21T00:24:18.691Z",
       "description": "Tasks for master context"
     }
   }

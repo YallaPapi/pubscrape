@@ -10,10 +10,11 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 from .base import PodcastData
-from .platforms.apple_podcasts import ApplePodcastsScraper
-from .platforms.spotify import SpotifyPodcastsScraper
-from .platforms.google_podcasts import GooglePodcastsScraper, PodcastIndexScraper
-from .platforms.learnoutloud import LearnOutLoudScraper
+# Temporarily commented out botasaurus-dependent imports
+# from .platforms.apple_podcasts import ApplePodcastsScraper
+# from .platforms.spotify import SpotifyPodcastsScraper
+# from .platforms.google_podcasts import GooglePodcastsScraper, PodcastIndexScraper
+# from .platforms.learnoutloud import LearnOutLoudScraper
 from .platforms.itunes_api import ITunesApiScraper
 from .contact_discovery import ContactPageDiscovery
 from .intelligence_analysis import PodcastIntelligenceAnalyzer, TopicRelevanceAnalyzer
@@ -32,13 +33,13 @@ class PodcastHostScraper:
         """Initialize the podcast host scraper."""
         self.logger = logging.getLogger(__name__)
         
-        # Initialize platform scrapers
+        # Initialize platform scrapers (only working ones)
         self.scrapers = {
-            "apple_podcasts": ApplePodcastsScraper(),
-            "spotify": SpotifyPodcastsScraper(),
-            "youtube": GooglePodcastsScraper(),
-            "podcast_index": PodcastIndexScraper(),
-            "learnoutloud": LearnOutLoudScraper(),
+            # "apple_podcasts": ApplePodcastsScraper(),
+            # "spotify": SpotifyPodcastsScraper(),
+            # "youtube": GooglePodcastsScraper(),
+            # "podcast_index": PodcastIndexScraper(),
+            # "learnoutloud": LearnOutLoudScraper(),
             "itunes_api": ITunesApiScraper(),
         }
         

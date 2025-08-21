@@ -1,0 +1,48 @@
+# Bing Search Scraper Requirements
+
+# Web scraping and automation
+botasaurus==4.0.24
+botasaurus-driver==4.0.24
+
+# Data processing and export
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# HTTP requests and session management
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Email validation and regex
+email-validator>=2.0.0
+re>=2.2.1
+
+# Rate limiting and retry logic
+tenacity>=8.2.0
+ratelimit>=2.2.1
+
+# Configuration management
+pyyaml>=6.0
+configparser>=5.3.0
+
+# Logging and monitoring
+coloredlogs>=15.0.0
+structlog>=23.0.0
+
+# Testing framework
+pytest>=7.4.0
+pytest-mock>=3.11.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Type hints and validation
+pydantic>=2.0.0
+typing-extensions>=4.7.0
+
+# Proxy support
+requests[socks]>=2.31.0
+
+# Date/time handling
+python-dateutil>=2.8.0
+
+# CSV export
+csv23>=0.3.4

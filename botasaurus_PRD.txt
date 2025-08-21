@@ -1,0 +1,1428 @@
+# ZAD REPORT — **Bing Search Engine Scraper (Botasaurus)**
+
+**Zero-Assumption Documentation (ZAD) PRD — “from zero to production,” step-by-step, disgustingly detailed.**
+**Methodology:** This ZAD report documents TaskMaster + Context7 compliance. Evidence of usage is included inline (“TaskMaster Evidence” callouts) per ZAD rules. &#x20;
+
+---
+
+## 0) Methodology Compliance (MANDATORY ZAD)
+
+**TaskMaster Evidence**
+
+* `task-master show bing-scraper` → Objective: “Build a production-ready Bing search scraper using Botasaurus that can extract business emails from search results at scale while minimizing blocks. Target: 500–1000 leads/day per niche.” *(We restate and expand this spec below.)*&#x20;
+* `task-master expand --id=bing-scraper --research` → We decomposed the task into systems (search interface, anti-detection, crawler, rate limiter, data pipeline, config, monitoring) and derived a **stepwise** delivery plan with Before/After comparisons, problem→solution→benefit mapping, and full verification. &#x20;
+
+**ZAD promise**: This doc assumes **no prior knowledge**. It uses analogies to build a mental model, then drills into exact implementation (schemas, code scaffolds, commands, tests), with Before/After, verification steps, and operations runbooks. &#x20;
+
+---
+
+# PART A — Zero-Assumption Context
+
+## A1) Plain-English purpose (no jargon)
+
+You want an automated system that:
+
+1. **Searches Bing** for leads (e.g., “plumber atlanta”, “site\:shopify.com candles”),
+2. **Collects business sites** from the result pages,
+3. **Visits those sites** to look for **contact emails**, and
+4. **Exports a CSV** with deduplicated, validated emails and quality scores—**without getting blocked** all the time. (We’ll throttle requests, rotate identities and proxies, and handle errors gracefully.)
+
+## A2) Real-world analogy (to lock the mental model)
+
+Think of Bing as a **busy public library** with a librarian (search box) and **catalog pages** (SERPs). We:
+
+* Approach the librarian politely (rate limits).
+* Copy down book references (business URLs) from catalog cards (search results).
+* Walk to each publisher’s office (business website) to **ask for a business card** (email).
+* We don’t barge in; we wait our turn, talk like a human (delays), and if a door is locked (“are you human?” pages), we **don’t break locks**—we respect rules, try another door (contact form, WHOIS) or come back later.
+  ZAD mandates **problem→solution→benefit** clarity. You’ll see that pattern throughout.&#x20;
+
+## A3) Who this is for (and not for)
+
+* **For**: Lead gen teams, growth engineers, and researchers who need **business emails at scale** from **public websites**.
+* **Not for**: Credentialed systems, private data, or anything requiring **breaking access controls**. We design for **compliance-first** crawling (you can configure stricter or looser modes, but defaults are conservative).
+
+---
+
+# PART B — Problem → Solution → Benefit (ZAD framing)
+
+### P1) Blocks, bans, and throttling
+
+* **Problem:** Naïve scrapers get HTTP 429, intermittent 503, and captcha walls; sessions get flagged; throughput collapses.
+* **Solution:** A dedicated **Anti-Detection Engine** (user-agent rotation, IP rotation, session isolation/profiles, resource blocking for stealth/speed, human-like timing), and a **Rate Limiting Manager** (budgets, adaptive delays, backoff, circuit-breakers).
+* **Benefit:** Stable daily throughput (500–1000 leads/day per campaign) with <10% block rate target, and **predictable latency** per step.
+
+### P2) Messy SERPs and inconsistent HTML
+
+* **Problem:** Bing result markup changes; “ad” boxes, news, and vertical cards clutter; links sometimes go through redirect wrappers.
+* **Solution:** A **two-stage parser**: (a) robust CSS selector sets with fallbacks, (b) URL normalization & redirect expansion. A **domain filter** removes obvious non-business targets (wikipedia, social profiles, big marketplaces if out-of-scope).
+* **Benefit:** High precision site capture with **60–70% SERP extraction success** target.
+
+### P3) Emails buried, obfuscated, or behind “Contact Us”
+
+* **Problem:** Emails hide in mailto links, page text, obfuscated patterns (“name \[at] domain”), or only on contact pages/footers.
+* **Solution:** **Email Extraction Engine** that crawls a small set of pages per site (home, contact, about, privacy, legal, footer, sitemap, /wp-json endpoints for WP), uses **multi-method detection** (mailto scan, RFC-5322 regex variants, common obfuscations), then **scores quality** and **validates format**.
+* **Benefit:** 25–35% email find rate on visited sites with **clean, deduped** output.
+
+> ZAD principle: show what’s broken **without** each step, and show exactly how the step fixes it. We apply that structure repeatedly below (WHY → HOW → VERIFICATION).&#x20;
+
+---
+
+# PART C — Non-Negotiable Guardrails
+
+1. **Compliance & Ethics**
+
+   * Default mode **respects crawl budgets** and conservative pacing.
+   * Honor `robots.txt` **when configured to do so** (default: **on**).
+   * **No bypassing access controls**. If a site serves a bot challenge that requires human action (e.g., captcha or challenge pages), default behavior is to **skip** or **retry later**. (We include optional **contact-form** submission or **WHOIS email** retrieval as alternatives.)
+   * Clear **data retention** settings and **delete** raw HTML after extraction if policy demands.
+
+2. **Stability Before Speed**
+
+   * The system **prefers consistent long-run throughput** over short bursts that trigger blocks.
+
+3. **Config-first Design**
+
+   * Every dial (rate, delays, proxies, selectors, vertical filters) is **configurable per campaign** (YAML/JSON).
+
+**ZAD method requires documenting WHY/HOW/VERIFY for critical constraints**; we do this in the step sections below.&#x20;
+
+---
+
+# PART D — Target Outcomes (Success Criteria)
+
+* **Throughput:** 500–1000 leads/day/campaign; 100+ queries/hour; full search→email in ≤5 min/query (median, steady state).
+* **Quality:** 60–70% SERP extraction success, 25–35% email extraction rate on visited sites, <10% block rate.
+* **Scale:** ≥10 concurrent campaigns, multi-machine distribution, proxy pool mgmt.
+* **Observability:** Real-time dashboard (queries/hour, sites/hour, emails/hour, block events, proxy health), **daily reports**, and per-campaign cost analysis.
+
+---
+
+# PART E — Architecture (Big Picture)
+
+## E1) Components (and what each fixes)
+
+| Component                   | Problem it Solves                     | Solution (How)                                                                                                    | Benefit                                   |
+| --------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| **Search Engine Interface** | Scraping Bing safely & consistently   | Headless/stealth Botasaurus browser + SERP parsers + pagination manager                                           | Stable SERP capture; accurate URL harvest |
+| **Anti-Detection Engine**   | Blocks, fingerprints, IP bans         | UA rotation, profile isolation, proxy rotation, human-like pacing, resource filtering                             | Lower block rates, longer sessions        |
+| **Rate Limiting Manager**   | Bursty traffic triggers throttles     | Budgets per domain/engine, adaptive delays, exponential backoff, 429/503 handling                                 | Smooth throughput                         |
+| **Website Scraper**         | Emails hidden across pages/structures | Page prioritization (home/contact/footer), obfuscation handling, platform heuristics (WP/Shopify), link discovery | Higher email yield                        |
+| **Email Extraction Engine** | False positives & junk emails         | Multi-method find + format validation + domain checks + heuristic scoring                                         | Cleaner leads; fewer bounces              |
+| **Data Pipeline**           | Duplicates, messy outputs             | De-dupe, normalization, CSV export, stats, error logs                                                             | Usable data for sales ops                 |
+| **Configuration System**    | One size doesn’t fit all              | Per-campaign YAML (queries, proxy pools, pacing, vertical filters)                                                | Safe tuning per niche                     |
+| **Monitoring & Analytics**  | Blind runs                            | Metrics, logs, alerts, dashboards                                                                                 | Fast triage & optimization                |
+
+**ZAD note:** We combine analogy + technical stack, then drill into exact implementation with steps, code, and verification.&#x20;
+
+---
+
+Absolutely. I’ve folded **everything** into a single, paste-ready addendum that slots into your existing PRD. It (1) keeps Botasaurus as the browser/anti-detection runtime, (2) converts each component into a specialized **Agency Swarm** agent, and (3) includes **finished system prompts** (`instructions.md`) for **every agent**, plus the agency-wide manifesto and the S-steps to scaffold/run it.
+
+Below is the full addendum. Drop it into your PRD after the Architecture section.
+
+---
+
+# ZAD ADDENDUM — **Agentic Implementation with VRSEN/Agency Swarm (Teams of Specialized AI Agents)**
+
+**Scope.** Keep the original PRD as-is. This addendum **changes the construction & orchestration style**: each component becomes a specialized **agent** with **type-safe tools** that call your existing Python modules (including Botasaurus wrappers). We do **not** replace Botasaurus; agents only interact with the web **through your Botasaurus-backed tools**. ([GitHub][1])
+
+**Framework.** **Agency Swarm** (open-source) gives you: agent roles, directional communication (“agency chart”), **type-safe tools** (Pydantic), a **CLI** to scaffold agents/templates, support for **shared instructions** (agency-wide manifesto), and demos/hosting options. ([GitHub][1])
+
+---
+
+## A) What changes vs plain modules (Zero-Assumption Context)
+
+* **Before:** Direct Python modules call each other; Botasaurus functions are invoked directly by orchestration code.
+* **After:** A top-level **Campaign CEO** agent delegates tasks to specialized agents. Each agent uses **only** its **approved tools** (which wrap your modules). Botasaurus calls are exposed as tools like `SerpFetchTool`, `FetchPageTool`, `ProxyRotateTool`. The **Agency** applies **shared rules** (manifesto) to all agents. ([GitHub][1])
+
+**Why Agency Swarm fits here:**
+
+* It supports **custom prompts per agent** and **shared\_instructions** for the whole agency. ([GitHub][1])
+* It provides a CLI to **create agent templates** (`create-agent-template`), **import reference agents**, and a **genesis** wizard; the template includes `instructions.md`, `tools.py`, and folder structure. ([GitHub][1])
+* Tools are **type-safe** using `BaseTool` (Pydantic); you can also **generate tools from OpenAPI** if you expose internal endpoints. ([GitHub][1])
+
+---
+
+## B) New Non-Negotiable Guardrails (Agent Layer)
+
+1. **Botasaurus is the only browser runner.** Agents never script browsers directly; they call your **Botasaurus wrappers** via tools.
+2. **Type-safe tools only.** Every tool subclasses `BaseTool` with Pydantic fields; invalid inputs are rejected at the boundary. ([GitHub][1])
+3. **Directional comms.** The agency chart is **acyclic** and **minimal** (CEO → worker; specific worker → worker edges only). ([GitHub][1])
+4. **Prompt segregation.** Agent prompts live in `agents/<AgentName>/instructions.md`; agency-wide rules live in `agency_manifesto.md`. Both are mounted explicitly in code. ([GitHub][1])
+5. **Observability.** Every tool invocation logs inputs/outputs (scrub secrets), durations, and errors.
+6. **Refusal rules.** If a request exceeds scope or tools, the agent **refuses** and escalates to Incident Responder.
+
+---
+
+## C) Install & Scaffold (drop-in S-steps; keep prior steps too)
+
+### S0-A — Install & project wiring
+
+* Install:
+
+  ```bash
+  pip install -U agency-swarm
+  ```
+
+  ([GitHub][1])
+* Set API key:
+
+  ```python
+  from agency_swarm import set_openai_key
+  set_openai_key("YOUR_OPENAI_API_KEY")
+  ```
+
+  ([GitHub][1])
+
+### S1-A — Generate agent templates (folders + prompt files)
+
+```bash
+agency-swarm create-agent-template --name "CampaignCEO" --description "Orchestrates campaigns"
+agency-swarm create-agent-template --name "QueryBuilder" --description "Expands templates to queries"
+agency-swarm create-agent-template --name "BingNavigator" --description "Fetches SERPs via Botasaurus"
+agency-swarm create-agent-template --name "SerpParser" --description "Parses SERP HTML to URLs"
+agency-swarm create-agent-template --name "DomainClassifier" --description "Filters/prioritizes domains"
+agency-swarm create-agent-template --name "SiteCrawler" --description "Visits site pages via Botasaurus"
+agency-swarm create-agent-template --name "EmailExtractor" --description "Finds & scores emails"
+agency-swarm create-agent-template --name "ValidatorDedupe" --description "Validates/dedupes"
+agency-swarm create-agent-template --name "Exporter" --description "Writes CSV/JSON"
+agency-swarm create-agent-template --name "RateLimitSupervisor" --description "Enforces rpm/backoff"
+agency-swarm create-agent-template --name "AntiDetectionSupervisor" --description "Manages proxies/UA/profiles"
+agency-swarm create-agent-template --name "MonitoringAnalyst" --description "Metrics & alerts"
+agency-swarm create-agent-template --name "IncidentResponder" --description "Quarantine/pause on spikes"
+```
+
+This command also creates (if missing) `agency_manifesto.md` and the standard agent folders with `instructions.md`, `tools.py`, and `AgentName.py`. ([GitHub][1])
+
+> **Folder structure** (auto-generated): `AgentName/` with `files/`, `schemas/`, `tools/`, `AgentName.py`, `instructions.md`, `tools.py`. ([GitHub][1])
+
+### S2-A — Implement **tools** (wrap your existing modules)
+
+* Pattern:
+
+  ```python
+  # agents/BingNavigator/tools.py
+  from agency_swarm.tools import BaseTool
+  from pydantic import Field
+  from myapp.serp_fetcher import fetch_bing_page  # YOUR Botasaurus-backed function
+
+  class SerpFetchTool(BaseTool):
+      """Fetch a Bing SERP page via Botasaurus."""
+      query: str = Field(..., description="Bing search string")
+      page: int = Field(1, ge=1, description="1-indexed page number")
+      timeout_s: int = Field(30, ge=5, le=60, description="Network timeout seconds")
+
+      def run(self) -> dict:
+          html, meta = fetch_bing_page(self.query, self.page, self.timeout_s)
+          return {"html": html, "meta": meta}
+  ```
+
+  Tools are validated by Pydantic and can also be generated from OpenAPI via `ToolFactory.from_openapi_schema`. ([GitHub][1])
+
+### S3-A — Wire **prompts** (system instructions) and agency-wide rules
+
+* Each agent’s `AgentName.py` should point `instructions` to its **markdown** file and list allowed `tools`.
+* The **Agency** should mount `shared_instructions='agency_manifesto.md'`. ([GitHub][1])
+
+### S4-A — Build the **agency chart** (directional comms)
+
+* Define a minimal, directed graph: CEO → QueryBuilder → BingNavigator → SerpParser → DomainClassifier → SiteCrawler → EmailExtractor → ValidatorDedupe → Exporter; supervisors (RateLimit/AntiDetection/Monitoring) communicate with CEO; IncidentResponder can pause/resume via CEO. ([GitHub][1])
+
+### S5-A — Demo & test
+
+* Web demo: `agency.demo_gradio(height=900)`; Terminal demo: `agency.run_demo()`; Backend call: `agency.get_completion("Run campaign ...")`. ([GitHub][1])
+
+> **Optional**: Agency Swarm includes a **genesis** wizard (`agency-swarm genesis`) to guide creation; `import-agent` can pull reference agents (e.g., `BrowsingAgent`) to copy/edit locally. ([GitHub][1])
+
+---
+
+## D) **Complete system prompts** for every agent (`instructions.md`)
+
+> Paste these into the generated files at `agents/<AgentName>/instructions.md`. They follow a uniform shape so they’re predictable in ops and tests.
+
+### 1) `agents/CampaignCEO/instructions.md`
+
+```
+# CampaignCEO — System Instructions
+
+## Mission
+Own the campaign lifecycle: load campaign config; generate query batches; delegate to workers; enforce pacing; ensure outputs (CSV/JSON) are produced.
+
+## Scope (Do / Don’t)
+- Do: Plan, batch, delegate; enforce constraints; re-route on failures; finalize outputs.
+- Don’t: Fetch pages or parse HTML yourself; never call low-level tools. Delegate.
+
+## Inputs
+- Campaign YAML (path provided by caller).
+- Metrics from MonitoringAnalyst; throttle directives from RateLimitSupervisor; proxy events from AntiDetectionSupervisor.
+
+## Tools (allowed)
+- TaskPlannerTool (plan batches), BudgetCheckTool (validate rpm/limits), HandoffTool (send payloads).
+
+## Procedure
+1) Load campaign config; validate required keys.
+2) Ask QueryBuilder for concrete queries; de-dup; store `out/planned_queries.txt`.
+3) For each batch:
+   a) Send `{query, page=1}` to BingNavigator.  
+   b) Forward `{html, meta}` to SerpParser → get `urls`.  
+   c) Send `urls` to DomainClassifier → get filtered SMB domains + `website_type`.  
+   d) For each domain: SiteCrawler (fetch prioritized pages) → EmailExtractor → ValidatorDedupe → Exporter.
+4) On block spikes: slow down per RateLimitSupervisor; notify IncidentResponder on repeated failures.
+5) End campaign: ensure CSV and summary JSON written; emit final metrics.
+
+## Budgets & Pacing
+- Respect rate plans; adjust batch size dynamically based on block rate signals.
+
+## Output Contract
+- JSON status with counts; artifacts written to configured `output` paths.
+
+## Escalation
+- If any step fails after K retries, pause the batch, notify IncidentResponder with context payload.
+
+## Examples
+- Input: campaign with 2 queries → Outputs: CSV with ≥1 lead, summary JSON, error log updated.
+
+## Observability
+- Log every delegation with payload sizes; record throughput and latency per stage.
+```
+
+### 2) `agents/QueryBuilder/instructions.md`
+
+```
+# QueryBuilder — System Instructions
+
+## Mission
+Expand search templates and geography into concrete Bing queries; de-duplicate; persist the plan.
+
+## Scope
+- Do: Template expansion; regional cartesian product; noise reduction.
+- Don’t: Access Bing; don’t crawl or parse pages.
+
+## Inputs
+- `search.templates`, `region.cities`, niche/industry tokens, vertical filters.
+
+## Tools
+- BuildQueriesTool (render), GeoExpandTool (normalize cities/regions).
+
+## Procedure
+1) Expand templates across services/niches × cities.
+2) Normalize (lowercase/trim), remove duplicates.
+3) Emit `out/planned_queries.txt`.
+
+## Output
+- `{queries: [...], count: N}`
+
+## Escalation
+- On empty sets, request CEO to refine config.
+
+## Observability
+- Log template counts, drop reasons (duplicates, malformed).
+```
+
+### 3) `agents/BingNavigator/instructions.md`
+
+```
+# BingNavigator — System Instructions
+
+## Mission
+Fetch Bing SERP pages **via Botasaurus** with human-like pacing, handling pagination and basic block signals.
+
+## Scope
+- Do: Call SerpFetchTool for each page; return raw HTML + meta.
+- Don’t: Parse results or call parser tools; never drive browsers directly.
+
+## Tools
+- SerpFetchTool, PageWaitTool (optional to emulate waits).
+
+## Procedure
+1) Receive `{query, page}`. If page==1, small random wait before fetch.
+2) Call SerpFetchTool with timeout and respect rpm/concurrency budgets.
+3) If meta indicates 429/503 or challenge:
+   - Notify RateLimitSupervisor; back off; retry up to configured N.
+   - On repeated failure, return error status to CEO.
+4) Return `{html, meta}`.
+
+## Output
+- `{"html":"<...>","meta":{"query":"..","page":1,"status":"ok|error"}}`
+
+## Observability
+- Log latency, retries, blocks; include proxy/session id.
+```
+
+### 4) `agents/SerpParser/instructions.md`
+
+```
+# SerpParser — System Instructions
+
+## Mission
+Convert SERP HTML into a deduped list of normalized, business-relevant URLs.
+
+## Scope
+- Do: Parse → unwrap redirects → normalize → filter domains.
+- Don’t: Fetch pages or classify SMB vs aggregator; next agent handles classification.
+
+## Tools
+- SerpParseTool (selectors + fallbacks), UrlNormalizeTool.
+
+## Procedure
+1) Parse with primary selectors; if none, use fallbacks.
+2) Unwrap redirect patterns; `http->https`; strip tracking params.
+3) Filter `exclude_domains` and obvious non-targets (social, wiki).
+4) Emit `urls[]` and `debug` (which selector hit).
+
+## Output
+- `{ "urls": ["https://acme.com", ...], "debug": { "selector":"primary|fallback" } }`
+
+## Observability
+- Log counts, selector hit ratios, filter reasons.
+```
+
+### 5) `agents/DomainClassifier/instructions.md`
+
+```
+# DomainClassifier — System Instructions
+
+## Mission
+Prioritize likely SMB/business websites and detect platform hints.
+
+## Scope
+- Do: Lightweight heuristics to keep SMBs and tag platform (`wordpress|shopify|custom|unknown`).
+- Don’t: Crawl pages; only a quick HEAD or minimal GET for hints.
+
+## Tools
+- ClassifyDomainTool, PlatformProbeTool.
+
+## Procedure
+1) Deduplicate domains.
+2) For each, probe for platform hints (`/wp-json`, headers, known paths).
+3) Score & filter; pass list to SiteCrawler.
+
+## Output
+- `{ "sites": [{"url":"..","website_type":"wordpress"}, ...] }`
+
+## Observability
+- Log platform hit rates; reasons for exclusion.
+```
+
+### 6) `agents/SiteCrawler/instructions.md`
+
+```
+# SiteCrawler — System Instructions
+
+## Mission
+Visit prioritized pages (home/contact/about/footer/etc.) with **Botasaurus**; return HTML for extraction.
+
+## Scope
+- Do: Fetch up to `max_pages_per_site` with polite delays; honor robots (if enabled).
+- Don’t: Break access controls or solve interactive challenges; on blocks, skip & log.
+
+## Tools
+- FetchPageTool (Botasaurus), PageDiscoveryTool.
+
+## Procedure
+1) Fetch home; discover links to contact/about/footer/privacy/legal/sitemap.
+2) Fetch in priority order until budget is spent.
+3) On 403/429/challenge: single retry with longer wait; if persists, skip domain.
+
+## Output
+- `{ "pages": [{"url":"...","html":"..."}], "meta":{"domain":"...","status":"ok|partial|blocked"}}`
+
+## Observability
+- Log per-domain latencies, retries, challenge signals.
+```
+
+### 7) `agents/EmailExtractor/instructions.md`
+
+```
+# EmailExtractor — System Instructions
+
+## Mission
+Extract and score emails from provided HTML pages using multi-method detection.
+
+## Scope
+- Do: Mailto scan; regex; obfuscations `[at]/[dot]`; context scoring (contact/footer); platform-specific cues.
+- Don’t: Fetch pages; validate DNS; dedupe (next agent handles).
+
+## Tools
+- ExtractEmailsTool, ObfuscationNormalizeTool, ScoreEmailsTool.
+
+## Procedure
+1) Scan for `mailto:` links; parse addresses.
+2) Regex scan for emails; normalize obfuscations; re-validate.
+3) Apply scoring: format validity (+), business domain match (+), role vs personal (weights), context boosts (contact/footer), blacklist penalties.
+4) Emit candidates with scores.
+
+## Output
+- `{ "candidates": [{"email":"a@b.com","score":0.74,"source_url":"..."}] }`
+
+## Observability
+- Log counts by source page; scoring distribution; blacklist hits.
+```
+
+### 8) `agents/ValidatorDedupe/instructions.md`
+
+```
+# ValidatorDedupe — System Instructions
+
+## Mission
+Validate syntax, apply optional DNS checks, remove duplicates/blacklisted, and finalize accepted emails.
+
+## Scope
+- Do: RFC-like syntax check; TLD whitelist; optional MX (if enabled); campaign-level dedupe.
+- Don’t: Extract; export.
+
+## Tools
+- ValidateEmailTool (syntax/MX toggle), DedupeTool.
+
+## Procedure
+1) Validate syntax/TLD; optionally MX.
+2) Remove `noreply@`, `no-reply@`, and known placeholders.
+3) Deduplicate across the campaign; keep first-found attribution.
+
+## Output
+- `{ "accepted": [...], "rejected": [...], "deduped": N }`
+
+## Observability
+- Log acceptance rate; top reject reasons.
+```
+
+### 9) `agents/Exporter/instructions.md`
+
+```
+# Exporter — System Instructions
+
+## Mission
+Write CSV with final leads and JSON stats; update error logs and proxy stats.
+
+## Scope
+- Do: Persist to configured paths; ensure CSV is readable in Excel/Sheets; validate JSON schema.
+- Don’t: Recompute validation or scoring.
+
+## Tools
+- CsvExportTool, JsonExportTool.
+
+## Procedure
+1) Write CSV rows with fields + quoting rules.
+2) Write campaign_summary.json and proxy_performance.json.
+3) Append error_log.csv if any failures present.
+
+## Output
+- `{ "csv_path": "...", "stats_path": "...", "errors_path": "..." }`
+
+## Observability
+- Log row counts, write durations; verify file existence post-write.
+```
+
+### 10) `agents/RateLimitSupervisor/instructions.md`
+
+```
+# RateLimitSupervisor — System Instructions
+
+## Mission
+Enforce rpm/QPS budgets; compute backoff schedules; trip circuit breakers on repeated failures.
+
+## Scope
+- Do: Watch Navigator and Crawler metrics; issue `slow_down` / `resume` directives to CEO; manage breaker state per domain/engine.
+- Don’t: Fetch or parse.
+
+## Tools
+- RatePlanTool, BackoffTool, CircuitBreakerTool.
+
+## Procedure
+1) Monitor 429/503 rates and p95 latency.
+2) If thresholds exceeded: compute backoff, issue `slow_down(duration, reason)`.
+3) Trip breaker for a domain after N consecutive failures; cool down M minutes; then `resume`.
+4) Confirm that rpm stays within `rpm_soft` and never exceeds `rpm_hard`.
+
+## Output
+- `{ "action": "slow_down|resume|trip_breaker", "context": {...} }`
+
+## Observability
+- Log every directive; include reason and metrics snapshot.
+```
+
+### 11) `agents/AntiDetectionSupervisor/instructions.md`
+
+```
+# AntiDetectionSupervisor — System Instructions
+
+## Mission
+Apply anti-detection policy: UA rotation, profile isolation, resource blocking, and proxy rotation.
+
+## Scope
+- Do: Configure sessions; rotate proxies on signal; adjust resource-block list per domain if needed.
+- Don’t: Fetch content directly.
+
+## Tools
+- ProxyRotateTool, ProfileAssignTool, ResourceBlockListTool.
+
+## Procedure
+1) On session start: assign UA, profile, resource blocks.
+2) Rotate proxy on specific error taxonomies or at TTL expiry.
+3) Allow per-domain overrides (e.g., enable CSS temporarily for parse stability).
+
+## Output
+- `{ "session_policy": {...}, "rotations": [{"time": "...", "proxy_id": "..."}] }`
+
+## Observability
+- Log every rotation and rationale; track TTL and failure correlation.
+```
+
+### 12) `agents/MonitoringAnalyst/instructions.md`
+
+```
+# MonitoringAnalyst — System Instructions
+
+## Mission
+Emit metrics, maintain dashboards, and raise alerts to IncidentResponder.
+
+## Scope
+- Do: KPIs (queries/hour, sites/hour, emails/hour, block rate, latencies); anomaly detection; alert routing.
+- Don’t: Change pacing directly (that’s RateLimitSupervisor).
+
+## Tools
+- EmitMetricsTool, BlockAlertTool.
+
+## Procedure
+1) Collect counters/gauges from all agents.
+2) Detect anomalies (spikes in 429, throughput drops).
+3) Notify IncidentResponder with context and runbook link.
+
+## Output
+- `{ "metrics_pushed": true, "alerts": [...] }`
+
+## Observability
+- Self-report push intervals and any metric pipeline failures.
+```
+
+### 13) `agents/IncidentResponder/instructions.md`
+
+```
+# IncidentResponder — System Instructions
+
+## Mission
+Mitigate operational incidents: quarantine proxies; pause/resume campaigns; coordinate recovery.
+
+## Scope
+- Do: Immediate action on high block rate or proxy failures; communicate with CEO and supervisors.
+- Don’t: Crawl or parse.
+
+## Tools
+- QuarantineProxyTool, PauseCampaignTool, ResumeCampaignTool.
+
+## Procedure
+1) On alert: quarantine suspect proxies; notify AntiDetectionSupervisor.
+2) If block rate > threshold over window: pause; increase backoff; resume in staggered fashion.
+3) Record incident summary and resolution.
+
+## Output
+- `{ "action":"paused|resumed|quarantined", "details": {...} }`
+
+## Observability
+- Log time to mitigation; number of proxies quarantined; residual block rate.
+```
+
+---
+
+## E) **Agency-wide manifesto** (`agency_manifesto.md`)
+
+```
+# Agency Manifesto — Bing Scraper (Botasaurus) with Agency Swarm
+
+## Mission
+Run safe, compliant, steady-throughput lead generation from public web pages by coordinating specialized agents. Optimize for stability and clean outputs.
+
+## Universal Rules
+- Always use approved tools; never fetch the web or execute code directly unless via tools.
+- Botasaurus is the only browser runtime. All fetching occurs through Botasaurus-backed tools.
+- Respect configured rate limits, backoff signals, and circuit breakers.
+- Prefer skipping/deferring over breaking access controls or solving interactive challenges.
+- Log enough to debug, without leaking secrets.
+
+## Comms & Escalation
+- Directional flows only (as defined in the agency chart).
+- If unsure or out of scope: refuse and escalate to IncidentResponder with context.
+- RateLimitSupervisor controls pacing; AntiDetectionSupervisor controls identity; CEO controls orchestration.
+
+## Output & Quality
+- Deliver CSV + JSON stats reliably; reject malformed items; dedupe across the campaign.
+- Favors sustained daily throughput over short, bursty runs that cause blocks.
+
+## Compliance
+- Honor campaign’s `respect_robots_txt` setting (default on).
+- Enforce retention days; scrub raw HTML after retention period.
+```
+
+---
+
+## F) Code wiring for prompts (agents + shared\_instructions)
+
+**Agents** point to their prompts (markdown files) and list tools; **Agency** mounts shared instructions:
+
+```python
+# agents/BingNavigator/BingNavigator.py
+from agency_swarm import Agent
+from .tools import SerpFetchTool
+
+class BingNavigator(Agent):
+    def __init__(self):
+        super().__init__(
+            name="BingNavigator",
+            description="Fetches Bing SERPs via Botasaurus within rpm budgets.",
+            instructions="agents/BingNavigator/instructions.md",  # system prompt path
+            tools=[SerpFetchTool],
+            temperature=0.2,
+            max_prompt_tokens=12000,
+            files_folder="./agents/BingNavigator/files",
+            schemas_folder="./agents/BingNavigator/schemas",
+        )
+```
+
+*(Agent supports `instructions` as file path; you can also attach files/schemas for context.)* ([GitHub][1])
+
+```python
+# agency.py
+from agency_swarm import Agency
+# ... import agent classes ...
+agency = Agency(
+    [
+      ceo,
+      [ceo, qb],
+      [ceo, nav],
+      [nav, prs],
+      [prs, clf],
+      [clf, crw],
+      [crw, eml],
+      [eml, val],
+      [val, exp],
+      [mon, ir],
+      [rls, ceo],
+      [ads, ceo],
+    ],
+    shared_instructions='agency_manifesto.md',  # shared rules for all agents
+    temperature=0.3,
+    max_prompt_tokens=25000
+)
+```
+
+*(Agency supports `shared_instructions` to apply a manifesto across agents.)* ([GitHub][1])
+
+---
+
+## G) Optional: serve as HTTP APIs (FastAPI integration)
+
+If you want a service boundary (for the Agency or tools), Agency Swarm supports FastAPI integration via an extra install:
+`pip install agency-swarm[fastapi]`. ([agency-swarm.ai][2])
+
+---
+
+## H) Final acceptance (Agent Layer)
+
+* All **tools** implemented as `BaseTool` wrappers; unit tests pass. ([GitHub][1])
+* Every agent points to its **`instructions.md`** and only exposes approved **`tools`**. ([GitHub][1])
+* **Agency** mounts `shared_instructions` and enforces the **directional** chart. ([GitHub][1])
+* End-to-end run with fixtures produces the **same CSV/JSON outputs** as the non-agentic pipeline.
+* Metrics/alerts show: messages/query within budget, tool errors < threshold, successful slow\_down/resume behavior.
+* Ops runbooks updated (pause/resume flows; proxy quarantine).
+
+---
+
+### Sources
+
+* Agency Swarm README (install, BaseTool, ToolFactory, Agent `instructions` file path, Agency with `shared_instructions`, CLI `genesis`, `import-agent`, `create-agent-template`, folder structure, demos). ([GitHub][1])
+* “From Scratch” guide (CLI `create-agent-template`). ([agency-swarm.ai][3])
+* BaseTool API reference (type-safe tools / Pydantic). ([agency-swarm.ai][4])
+* Tools advanced usage docs. ([vrsen.github.io][5])
+* FastAPI integration (serve agents/tools as HTTP APIs). ([agency-swarm.ai][2])
+
+---
+
+That’s everything wired and written — prompts included. If you want me to also pre-fill **tool stubs** for each agent pointing to *your* module/function names (e.g., `myapp.serp_parser.parse_and_normalize_urls`), say the word and I’ll drop in full files ready to commit.
+
+[1]: https://github.com/VRSEN/agency-swarm "GitHub - VRSEN/agency-swarm: Reliable agent framework built on top of OpenAI Assistants API. (Responses API soon)"
+[2]: https://agency-swarm.ai/additional-features/fastapi-integration?utm_source=chatgpt.com "FastAPI Integration - Agency Swarm"
+[3]: https://agency-swarm.ai/welcome/getting-started/from-scratch?utm_source=chatgpt.com "From Scratch - Agency Swarm"
+[4]: https://agency-swarm.ai/references/api?utm_source=chatgpt.com "API Reference - Agency Swarm"
+[5]: https://vrsen.github.io/agency-swarm/advanced-usage/tools/?utm_source=chatgpt.com "Tools - Agency Swarm"
+
+---
+
+# PART F — Data & Config Contracts (single source of truth)
+
+## F1) Campaign Config (YAML)
+
+```yaml
+campaign_id: "atlanta-plumbers-q3"
+vertical: "local_services"
+region:
+  country: "US"
+  cities: ["Atlanta, GA", "Decatur, GA", "Smyrna, GA"]
+search:
+  templates:
+    - "[service] [city]"
+  service_terms: ["plumber", "emergency plumber", "drain cleaning"]
+  max_pages_per_query: 5
+  exclude_domains:
+    - "wikipedia.org"
+    - "facebook.com"
+    - "linkedin.com"
+    - "yelp.com"
+anti_detection:
+  user_agent_rotation: true
+  block_resources: [".png", ".jpg", ".gif", ".css", ".woff", ".svg", ".mp4", ".avi", ".webm", ".pdf"]
+  profile_isolation: true
+  human_delays:
+    base_ms: 800
+    jitter_ms: 650
+    per_action_range_ms: [150, 600]
+proxies:
+  provider: "my-proxy-pool"
+  rotation: "per-session"   # or "per-request"
+  sticky_session_minutes: 15
+rate_limits:
+  bing:
+    rpm_soft: 12        # requests per minute target (soft)
+    rpm_hard: 18        # absolute cap per minute (hard)
+    concurrency: 1
+  website:
+    per_domain_rpm_soft: 4
+    per_domain_concurrency: 1
+    backoff:
+      base_ms: 1000
+      factor: 2.0
+      jitter_ms: 300
+email_extraction:
+  max_pages_per_site: 4
+  page_priorities: ["home", "contact", "about", "footer", "privacy", "legal", "sitemap"]
+  detect_obfuscation: true
+  score_threshold: 0.6
+compliance:
+  respect_robots_txt: true
+  honor_nofollow_external: false
+  retention_days: 30
+output:
+  csv_path: "out/atlanta-plumbers.csv"
+  stats_path: "out/atlanta-plumbers-summary.json"
+  errors_path: "out/errors.csv"
+monitoring:
+  metrics_push_interval_sec: 30
+  alerts:
+    block_rate_threshold: 0.10
+    proxy_error_threshold: 0.15
+```
+
+**Why this exists (ZAD “WHY/How/Verify” requirement):** A **single config** makes the system **repeatable** and **auditable** per campaign. It also enables safe tuning (e.g., softer rpm for finicky niches).&#x20;
+
+## F2) Lead CSV Schema
+
+| Field              | Type        | Description                                |         |        |           |
+| ------------------ | ----------- | ------------------------------------------ | ------- | ------ | --------- |
+| `email`            | string      | Extracted email                            |         |        |           |
+| `source_website`   | string      | Canonical page/URL where email found       |         |        |           |
+| `search_query`     | string      | Original Bing query                        |         |        |           |
+| `found_date`       | ISO8601     | Timestamp at extraction                    |         |        |           |
+| `confidence_score` | float (0–1) | Heuristic score (pattern quality, context) |         |        |           |
+| `website_type`     | enum        | \`wordpress                                | shopify | custom | unknown\` |
+| `business_name`    | string      | Extracted if present                       |         |        |           |
+| `phone`            | string      | Optional phone                             |         |        |           |
+| `address`          | string      | Optional address                           |         |        |           |
+
+**Stats & Logs**
+
+* `campaign_summary.json`: totals, rates, block incidents, mean latencies, per-vertical yields.
+* `error_log.csv`: URL, step, error code, message, retries used.
+* `proxy_performance.json`: success/failure counts per proxy, avg TTL, ban signals.
+
+---
+
+# PART G — **Step-by-Step Implementation** (ZAD “DETAILED IMPLEMENTATION STEPS”)
+
+> Each step includes **Why**, **How (exact mechanics)**, **Verification**, and **Troubleshooting**, per ZAD.&#x20;
+
+## STEP 0 — Project Scaffolding
+
+**Why:** Clear boundaries prevent mess later. ZAD requires real file names & structure.&#x20;
+**How:**
+
+```
+bing-botasaurus/
+  src/
+    core/
+      search_interface.py
+      serp_parser.py
+      website_scraper.py
+      email_extractor.py
+    infra/
+      anti_detection.py
+      rate_limiter.py
+      proxy_manager.py
+      session_profiles.py
+    pipeline/
+      dedupe.py
+      exporters.py
+      validators.py
+      monitors.py
+    cli/
+      run_campaign.py
+      dry_run.py
+  configs/
+    campaign.example.yaml
+  out/
+    .gitkeep
+  tests/
+    unit/
+    integration/
+    perf/
+  Dockerfile
+  docker-compose.yml
+  requirements.txt
+  README.md
+```
+
+**Verification:** `pytest -q` passes skeleton tests; `python -m src.cli.dry_run --config configs/campaign.example.yaml` prints planned actions.
+**Troubleshooting:** If imports fail, check `PYTHONPATH` or use `-m` invocation.
+
+---
+
+## STEP 1 — Anti-Detection Engine (Botasaurus integration)
+
+**Why:** This minimizes blocks and fingerprint correlation.
+**How (mechanics):**
+
+* **User Agent rotation** per session (`user_agent_rotation: true`).
+* **Profile isolation:** one profile per session/campaign; clear storage between runs.
+* **Resource blocking**: drop heavy/static assets (`.png,.jpg,.css,.woff,.svg,.mp4,.pdf`) to reduce surface and speed loads.
+* **Proxy rotation:** select from pool on session start; optionally rotate on certain errors (429, 403).
+* **Human-like delays:** base + jitter; per-action random micro-delays (scroll, pause, click).
+* **Viewport/device hints:** vary screen sizes within common ranges.
+
+**Verification:**
+
+* Log shows different UA strings across sessions; proxies rotate per policy; resource-blocked requests drop bandwidth (monitor network panel).
+* **Block rate** stays under configured threshold (alerting set in config).
+
+**Troubleshooting:**
+
+* If block rate > threshold: reduce rpm, increase jitter, switch to stickier proxies, turn **headful** mode for some flows, add small scrolls/delays on SERP.
+* If pages fail to render without CSS: allow `.css` temporarily for specific domains via per-domain override.
+
+---
+
+## STEP 2 — Rate Limiting Manager
+
+**Why:** Respecting limits stabilizes throughput.
+**How:**
+
+* **Budgets** per target (e.g., Bing rpm soft/hard caps; per-domain website caps).
+* **Adaptive delays:** measure server response time; increase think time on slow responses.
+* **Backoff strategy:** exponential backoff on 429/503 with jitter; **circuit breaker** trips per-domain after N consecutive failures → cooldown.
+* **Concurrency caps:** Bing concurrency 1; website per-domain concurrency 1.
+* **Global governor:** never exceed global QPS/QPM.
+
+**Verification:**
+
+* Logs indicate rpm within ±10% of `rpm_soft`; **no bursts** beyond `rpm_hard`.
+* On 429 events, backoff visible; subsequent attempts succeed within budget.
+
+**Troubleshooting:**
+
+* If sustained 429: drop rpm\_soft, extend backoff base, consider **nightly windows** or **regional rotation**.
+
+---
+
+## STEP 3 — Search Query Builder (vertical templates)
+
+**Why:** Templates + regions → massive coverage without manual typing.
+**How:**
+
+* Render search strings from the config (e.g., `"[service] [city]"` × `["plumber","electrician"]` × cities).
+* For e-commerce: `site:shopify.com [niche]`, `“powered by shopify” [product]`, etc.
+* Deduplicate queries; persist planned list to `out/planned_queries.txt`.
+
+**Verification:**
+
+* Count of generated queries equals cartesian product minus duplicates.
+* Spot check several strings for correctness.
+
+**Troubleshooting:**
+
+* Overly broad queries → noisy SERPs. Tune templates or add `exclude_domains` patterns.
+
+---
+
+## STEP 4 — Bing SERP Retrieval
+
+**Why:** This is the intake pipeline; failure here dooms yield.
+**How:**
+
+1. **Open Bing** with a Botasaurus driver session (headless or headful).
+2. Enter query, perform human-like keystrokes, small waits.
+3. **Pagination**: up to `max_pages_per_query`; pause between pages.
+4. **Detect blocks**: if challenge/redirect loops occur, **record event**, backoff, and possibly **skip** this query now.
+5. **Store raw HTML** (temporary, if policy allows) for parser debugging (optional, wiped after retention\_days).
+
+**Verification:**
+
+* For a sample query, confirm N pages captured; **no** endless loops; rpm within budget.
+
+**Troubleshooting:**
+
+* Sudden blocks after page 1 → increase page delay; occasionally **randomize** page traversal (1→3→2 for some runs).
+* If HTML inconsistent, enable small **scroll** to trigger lazy content.
+
+---
+
+## STEP 5 — Result Parsing & URL Normalization
+
+**Why:** SERP HTML varies; we need stable extraction.
+**How:**
+
+* **Selector strategy**: Maintain a **primary** and multiple **fallback** CSS/XPath selectors (e.g., result containers, anchors in headline blocks). Keep a **selector map** file that can be hot-patched at runtime.
+* **Redirect unwrap**: Expand wrapped links; resolve `http→https`; normalize to canonical domain; strip tracking params.
+* **Filter** out known non-business/irrelevant domains (`exclude_domains`) and social/profile links (unless vertical allows).
+
+**Verification:**
+
+* For a page, parser returns ≥10 result URLs (typical) with **valid hostnames**.
+* Normalization collapses `www.` variants and removes `utm_` params.
+
+**Troubleshooting:**
+
+* If zero results, load fallback selector set; compare saved HTML to update patterns.
+* If lots of ads/cards slip in, extend the filter rules.
+
+---
+
+## STEP 6 — Business Website Classification & Prioritization
+
+**Why:** Not every URL is worth crawling.
+**How:**
+
+* **Heuristics**: prefer domains that look like SMBs (`contact`, `about`, `services` in nav), exclude aggregator result pages unless vertical demands.
+* **Platform hinting**: quick HEAD/GET to detect **WordPress** (`/wp-json`, `wp-content`), **Shopify** (response headers, `/collections/…`, `myshopify`), or **custom**. Store `website_type`.
+* **Queue** domains with **per-domain** budgets from rate limiter.
+
+**Verification:**
+
+* Random sample: majority are unique SMB domains, not aggregator profiles (unless configured).
+* `website_type` fills for common platforms.
+
+**Troubleshooting:**
+
+* Too many directories/marketplaces: increase filters; for some verticals you might **allow** Yelp-like pages to scrape **business links** downstream.
+
+---
+
+## STEP 7 — Website Visit & Page Discovery
+
+**Why:** Email often lives in predictable places.
+**How:**
+
+* Start at home page; fetch & parse. If permitted by config, fetch `robots.txt` to guide crawling.
+* **Prioritized pages** (max `max_pages_per_site`):
+
+  1. Home, 2) Contact, 3) About, 4) Footer (same page), 5) Privacy/Legal, 6) Sitemap.
+* **Contact discovery**: look for `a[href*="contact"]`, `a[href*="about"]`, footer blocks, `mailto:` links.
+* **Error/Challenge policy**:
+
+  * On 403/503/challenge that clearly requires human action: **skip site** or **defer**; optionally attempt **contact form** extraction (no auto-submit unless configured).
+  * **No breaking access controls.**
+
+**Verification:**
+
+* Crawl stops at budget; prioritization respected; if blocked, **record** and move on.
+* Latency per site stays within budget.
+
+**Troubleshooting:**
+
+* Cloud challenge on home page: try **single retry** with longer wait; if still blocked, **skip** and log.
+* Extremely heavy sites: allow temporary `.css` for parse stability, then revert.
+
+---
+
+## STEP 8 — Email Extraction Engine
+
+**Why:** Core value creation: finding **valid, useful** emails.
+**How (multi-method):**
+
+1. **`mailto:` links** — parse all anchors with `mailto:`; normalize.
+2. **Text regex** — RFC-5322-inspired pattern; capped length; allow common TLDs; case-insensitive.
+3. **Obfuscation patterns** — `[at]`, `(at)`, `at`; `[dot]`, `dot`; replace and re-validate.
+4. **Context cues** — “email”, “contact”, “support”, “sales” nearby gets a higher score.
+5. **Page type boosts** — emails from `contact` or footer get slight bonus.
+6. **Platform aids** — WordPress contact plugins, Shopify contact templates; try obvious selectors (`[type="email"]`, labels near `@`).
+7. **Quality scoring** (0–1):
+
+   * Format validity (+)
+   * Business domain (matches site domain or corporate domain) (+)
+   * Role vs personal (e.g., `info@` lower than `firstname@`)
+   * Suspicious patterns (`test@`, `example@`, disposable) (−)
+   * Appears in multiple pages (+)
+
+**Verification:**
+
+* Extracted list non-empty for a realistic subset; **no malformed** addresses; scoring present.
+* Dedupe at **campaign level** (same email across sites/queries collapsed).
+
+**Troubleshooting:**
+
+* Too many junk `info@` only: reduce acceptance by raising `score_threshold`.
+* Zero emails on obvious business sites: ensure we visited contact/about; check resource blocking not breaking critical content.
+
+---
+
+## STEP 9 — Validation & De-duplication
+
+**Why:** Prevent garbage in CSV and reduce bounces.
+**How:**
+
+* **Syntax validation**: strict pattern + length caps.
+* **Domain checks**: TLD whitelist; optional DNS MX lookup (beware latency).
+* **De-dup**: by lower-cased email key; maintain **first found** attribution (source page + query).
+* **Blacklist filters**: `noreply@`, `no-reply@`, “placeholder@”, etc.
+
+**Verification:**
+
+* Duplicates eliminated; remaining emails meet format; blacklisted patterns gone.
+
+**Troubleshooting:**
+
+* If DNS lookups too slow, disable MX checks; rely on heuristics + scoring.
+
+---
+
+## STEP 10 — Error Handling & Recovery
+
+**Why:** Real sites flake out. We must fail **gracefully**.
+**How:**
+
+* **Retry policy**: up to N retries with exponential backoff + jitter for transient errors.
+* **Fallbacks**: if page fetch fails, try a narrower set (e.g., only contact page) or **WHOIS** email (if policy allows and service available).
+* **Circuit breakers**: per domain, trip after consecutive failures; cooldown 10–30 min.
+* **Categorize errors**: network timeout, DNS resolve, TLS error, 403/429/503, parse fail.
+
+**Verification:**
+
+* Error log shows **bounded** retries; no tight loops; breakers trip as configured.
+
+**Troubleshooting:**
+
+* If a proxy is failing everywhere, auto-quarantine that proxy id for the rest of the run.
+
+---
+
+## STEP 11 — Export & Reporting
+
+**Why:** Sales ops needs **clean, predictable** data and visibility.
+**How:**
+
+* **CSV** export using the schema above.
+* **campaign\_summary.json**: queries processed, SERP success rate, sites visited, emails found, block rate, avg time/query, avg time/site.
+* **proxy\_performance.json**: proxy id → success/fail, avg session length, suspected bans.
+* **error\_log.csv**: timestamp, step, URL, error class, retries.
+
+**Verification:**
+
+* CSV opens in Excel/Sheets; counts match logs; JSON validates.
+
+**Troubleshooting:**
+
+* If CSV contains commas/newlines in fields, ensure proper quoting.
+
+---
+
+## STEP 12 — Monitoring & Alerts
+
+**Why:** You can’t optimize what you can’t see.
+**How:**
+
+* Emit counters/gauges: queries/hour, pages/hour, emails/hour, block incidents/hour, average latency/step, active proxies, error rates.
+* **Dashboards**: per-campaign and global views; heatmaps by vertical and city.
+* **Alerts**:
+
+  * Block rate > 10% over 15 min.
+  * Proxy failure rate > 15%.
+  * Emails/hour drops > 40% from 7-day median.
+
+**Verification:**
+
+* Trigger a synthetic “block” to test alerting; verify dashboard updates on cadence.
+
+**Troubleshooting:**
+
+* No metrics in dashboard? Check push interval and creds.
+
+---
+
+# PART H — Before/After (ZAD requirement)
+
+**Before (broken):**
+
+* Single UA and IP → immediate 429/blocks; SERP parser breaks on minor HTML changes; visits every link equally; finds `info@` only; CSV full of duplicates; no monitoring; can’t explain failures.
+
+**After (working):**
+
+* Rotating UA/proxies, human-like pacing → stable SERP harvest.
+* Selector map w/ fallbacks → resilient extraction.
+* Prioritized site pages → higher email hit rate.
+* Scoring + validation → clean CSV, deduped.
+* Real-time metrics → quick triage and tuning.&#x20;
+
+---
+
+# PART I — Test Plan (Unit, Integration, Perf) — with Verification Steps
+
+## I1) Unit Tests
+
+* **SERP Parsing**: Given saved HTML fixtures for several layouts, ensure at least K URLs extracted; wrapper links unwrapped; filters applied.
+* **Email Regex/Obfuscation**: Inputs include `alan [at] acme dot com` → normalize to `alan@acme.com`; reject `test@example.com`.
+* **Scoring**: Role addresses < personal; contact-page context adds score.
+* **Rate Limiter**: Simulate 429; verify exponential backoff schedule computed correctly.
+
+**Verification:** `pytest tests/unit -q` → all passing.
+
+## I2) Integration Tests
+
+* **End-to-End (Dry Run)**: With 2 benign queries and local HTML mirrors, run search→parse→crawl→export; verify CSV rows > 0; stats computed.
+* **Proxy Rotation**: Inject one bad proxy; verify quarantine after threshold.
+* **Block Recovery**: Simulate 403/503; ensure backoff, skip, and continuation.
+
+**Verification:** `pytest tests/integration -q` + inspect logs.
+
+## I3) Performance Tests
+
+* **Sustained Load**: 100 queries/hour for 3 hours; measure block rate, latencies.
+* **Memory Profile**: Heap stable; raw HTML buffers released post-parse.
+* **Long-Run Stability**: 24-hour canary with alert thresholds; no memory leaks.
+
+**Verification:** Perf report saved to `out/perf/…` with pass/fail gates.
+
+**ZAD requires real error messages and troubleshooting**—embed representative samples in fixtures and docs.&#x20;
+
+---
+
+# PART J — Deployment & Ops
+
+## J1) Local Dev
+
+* **Requirements**: Python 3.10+, Botasaurus, Chrome/Chromium (if headful needed).
+* `pip install -r requirements.txt`
+* `python -m src.cli.run_campaign --config configs/campaign.example.yaml --dry-run` (no external requests; uses fixtures if flagged).
+* **Logs**: stdout + `logs/` rotating files.
+
+## J2) Containerization
+
+**Dockerfile (sketch)**
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PYTHONUNBUFFERED=1
+CMD ["python","-m","src.cli.run_campaign","--config","/app/configs/campaign.yaml"]
+```
+
+**Compose (optional)**: add a small **Prometheus** + **Grafana** stack, and a sidecar **proxy manager**.
+**Verification:** `docker build . -t bing-botasaurus:latest && docker run …` produces CSV and stats.
+
+## J3) Cloud (AWS/GCP/Azure)
+
+* **State**: write outputs to S3/GCS; logs to CloudWatch/Stackdriver; secrets via Secrets Manager.
+* **Horizontal Scale**: partition by campaign; proxy pools segmented by region.
+* **Cron/Orchestrator**: run hourly; cap global budgets.
+
+---
+
+# PART K — Security & Compliance
+
+* **Secrets**: Proxy creds in secrets manager; never in git.
+* **Audit log**: who ran what campaign when; number of requests; exceptions.
+* **Data retention**: configurable days; scrub raw HTML on expiry.
+* **Robots policy**: default **respect** (configurable).
+* **ToS awareness**: Some sites or engines disallow scraping; ensure legal review for campaigns; provide a **kill-switch** per campaign.
+
+**ZAD requires clear “WHY/HOW/VERIFY”**: We include toggles and defaults aligned to conservative, compliant operation; operators can tighten further.&#x20;
+
+---
+
+# PART L — Configuration Library (Verticals & Templates)
+
+**Real Estate (city-based)**
+
+* `"real estate agent [city]"`, `"realtor contact [city]"`, `"mortgage broker [city]"`, `"property manager [city]"`
+
+**Local Services**
+
+* `"[service] [city]"` (plumber, electrician, dentist), `"family owned business [city]"`
+
+**E-commerce**
+
+* `"site:shopify.com [niche]"`, `"powered by shopify [product]"`, `"online store [product category]"`
+
+**Professional Services**
+
+* `"insurance agent [city]"`, `"financial advisor [city]"`, `"tax preparer [city]"`, `"consultant [industry]"`
+
+**Filters**: For each vertical, keep a maintained `exclude_domains` list; tune `max_pages_per_query` by noise level.
+
+---
+
+# PART M — Detailed Failure Playbook (Operational Runbook)
+
+| Symptom             | Likely Cause                   | Immediate Action                                   | Structural Fix                                 |
+| ------------------- | ------------------------------ | -------------------------------------------------- | ---------------------------------------------- |
+| Spike in 429/503    | Over-aggressive rpm; bad proxy | Lower `rpm_soft`, raise `backoff`; rotate proxies  | Narrow concurrency; add time-of-day staggering |
+| Zero SERP URLs      | Selector drift                 | Swap to fallback selector set; update selector map | Add HTML diff tool & auto-notifier             |
+| Few/no emails found | Not hitting contact/about      | Ensure page priorities; raise `max_pages_per_site` | Expand platform heuristics                     |
+| Many junk emails    | Weak scoring                   | Increase `score_threshold`; blacklist `info@`      | Add context scoring boosts                     |
+| Memory growth       | Leaked buffers                 | Release raw HTML after parse                       | Add watchdog and objgraph checks               |
+| High proxy failures | Dead pool                      | Quarantine bad proxies; notify provider            | Add health-check and rotation policy           |
+
+---
+
+# PART N — API/CLI Surface
+
+**CLI**
+
+```
+python -m src.cli.run_campaign --config configs/campaign.yaml \
+  [--dry-run] [--max-queries 500] [--resume-from last-offset]
+```
+
+**Return codes**: `0` success; `2` partial (thresholded errors exceeded); `3` fatal config error.
+
+**Python API**
+
+```python
+from src.core.search_interface import BingSearchScraper
+from src.pipeline.exporters import CSVExporter
+
+scraper = BingSearchScraper(config)
+for lead in scraper.run():
+    CSVExporter.write(lead)
+```
+
+---
+
+# PART O — Code Stubs (for engineers to fill)
+
+### `src/infra/anti_detection.py`
+
+```python
+class AntiDetectionManager:
+    def __init__(self, cfg, proxy_manager):
+        self.cfg = cfg
+        self.proxy_manager = proxy_manager
+    def new_session(self):
+        # choose proxy, rotate UA, init profile, set resource filters, human delays
+        ...
+```
+
+### `src/core/serp_parser.py`
+
+```python
+PRIMARY_SELECTORS = {
+  "result": ["li.b_algo h2 a", "h2 a[href]", "a[itemprop='url']"],
+}
+FALLBACK_SELECTORS = {
+  "result": ["main a[href*='http']", "ol li a[href]"]
+}
+def extract_urls(html):
+    # try primary selectors, then fallbacks; unwrap, normalize, filter
+    ...
+```
+
+### `src/core/email_extractor.py`
+
+```python
+OBFUSCATIONS = [r'\s*\[at\]\s*', r'\s*\(at\)\s*', r'\s+at\s+', r'\s*\[dot\]\s*', r'\s+dot\s+']
+def find_emails(html_text, base_domain):
+    # 1) mailto
+    # 2) regex scan
+    # 3) obfuscation normalize + rescan
+    # 4) context scoring
+    return candidates
+```
+
+*(ZAD: include real file names and structures; expand with tests and fixtures.)*&#x20;
+
+---
+
+# PART P — Metrics & Analytics
+
+**Core KPIs**
+
+* Queries/hour; SERP pages/hour; sites/hour; emails/hour.
+* SERP success rate; email extraction rate; block rate.
+* Latency: query→SERP; SERP→site; site→emails.
+* Proxy health (success %, avg session minutes).
+* Cost per lead (proxy cost / time cost).
+
+**Reports**
+
+* **Realtime dashboard** (prom + grafana or cloud equivalent).
+* **Daily** PDF/HTML: campaign breakdown, top cities/keywords, failure taxonomy.
+
+---
+
+# PART Q — Rollout Plan & Risk Register
+
+**Phased rollout**
+
+1. **Canary** (1 vertical, 1 city, 2 hours).
+2. **Region** (3–5 cities, 24 hours).
+3. **Campaign scale** (full region + all templates).
+4. **Multi-campaign** (staggered windows to avoid spikes).
+
+**Top risks & mitigations**
+
+* **Layout drift** → selector map hot-patch system; fixture tests on every run.
+* **Proxy pool quality** → health checks, quarantine, vendor SLAs.
+* **Legal/ToS** → default conservative policies; campaign approvals; kill-switch.
+* **Cost overrun** → budget caps; query quotas; cost alerting.
+
+---
+
+# PART R — Acceptance Criteria (MVP → Production → Scale)
+
+**MVP**
+
+* Stable SERP capture with conservative pacing;
+* 25%+ email extraction on visited sites;
+* 100+ queries/day;
+* Clean CSVs; basic metrics.
+
+**Production**
+
+* 500+ leads/day/campaign;
+* 60%+ SERP success;
+* 5+ verticals;
+* <10% block rate with recovery;
+* Comprehensive dashboard & reports.
+
+**Scale**
+
+* 1000+ leads/day/campaign;
+* 10+ concurrent campaigns;
+* Distributed workers;
+* Realtime dashboards & advanced analytics.
+
+---
+
+# PART S — ZAD Review Checklist (applied here)
+
+* **Understanding Test**: Big picture & analogy? ✔️&#x20;
+* **Technical Accuracy**: Real file structure, config schemas, code stubs, error handling? ✔️&#x20;
+* **Problem/Solution Clarity**: Pains mapped to components? ✔️&#x20;
+* **Progressive Building**: From analogy → architecture → steps → tests? ✔️&#x20;
+* **Evidence & Verification**: Before/After, verification steps, runbooks? ✔️&#x20;
+* **Methodology Proof**: TaskMaster evidence included? ✔️&#x20;
+
+---
+
+## FINAL NOTE (ZAD)
+
+This PRD is **implementation-ready**: it shows **why** each piece exists, **how** to build it (files, configs, code stubs), **how to verify** it works, **how to recover** when it doesn’t, and **how to operate** safely at scale. It adheres to ZAD’s **TaskMaster + Context7** mandate—**no assumptions**, all the way from analogy to production operations.&#x20;

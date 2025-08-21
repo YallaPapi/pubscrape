@@ -1,0 +1,50 @@
+CLAUDE CODE: FORCE VISIBLE RUNS (COPY THIS WHOLE BLOCK INTO YOUR PROJECT INSTRUCTIONS)
+
+Goal
+Make every run/test visible in real time (for me and for you) and keep logs.
+
+What is already in this repo
+- tools/visible_runner/run_visible.py  → wrapper that forces unbuffered output and streams stdout/stderr live
+- tools/visible_runner/log_view.py     → live tail viewer (optional)
+- pytest.ini                           → shows print/log output during pytest (-s -vv)
+
+Install
+- pip install rich
+
+Rules for executing commands (ALWAYS use the wrapper)
+- Never call a tool/script/test directly.
+- Always execute via:
+  python tools/visible_runner/run_visible.py -- <command and args>
+
+Canonical conversions
+- If you would run: python script.py
+  Run instead:      python tools/visible_runner/run_visible.py -- python -u script.py
+
+- If you would run: pytest tests/test_api.py::TestAPI::test_ok
+  Run instead:      python tools/visible_runner/run_visible.py -- pytest tests/test_api.py::TestAPI::test_ok
+
+- If you would run: uvicorn app:app --reload --port 8000
+  Run instead:      python tools/visible_runner/run_visible.py -- uvicorn app:app --reload --port 8000
+
+Operational guidance for long jobs
+- While a command is running, you may read progress from these files:
+  - tools/visible_runner/logs/latest.log        (human-readable rolling log)
+  - tools/visible_runner/logs/events-*.jsonl    (machine-readable event stream)
+- If a job stalls, report the last 50 lines from latest.log and the last 20 JSONL entries.
+- Propagate the child process return code as the job’s status.
+- Use a timeout if appropriate:
+  python tools/visible_runner/run_visible.py -- --timeout 900 -- <command>
+
+Examples to propose/use
+- python tools/visible_runner/run_visible.py -- python -u my_tool.py --flag X
+- python tools/visible_runner/run_visible.py -- pytest -k smoke
+- python tools/visible_runner/run_visible.py -- uvicorn app:app --reload
+- python tools/visible_runner/run_visible.py -- bash -lc "echo hi && sleep 2 && echo done"
+
+Optional live viewer (second terminal pane)
+- python tools/visible_runner/log_view.py
+  (or) tail -f tools/visible_runner/logs/latest.log
+
+Notes
+- The wrapper sets PYTHONUNBUFFERED=1 automatically for Python children.
+- Prefer print(..., flush=True) or logging to stdout in your scripts for immediate visibility.

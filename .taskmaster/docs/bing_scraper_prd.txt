@@ -1,0 +1,238 @@
+Bing Search Engine Scraper - Product Requirements Document
+
+OVERVIEW:
+Build a production-ready Bing search scraper using Botasaurus that can extract business emails from search results at scale while avoiding detection and rate limiting. The scraper must be able to handle 500-1000 leads per day per target niche.
+
+CORE OBJECTIVES:
+1. Scrape Bing search results for any given search query/dork
+2. Extract business websites from search results  
+3. Visit found websites and extract email addresses
+4. Avoid detection using documented Botasaurus anti-detection features
+5. Handle rate limiting and blocking gracefully
+6. Support multiple search verticals (real estate, local business, e-commerce, etc.)
+7. Generate CSV output with extracted leads
+
+TECHNICAL REQUIREMENTS:
+
+Anti-Detection System:
+- Implement user agent rotation using Botasaurus user_agent_rotation=True
+- Use browser fingerprint randomization (built into Botasaurus Driver)
+- Block unnecessary resources (.js, .css, .jpg, .png) for stealth and speed
+- Implement profile management for session isolation
+- Support proxy rotation for IP diversity
+- Add human-like delays and interaction patterns
+
+Rate Limiting Management:
+- Respect Bing's documented 15-20 requests/minute limit
+- Implement exponential backoff on rate limit errors (HTTP 429)
+- Support concurrent session limits (max 1-2 for Bing)
+- Add adaptive delays based on response times
+- Monitor for blocks and switch tactics automatically
+
+Search Result Extraction:
+- Parse Bing HTML structure using stable CSS selectors
+- Extract business website URLs from search results
+- Handle Bing's URL redirect patterns (/url?q= wrapping)
+- Support pagination (multiple pages of results)
+- Filter out non-business results (Wikipedia, social media, etc.)
+
+Email Extraction Engine:
+- Visit extracted website URLs with Cloudflare bypass
+- Extract emails using multiple methods (regex, mailto links, contact sections)
+- Validate extracted emails (filter fake/test emails)
+- Handle different website structures (Shopify, WordPress, custom sites)
+- Support contact page discovery and scraping
+- Implement email quality scoring
+
+Error Handling:
+- Graceful handling of website timeouts and errors
+- Automatic retry logic with exponential backoff
+- Fallback strategies when primary methods fail
+- Comprehensive logging and monitoring
+- Recovery from temporary blocks
+
+Data Output:
+- CSV export with fields: email, source_website, search_query, found_date, confidence_score
+- Statistics reporting (success rates, blocking incidents)
+- Duplicate email detection and removal
+- Data validation and cleaning
+
+SEARCH VERTICALS TO SUPPORT:
+
+Real Estate:
+- "real estate agent [city]"
+- "realtor contact [city]" 
+- "mortgage broker [city]"
+- "property manager [city]"
+
+Local Services:
+- "[service] [city]" (plumber, electrician, dentist, etc.)
+- "small business [industry] [city]"
+- "family owned business [city]"
+
+E-commerce:
+- "site:shopify.com [niche]"
+- "powered by shopify [product]"
+- "online store [product category]"
+
+Professional Services:
+- "insurance agent [city]"
+- "financial advisor [city]"
+- "tax preparer [city]"
+- "consultant [industry]"
+
+PERFORMANCE REQUIREMENTS:
+
+Speed:
+- Process 100+ search queries per hour
+- Extract emails from 500+ websites per day
+- Complete full search-to-email pipeline in under 5 minutes per query
+
+Success Rates:
+- 60-70% success rate for Bing search result extraction
+- 25-35% email extraction rate from visited websites
+- Less than 10% blocking rate with proper anti-detection
+
+Scalability:
+- Support multiple search verticals simultaneously
+- Handle proxy rotation for increased throughput
+- Support distributed scraping across multiple machines/IPs
+
+TECHNICAL ARCHITECTURE:
+
+Core Components:
+1. Search Engine Interface - handles Bing search queries and result extraction
+2. Anti-Detection Engine - manages user agents, proxies, delays, fingerprints
+3. Website Scraper - visits websites and extracts emails
+4. Rate Limiting Manager - enforces limits and handles blocks
+5. Data Pipeline - processes, validates, and exports results
+6. Configuration System - manages search queries, targets, settings
+
+Key Classes:
+- BingSearchScraper - main orchestrator class
+- AntiDetectionManager - handles all stealth features
+- EmailExtractor - email discovery and validation
+- RateLimiter - request throttling and blocking detection
+- DataExporter - CSV generation and statistics
+
+Integration Points:
+- Botasaurus browser automation with full anti-detection
+- Proxy service integration for IP rotation
+- CSV export for lead management systems
+- Configuration files for different scraping campaigns
+
+SECURITY AND COMPLIANCE:
+
+Legal Considerations:
+- Respect robots.txt files where possible
+- Implement conservative rate limiting
+- Add Terms of Service compliance documentation
+- Support data retention policies and cleanup
+
+Technical Security:
+- Secure proxy credential management
+- Encrypted configuration storage for sensitive settings
+- Audit logging for all scraping activities
+- IP rotation to avoid attribution
+
+TESTING REQUIREMENTS:
+
+Unit Tests:
+- Email extraction accuracy validation
+- Search result parsing verification
+- Anti-detection feature testing
+- Rate limiting enforcement testing
+
+Integration Tests:
+- End-to-end search-to-email pipeline testing
+- Proxy rotation and failover testing
+- Block detection and recovery testing
+- Multi-vertical campaign testing
+
+Performance Tests:
+- Load testing with 100+ concurrent requests
+- Memory usage optimization validation
+- Long-running campaign stability testing
+
+DEPLOYMENT REQUIREMENTS:
+
+Local Development:
+- Support Windows, Mac, Linux development environments
+- Easy configuration management for different campaigns
+- Comprehensive debugging and logging capabilities
+
+Production Deployment:
+- Support cloud deployment (AWS, Azure, GCP)
+- Docker containerization for easy scaling
+- Environment-based configuration management
+- Monitoring and alerting integration
+
+MONITORING AND ANALYTICS:
+
+Key Metrics:
+- Search queries processed per hour
+- Websites visited per hour  
+- Emails extracted per hour
+- Success rates by search vertical
+- Blocking incidents and recovery times
+- Proxy health and rotation statistics
+
+Reporting:
+- Real-time dashboard with key metrics
+- Daily/weekly campaign performance reports
+- Success rate analysis by query type
+- Cost analysis (proxy usage, API calls)
+
+CONFIGURATION MANAGEMENT:
+
+Campaign Configuration:
+- JSON/YAML configuration files for different campaigns
+- Support for multiple search verticals in single campaign
+- Proxy pool configuration and rotation settings
+- Rate limiting and anti-detection parameter tuning
+
+Search Query Management:
+- Template-based query generation for different verticals
+- Geographic targeting support (city, state, country)
+- Industry/niche targeting configuration
+- Custom search dork support
+
+OUTPUT FORMATS:
+
+CSV Export Fields:
+- email: extracted email address
+- source_website: website where email was found
+- search_query: original Bing search query used
+- found_date: timestamp when email was extracted
+- confidence_score: email quality/confidence rating
+- website_type: categorization (shopify, wordpress, custom, etc.)
+- business_name: extracted business name if available
+- phone: extracted phone number if available
+- address: extracted address if available
+
+Statistics Export:
+- campaign_summary.json with overall performance metrics
+- error_log.csv with detailed error tracking
+- proxy_performance.json with proxy health statistics
+
+SUCCESS CRITERIA:
+
+Minimum Viable Product:
+- Successfully scrape Bing search results without getting blocked
+- Extract emails from 25%+ of visited websites
+- Process 100+ search queries per day
+- Generate clean CSV output with lead data
+
+Production Ready:
+- Process 500+ leads per day per campaign
+- Maintain 60%+ Bing search success rate
+- Support 5+ different search verticals
+- Less than 10% blocking rate with recovery
+- Comprehensive monitoring and reporting
+
+Scale Target:
+- Process 1000+ leads per day per campaign
+- Support 10+ concurrent campaigns
+- Multi-machine distributed deployment
+- Real-time monitoring dashboard
+- Advanced analytics and optimization
