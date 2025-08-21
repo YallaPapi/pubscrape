@@ -1,0 +1,44 @@
+name: "Multi-Vertical Contact Discovery Campaign"
+description: "Comprehensive contact discovery campaign targeting restaurants and law firms"
+vertical: "restaurants"
+service_terms:
+  - "restaurant"
+  - "cafe"
+  - "bistro"
+  - "diner"
+query_templates:
+  - "{service_type} {city} contact"
+  - "{service_type} {city} owner email"
+  - "{service_type} {city} manager phone"
+  - "restaurant {city} {state} contact information"
+cities:
+  - "New York"
+  - "Los Angeles"
+  - "Chicago"
+  - "Houston"
+  - "Phoenix"
+  - "Philadelphia"
+  - "San Antonio"
+  - "San Diego"
+  - "Dallas"
+  - "San Jose"
+states:
+  - "CA"
+  - "NY"
+  - "TX"
+  - "FL"
+  - "IL"
+max_queries_per_template: 25
+priority_filter: 1
+intent_filters:
+  - "contact_discovery"
+  - "email_finding"
+exclusions:
+  - "spam"
+  - "scam"
+  - "fake"
+metadata:
+  created_by: "query_builder_system"
+  version: "1.0"
+  target_audience: "restaurant_owners"
+  campaign_type: "contact_discovery"

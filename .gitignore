@@ -87,3 +87,40 @@ htmlcov/
 # Task files
 # tasks.json
 # tasks/ 
+
+# Bing Scraper specific
+out/
+!out/.gitkeep
+campaign_results/
+error_logs/
+proxy_performance.json
+campaign_summary.json
+
+# Botasaurus specific
+chrome_data/
+browser_profiles/
+screenshots/
+page_sources/
+.botasaurus/
+
+# Agency Swarm specific
+agency_data/
+agent_outputs/
+.agency/
+
+# Docker
+.dockerignore
+
+# Monitoring and metrics
+monitoring/data/
+logs/
+metrics/
+
+# Campaign configurations (may contain sensitive data)
+configs/*.yaml
+!configs/campaign.example.yaml
+
+# Chrome and browser artifacts
+*.crx
+*.pem
+chrome-user-data/

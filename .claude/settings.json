@@ -1,0 +1,24 @@
+{
+  "allowedTools": [
+    "Edit",
+    "Read", 
+    "Write",
+    "Bash",
+    "Glob",
+    "Grep",
+    "LS",
+    "TodoWrite",
+    "Task",
+    "WebFetch",
+    "WebSearch"
+  ],
+  "agents": {
+    "enabled": true,
+    "allowAgentCreation": true,
+    "maxConcurrentAgents": 5
+  },
+  "mcp": {
+    "enabled": true,
+    "autoConnect": true
+  }
+}

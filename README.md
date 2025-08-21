@@ -1,92 +1,135 @@
-# 🎙️ Podcast Host Contact Scraper
+# Bing Search Engine Scraper with Botasaurus and Agency Swarm
 
-**100% Free, Open Source Podcast Host Contact Discovery Tool**
+A production-ready, AI-powered contact discovery system that uses Bing search to find business emails at scale while maintaining compliance and minimizing detection.
 
-Find contact information for popular podcast hosts who are perfect guests for your show. No subscriptions, no API limits, just pure open-source scraping power.
+## 🎯 Overview
 
-## 🚀 Features
+This system combines **Botasaurus** for anti-detection browser automation with **Agency Swarm** for multi-agent AI orchestration to create a robust, scalable email scraping solution.
 
-- **Multi-Platform Discovery**: Apple Podcasts, Spotify, Google Podcasts
-- **Smart Contact Extraction**: Websites, emails, booking info, social media
-- **AI-Powered Relevance**: Score hosts by topic relevance and interest
-- **Bulk Processing**: Handle 1000+ podcasts per search
-- **100% Free**: No API costs, subscriptions, or hidden fees
-- **Anti-Detection**: Uses Botasaurus for bypass protection
+### Key Features
+
+- **🤖 13 Specialized AI Agents** - Campaign CEO, Query Builder, Bing Navigator, etc.
+- **🛡️ Advanced Anti-Detection** - User-agent rotation, proxy management, human-like delays
+- **⚡ Rate Limiting & Circuit Breakers** - Smart throttling and adaptive backoff
+- **📧 Multi-Method Email Extraction** - Regex, obfuscation handling, context scoring
+- **🔧 Configuration-Driven** - YAML configs per campaign
+- **📊 Comprehensive Monitoring** - Real-time dashboards, metrics, and alerts
+- **🐳 Docker Ready** - Full containerization with monitoring stack
+
+### Target Performance
+
+- **500-1000 leads/day** per campaign
+- **60-70% SERP extraction** success rate
+- **25-35% email discovery** rate on visited sites
+- **<10% block rate** with proper configuration
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Python 3.10+**
+- **Git**
+- **Docker & Docker Compose** (optional, for production)
+- **Chrome/Chromium** browser
+
+### 1. Clone and Setup
+
+```bash
+git clone <repository-url>
+cd pubscrape
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+source venv/Scripts/activate
+# Linux/Mac:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Environment Configuration
+
+Create `.env` file with your API keys:
+
+```bash
+# Core AI APIs
+ANTHROPIC_API_KEY=your_anthropic_key_here
+PERPLEXITY_API_KEY=your_perplexity_key_here
+OPENAI_API_KEY=your_openai_key_here
+
+# Optional: Additional APIs
+OPENROUTER_API_KEY=your_openrouter_key_here
+YOUTUBE_API_KEY=your_youtube_key_here
+```
+
+### 3. Verify Installation
+
+```bash
+# Test Agency Swarm CLI
+agency-swarm --help
+
+# Test Botasaurus installation
+python -c "import botasaurus; print('Botasaurus ready!')"
+
+# Run tests
+pytest tests/ -v
+```
 
 ## 📁 Project Structure
 
 ```
-podcast_host_scraper/     # Main podcast scraper implementation
-├── podcast_scraper/      # Core scraping modules
-├── scrape_podcasts.py    # CLI interface
-├── output/              # Generated CSV and reports
-└── tests/               # Test suite
-
-archived/                 # Archived components
-└── youtube-scraper/      # Previous YouTube scraper implementation
-
-docs/                     # Documentation
-└── podcast_scraper_prd.md # Product requirements
+pubscrape/
+├── src/
+│   ├── core/           # Core scraping components
+│   ├── infra/          # Anti-detection & infrastructure  
+│   ├── pipeline/       # Data processing pipeline
+│   └── cli/            # Command-line interface
+├── configs/            # Campaign configurations
+├── out/               # Output files (CSV, JSON, logs)
+├── tests/             # Test suites
+├── .taskmaster/       # TaskMaster project management
+├── venv/             # Virtual environment
+├── Dockerfile        # Container configuration
+├── docker-compose.yml # Multi-service orchestration
+└── requirements.txt   # Python dependencies
 ```
 
-## ⚡ Quick Start
+## 🤖 Agency Swarm Agents
+
+The system uses 13 specialized AI agents:
+
+1. **CampaignCEO** - Orchestrates campaigns and delegates tasks
+2. **QueryBuilder** - Expands search templates to concrete queries  
+3. **BingNavigator** - Fetches SERPs via Botasaurus
+4. **SerpParser** - Parses SERP HTML to extract URLs
+5. **DomainClassifier** - Filters and prioritizes business domains
+6. **SiteCrawler** - Visits site pages via Botasaurus
+7. **EmailExtractor** - Finds and scores emails using multiple methods
+8. **ValidatorDedupe** - Validates and deduplicates emails
+9. **Exporter** - Writes CSV/JSON outputs
+10. **RateLimitSupervisor** - Enforces rate limits and backoff
+11. **AntiDetectionSupervisor** - Manages proxies and sessions
+12. **MonitoringAnalyst** - Tracks metrics and raises alerts
+13. **IncidentResponder** - Handles operational incidents
+
+## 📚 TaskMaster Integration
+
+This project uses TaskMaster for development workflow:
 
 ```bash
-# Navigate to podcast scraper
-cd podcast_host_scraper
+# View current tasks
+task-master list
 
-# Install dependencies
-pip install -r requirements.txt
+# Work on next task
+task-master next
 
-# Find AI-related podcast hosts
-python scrape_podcasts.py --topic "artificial intelligence" --limit 100
-
-# Output includes:
-# - podcast_contacts.csv (main results)
-# - podcast_report.md (summary stats)
+# Mark task complete  
+task-master set-status --id=X --status=done
 ```
-
-## 🎯 Current Status
-
-**✅ Working Features:**
-- Apple Podcasts directory scraping
-- Basic CSV output with podcast metadata
-- CLI interface with comprehensive options
-- Error logging and reporting
-
-**⚠️ Known Issues:**
-- Contact extraction incomplete (0% email discovery rate)
-- Missing social media and website discovery
-- AI relevance scoring not fully implemented
-- Limited multi-platform integration
-
-**📋 Next Development Priorities:**
-1. Fix contact extraction from podcast websites
-2. Implement social media profile discovery
-3. Complete AI relevance scoring integration
-4. Add Spotify and Google Podcasts support
-
-## 📊 Example Output
-
-Current CSV structure:
-```csv
-podcast_name,host_name,host_email,website,social_links,estimated_downloads,ai_relevance_score
-DISGRACELAND,,,,,,,unknown
-```
-
-Target CSV structure (in development):
-```csv
-podcast_name,host_name,host_email,website,social_links,estimated_downloads,ai_relevance_score
-"The AI Podcast",John Smith,john@aipodcast.com,https://aipodcast.com,@johnsmith_ai,50000,95
-```
-
-## 🛠️ Development
-
-The scraper uses:
-- **Botasaurus**: Anti-detection web scraping
-- **Python 3.11+**: Core implementation
-- **Apple Podcasts RSS**: Free podcast directory access
-- **OpenAI API**: AI relevance scoring (optional)
 
 ## 📄 License
 
@@ -94,6 +137,6 @@ MIT License - Use freely for commercial and personal projects.
 
 ---
 
-**Note**: This project evolved from a YouTube scraper to a podcast scraper. The YouTube scraper components have been archived in `archived/youtube-scraper/` and can be reactivated if needed.
+**Note**: This project evolved from a podcast scraper to a comprehensive Bing scraper. Previous implementations have been archived in the `archived/` directory.
 
-⭐ **Star this repo if it helps you discover amazing podcast opportunities!**
+⭐ **Star this repo for production-ready contact discovery!**

@@ -119,3 +119,4 @@ Use Context7 for:
 - ALWAYS ALWAYS ALWAYS use taskmaster research instead of websearch, NEVER USE WEBSEARCH
 - Any time you finish doing something and are waiting for my input, give me a list of all the remaining tasks/subtasks and what % of the project has been completed so far
 - ALWAYS ALWAYS ALWAYS use taskmaster research, never use web search. There are custom agents that can help you with this
+- Use the specialized subagents any time you need to debug, refactor, or test. Use them proactively

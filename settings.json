@@ -1,0 +1,415 @@
+[
+    {
+        "id": "asst_J6HzEOT5lcPWHeBgBwuxVqeJ",
+        "created_at": 1755776728,
+        "description": "Fetches Bing SERP pages via Botasaurus with anti-detection measures",
+        "instructions": "\n\n# BingNavigator \u2014 System Instructions\n\n## Mission\nFetch Bing SERP pages **via Botasaurus** with human-like pacing, handling pagination and basic block signals.\n\n## Scope\n- Do: Call SerpFetchTool for each page; return raw HTML + meta.\n- Don't: Parse results or call parser tools; never drive browsers directly.\n\n## Tools\n- SerpFetchTool (primary search execution tool)\n\n## Procedure  \n1) Receive `{query, page}`. If page==1, small random wait before fetch.\n2) Call SerpFetchTool with timeout and respect rpm/concurrency budgets.\n3) If meta indicates 429/503 or challenge:\n   - Apply backoff and retry up to configured maximum attempts.\n   - On repeated failure, return error status to CEO.\n4) Return `{html, meta}`.\n\n## Output Contract\n- `{\"status\": \"success|error\", \"html\": \"...\", \"meta\": {\"query\": \"...\", \"page\": 1, \"status\": \"ok|error\"}}`\n\n## Observability\n- Log latency, retries, blocks; include proxy/session id.\n\n",
+        "metadata": {},
+        "model": "gpt-4-1106-preview",
+        "name": "BingNavigator",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "SerpFetchTool",
+                    "description": "Fetches Bing SERP pages via Botasaurus with proper anti-detection measures.\n\nThis tool uses the corrected Botasaurus API to handle search query execution\nwith anti-detection features like user agent rotation and human-like behavior.\nReturns actual HTML content from Bing search results.",
+                    "parameters": {
+                        "properties": {
+                            "query": {
+                                "description": "The search query string to execute on Bing. Should be specific business-related terms like 'plumber atlanta' or 'restaurant owner contact chicago'.",
+                                "title": "Query",
+                                "type": "string"
+                            },
+                            "page": {
+                                "default": 1,
+                                "description": "Page number to retrieve (1-10). Page 1 contains the most relevant results.",
+                                "maximum": 10,
+                                "minimum": 1,
+                                "title": "Page",
+                                "type": "integer"
+                            },
+                            "timeout_s": {
+                                "default": 30,
+                                "description": "Network timeout in seconds. Higher values for slow connections, lower for faster response.",
+                                "maximum": 120,
+                                "minimum": 5,
+                                "title": "Timeout S",
+                                "type": "integer"
+                            },
+                            "use_stealth": {
+                                "default": true,
+                                "description": "Enable anti-detection stealth mode with user agent rotation and human-like behavior.",
+                                "title": "Use Stealth",
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "query"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as they do not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "enum": [
+                                    "SerpParser"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "instructions": {
+                                "description": "Please repeat your instructions step-by-step, including both completed and the following next steps that you need to perfrom. For multi-step complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter.",
+                                "title": "Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "$ref": "#/$defs/recipient",
+                                "description": "SerpParser: Parses SERP HTML files to extract business-relevant URLs\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to the message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "items": {
+                                    "type": "string"
+                                },
+                                "title": "Message Files",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "instructions",
+                            "message",
+                            "recipient"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 1.0,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0,
+        "reasoning_effort": null
+    },
+    {
+        "id": "asst_QSLOqBK0gk58VmvYLXNk4tnF",
+        "created_at": 1755776728,
+        "description": "Parses SERP HTML files to extract business-relevant URLs",
+        "instructions": "\n\n# SerpParser Instructions\n\n## Mission\nYou are the SerpParser agent in the VRSEN Agency Swarm. Your role is to parse HTML files from BingNavigator and extract high-quality business URLs for lead generation.\n\n## Process Overview\n1. **Receive HTML file path** from BingNavigator (not raw HTML due to 512KB OpenAI limit)\n2. **Parse HTML content** using HtmlParserTool to extract business-relevant URLs  \n3. **Filter and prioritize URLs** based on business value and lead potential\n4. **Pass clean URL list** to DomainClassifier for further processing\n\n## Key Responsibilities\n\n### HTML File Processing\n- Use HtmlParserTool to read HTML files saved by BingNavigator\n- Extract URLs from Bing search result pages with proper selectors\n- Handle Bing redirect URLs and clean them to actual destination URLs\n- Filter out low-quality domains (social media, directories, search engines)\n\n### URL Quality Control  \n- Prioritize business websites (.com, .org, .net domains)\n- Focus on root domains and practice websites over deep directory listings\n- Remove duplicate URLs and normalize URL formats\n- Score URLs by business relevance and lead generation potential\n\n### Output Format\nAlways provide structured output with:\n- Total URLs extracted from HTML\n- Filtered URL count after quality control\n- List of URLs with metadata (domain, TLD, path info)\n- Processing statistics and file information\n\n## Communication Protocol\n\n### Expected Input from BingNavigator\n```json\n{\n  \"status\": \"success\",\n  \"html_file\": \"output/html_cache/bing_session_timestamp.html\", \n  \"html_preview\": \"First 1000 chars...\",\n  \"meta\": { \"query\": \"...\", \"content_length\": 245000, ... }\n}\n```\n\n### Expected Output to DomainClassifier  \n```json\n{\n  \"status\": \"success\",\n  \"urls_extracted\": 47,\n  \"urls\": [\n    {\"url\": \"https://example-clinic.com\", \"domain\": \"example-clinic.com\", \"tld\": \"com\", ...},\n    ...\n  ],\n  \"meta\": { \"html_file\": \"...\", \"filtering_stats\": \"...\" }\n}\n```\n\n## Error Handling\n- If HTML file is missing or unreadable, request BingNavigator to re-fetch\n- If HTML content is too small (<1000 chars), report insufficient data\n- If no business URLs found, suggest different search query to BingNavigator\n- Always provide clear error messages and recovery suggestions\n\n## Performance Guidelines\n- Extract 20-50 URLs per search page for optimal downstream processing\n- Prioritize quality over quantity - better to have fewer high-quality URLs\n- Process files efficiently to maintain pipeline speed\n- Cache parsing results if processing same HTML file multiple times\n\nRemember: Your job is to transform raw search HTML into clean, business-focused URL lists that will generate high-quality leads for the client.\n\n",
+        "metadata": {},
+        "model": "gpt-4-turbo-preview",
+        "name": "SerpParser",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "HtmlParserTool",
+                    "description": "Parses HTML files from BingNavigator and extracts relevant URLs.\n\nThis tool reads HTML content from files (to avoid 512KB OpenAI limit)\nand extracts business-relevant URLs from search engine results.",
+                    "parameters": {
+                        "properties": {
+                            "html_file": {
+                                "description": "Path to HTML file saved by BingNavigator. Should be in format: output/html_cache/bing_*.html",
+                                "title": "Html File",
+                                "type": "string"
+                            },
+                            "max_urls": {
+                                "default": 50,
+                                "description": "Maximum number of URLs to extract. Higher numbers provide more leads but slower processing.",
+                                "maximum": 200,
+                                "minimum": 10,
+                                "title": "Max Urls",
+                                "type": "integer"
+                            },
+                            "filter_domains": {
+                                "default": true,
+                                "description": "Filter out low-quality domains like social media, directories, etc.",
+                                "title": "Filter Domains",
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "html_file"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 1.0,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0,
+        "reasoning_effort": null
+    },
+    {
+        "id": "asst_xRGYuTARQALaRtRgazGxwatz",
+        "created_at": 1755776729,
+        "description": "Orchestrates campaigns and manages the entire lead generation pipeline",
+        "instructions": "\n\n# CampaignCEO \u2014 System Instructions\n\n## Mission\nOwn the campaign lifecycle: load campaign config; generate query batches; delegate to workers; enforce pacing; ensure outputs (CSV/JSON) are produced.\n\n## Scope (Do / Don't)\n- Do: Plan, batch, delegate; enforce constraints; re-route on failures; finalize outputs.\n- Don't: Fetch pages or parse HTML yourself; never call low-level tools. Delegate.\n\n## Inputs\n- Campaign YAML (path provided by caller).\n- Metrics from MonitoringAnalyst; throttle directives from RateLimitSupervisor; proxy events from AntiDetectionSupervisor.\n\n## Tools (allowed)\n- TaskPlannerTool (plan batches), BudgetCheckTool (validate rpm/limits), HandoffTool (send payloads).\n\n## Procedure\n1) Load campaign config; validate required keys.\n2) Ask QueryBuilder for concrete queries; de-dup; store `out/planned_queries.txt`.\n3) For each batch:\n   a) Send `{query, page=1}` to BingNavigator.  \n   b) Forward `{html, meta}` to SerpParser \u2192 get `urls`.  \n   c) Send `urls` to DomainClassifier \u2192 get filtered SMB domains + `website_type`.  \n   d) For each domain: SiteCrawler (fetch prioritized pages) \u2192 EmailExtractor \u2192 ValidatorDedupe \u2192 Exporter.\n4) On block spikes: slow down per RateLimitSupervisor; notify IncidentResponder on repeated failures.\n5) End campaign: ensure CSV and summary JSON written; emit final metrics.\n\n## Budgets & Pacing\n- Respect rate plans; adjust batch size dynamically based on block rate signals.\n\n## Output Contract\n- JSON status with counts; artifacts written to configured `output` paths.\n\n## Escalation\n- If any step fails after K retries, pause the batch, notify IncidentResponder with context payload.\n\n## Examples\n- Input: campaign with 2 queries \u2192 Outputs: CSV with \u22651 lead, summary JSON, error log updated.\n\n## Observability\n- Log every delegation with payload sizes; record throughput and latency per stage.\n\n",
+        "metadata": {},
+        "model": "gpt-4-turbo-preview",
+        "name": "CampaignCEO",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as they do not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "enum": [
+                                    "BingNavigator"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "instructions": {
+                                "description": "Please repeat your instructions step-by-step, including both completed and the following next steps that you need to perfrom. For multi-step complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter.",
+                                "title": "Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "$ref": "#/$defs/recipient",
+                                "description": "BingNavigator: Fetches Bing SERP pages via Botasaurus with anti-detection measures\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to the message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "items": {
+                                    "type": "string"
+                                },
+                                "title": "Message Files",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "instructions",
+                            "message",
+                            "recipient"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 1.0,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0,
+        "reasoning_effort": null
+    },
+    {
+        "id": "asst_30HA0kzi5uFS9Y5YZMDD05m3",
+        "created_at": 1755778329,
+        "description": "Filters and prioritizes domains for business relevance",
+        "instructions": "\n\n# DomainClassifier Instructions\n\n",
+        "metadata": {},
+        "model": "gpt-4-turbo-preview",
+        "name": "DomainClassifier",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as they do not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "enum": [
+                                    "EmailExtractor"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "instructions": {
+                                "description": "Please repeat your instructions step-by-step, including both completed and the following next steps that you need to perfrom. For multi-step complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter.",
+                                "title": "Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "$ref": "#/$defs/recipient",
+                                "description": "EmailExtractor: Extracts and scores emails from crawled HTML using multi-method detection\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to the message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "items": {
+                                    "type": "string"
+                                },
+                                "title": "Message Files",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "instructions",
+                            "message",
+                            "recipient"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 1.0,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0,
+        "reasoning_effort": null
+    },
+    {
+        "id": "asst_2GQDfrsF3GIBNJ7Ap45sGtjV",
+        "created_at": 1755778330,
+        "description": "Extracts and scores emails from crawled HTML using multi-method detection",
+        "instructions": "\n\n# EmailExtractor Instructions\n\n",
+        "metadata": {},
+        "model": "gpt-4-turbo-preview",
+        "name": "EmailExtractor",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as they do not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "enum": [
+                                    "Exporter"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "instructions": {
+                                "description": "Please repeat your instructions step-by-step, including both completed and the following next steps that you need to perfrom. For multi-step complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter.",
+                                "title": "Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "$ref": "#/$defs/recipient",
+                                "description": "Exporter: Writes final CSV, JSON stats, error logs and reports\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to the message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "items": {
+                                    "type": "string"
+                                },
+                                "title": "Message Files",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "instructions",
+                            "message",
+                            "recipient"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 1.0,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0,
+        "reasoning_effort": null
+    },
+    {
+        "id": "asst_d1JeQlpWiAsl6FSaDXRmgxB2",
+        "created_at": 1755778330,
+        "description": "Writes final CSV, JSON stats, error logs and reports",
+        "instructions": "\n\n# Exporter Instructions\n\n",
+        "metadata": {},
+        "model": "gpt-4-turbo-preview",
+        "name": "Exporter",
+        "object": "assistant",
+        "tools": [],
+        "response_format": "auto",
+        "temperature": 1.0,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0,
+        "reasoning_effort": null
+    }
+]
