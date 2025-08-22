@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 # Import proper Botasaurus integration
-from botasaurus.browser import browser, Driver
+from botasaurus.browser import browser
 
 
 class SerpFetchTool(BaseTool):
@@ -87,8 +87,8 @@ class SerpFetchTool(BaseTool):
                     page_html = driver.page_html  # Property, not method!
                     user_agent_used = driver.user_agent  # Property, not method!
                     
-                    # Check for blocking/success
-                    blocked_indicators = ['blocked', 'captcha', 'access denied', 'unusual traffic']
+                    # Check for blocking/success (more specific indicators)
+                    blocked_indicators = ['captcha', 'access denied', 'unusual traffic', 'verify you are human', 'too many requests']
                     is_blocked = any(indicator in title.lower() for indicator in blocked_indicators)
                     
                     success_indicators = ['search', 'results', query.split()[0].lower()]
@@ -97,14 +97,16 @@ class SerpFetchTool(BaseTool):
                     # Try fallback if blocked or no results
                     method_used = 'direct_bing'
                     if is_blocked or not has_results or len(page_html) < 5000:
-                        driver.google_get(query)
+                        # Use proper fallback URL instead of google_get
+                        fallback_url = f"https://www.bing.com/search?q={query.replace(' ', '%20')}&setlang=en"
+                        driver.get(fallback_url)
                         driver.sleep(2)
                         
                         title = driver.title
                         current_url = driver.current_url
                         page_html = driver.page_html
                         has_results = len(page_html) > 1000
-                        method_used = 'google_fallback'
+                        method_used = 'bing_fallback'
                     
                     response_time = time.time() - start_time
                     

@@ -152,19 +152,48 @@ class HtmlParserTool(BaseTool):
     def _extract_bing_redirect_url(self, bing_url: str) -> str:
         """Extract actual URL from Bing redirect URL"""
         import urllib.parse as urlparse_module
+        import base64
         
-        # Handle Bing redirect patterns
-        if '&u=' in bing_url:
-            parts = bing_url.split('&u=')
-            if len(parts) > 1:
-                return urlparse_module.unquote(parts[1].split('&')[0])
-        
-        if 'url=' in bing_url:
-            parts = bing_url.split('url=')
-            if len(parts) > 1:
-                return urlparse_module.unquote(parts[1].split('&')[0])
-        
-        return bing_url
+        try:
+            # Check if it's a Bing redirect URL
+            if 'bing.com/ck/a' not in bing_url:
+                return bing_url
+            
+            # Handle modern Bing redirect patterns with base64 encoding
+            if '&u=' in bing_url:
+                parts = bing_url.split('&u=')
+                if len(parts) > 1:
+                    encoded_url = parts[1].split('&')[0]
+                    
+                    # The URL appears to be base64 encoded with 'a1' prefix
+                    if encoded_url.startswith('a1'):
+                        encoded_url = encoded_url[2:]  # Remove 'a1' prefix
+                        try:
+                            # Decode base64 (add padding if needed)
+                            padding = 4 - (len(encoded_url) % 4)
+                            if padding != 4:
+                                encoded_url += '=' * padding
+                            decoded_bytes = base64.b64decode(encoded_url)
+                            decoded_url = decoded_bytes.decode('utf-8')
+                            return decoded_url
+                        except:
+                            # If base64 decoding fails, try simple URL decode
+                            return urlparse_module.unquote(parts[1].split('&')[0])
+                    else:
+                        # Fallback to simple URL decode
+                        return urlparse_module.unquote(parts[1].split('&')[0])
+            
+            # Handle legacy Bing redirect patterns
+            if 'url=' in bing_url:
+                parts = bing_url.split('url=')
+                if len(parts) > 1:
+                    return urlparse_module.unquote(parts[1].split('&')[0])
+            
+            return bing_url
+            
+        except Exception as e:
+            # If any decoding fails, return original URL
+            return bing_url
     
     def _is_valid_business_url(self, url: str) -> bool:
         """Check if URL is valid and business-relevant"""

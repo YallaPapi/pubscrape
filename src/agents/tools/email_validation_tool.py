@@ -1,12 +1,13 @@
 """
 Email Validation Tool
 
-Agency Swarm tool for comprehensive email validation including syntax checking,
-DNS validation, blacklist filtering, and quality assessment.
+Agency Swarm tool for comprehensive email validation using Mailtester Ninja API
+as the primary validation method, with fallback to local validation methods.
 """
 
 import logging
 import time
+import os
 from typing import Dict, Any, List, Optional
 from pydantic import Field
 
@@ -20,6 +21,15 @@ except ImportError:
             for key, value in kwargs.items():
                 setattr(self, key, value)
 
+# Import both Mailtester Ninja and local validation
+try:
+    from .mailtester_ninja_client import (
+        MailtesterNinjaClient, ValidationLevel, EmailStatus, create_mailtester_client
+    )
+    MAILTESTER_AVAILABLE = True
+except ImportError:
+    MAILTESTER_AVAILABLE = False
+
 from agents.validator_dedupe_agent import (
     EmailSyntaxValidator, DNSValidator, BlacklistFilter, 
     ValidationResult, ValidationStatus, EmailQuality
@@ -28,25 +38,35 @@ from agents.validator_dedupe_agent import (
 
 class EmailValidationTool(BaseTool):
     """
-    Tool for validating email addresses with comprehensive checks.
+    Tool for validating email addresses with comprehensive checks using Mailtester Ninja API.
     
-    Performs syntax validation, TLD whitelist checking, optional DNS/MX validation,
-    blacklist filtering, and quality assessment.
+    Primary validation uses Mailtester Ninja API for real-time email verification.
+    Falls back to local validation methods if API is unavailable.
     """
     
     emails: List[str] = Field(
         ..., 
-        description="List of email addresses to validate"
+        description="List of email addresses to validate using Mailtester Ninja API"
+    )
+    
+    use_mailtester_api: bool = Field(
+        default=True,
+        description="Use Mailtester Ninja API for validation (recommended)"
+    )
+    
+    validation_level: str = Field(
+        default="basic",
+        description="API validation level: 'basic' for syntax/domain checks, 'full' for SMTP verification"
     )
     
     enable_dns_check: bool = Field(
         default=False,
-        description="Enable DNS MX record validation (slower but more thorough)"
+        description="Enable DNS MX record validation for fallback method"
     )
     
     enable_deliverability_check: bool = Field(
         default=False,
-        description="Enable email deliverability checking"
+        description="Enable email deliverability checking for fallback method"
     )
     
     tld_whitelist: Optional[List[str]] = Field(
@@ -66,14 +86,130 @@ class EmailValidationTool(BaseTool):
     
     def run(self) -> Dict[str, Any]:
         """
-        Validate email addresses and return results.
+        Validate email addresses using Mailtester Ninja API or fallback methods.
         
         Returns:
             Dictionary containing validation results and statistics
         """
         start_time = time.time()
         
-        # Configure validators
+        # Always prioritize Mailtester Ninja API when available and configured
+        use_api = (
+            self.use_mailtester_api and 
+            MAILTESTER_AVAILABLE and 
+            os.getenv('MAILTESTER_NINJA_API_KEY') and 
+            os.getenv('MAILTESTER_NINJA_API_KEY') not in ['YOUR_MAILTESTER_NINJA_API_KEY_HERE', '', None]
+        )
+        
+        if use_api:
+            logging.info(f"Using Mailtester Ninja API for email validation ({self.validation_level})")
+            return self._validate_with_mailtester_api()
+        else:
+            if not MAILTESTER_AVAILABLE:
+                logging.warning("Mailtester Ninja client not available - check installation")
+            elif not os.getenv('MAILTESTER_NINJA_API_KEY'):
+                logging.warning("MAILTESTER_NINJA_API_KEY environment variable not set")
+            else:
+                logging.warning("Mailtester Ninja API disabled by configuration")
+                
+            logging.info("Using fallback validation method (basic validation without API)")
+            return self._validate_with_fallback_methods()
+    
+    def _validate_with_mailtester_api(self) -> Dict[str, Any]:
+        """Validate emails using Mailtester Ninja API"""
+        start_time = time.time()
+        
+        try:
+            # Parse validation level
+            try:
+                validation_level = ValidationLevel(self.validation_level.lower())
+            except ValueError:
+                validation_level = ValidationLevel.BASIC
+            
+            # Create Mailtester client
+            with create_mailtester_client(enable_caching=True) as client:
+                
+                # Validate emails
+                if len(self.emails) > 50:
+                    # Use batch validation for large lists
+                    mailtester_results = client.validate_batch(
+                        self.emails, 
+                        validation_level=validation_level,
+                        batch_size=100
+                    )
+                else:
+                    # Validate individually for smaller lists
+                    mailtester_results = [
+                        client.validate_email(email, validation_level)
+                        for email in self.emails
+                    ]
+                
+                # Convert Mailtester results to our format
+                results = []
+                stats = self._initialize_stats()
+                
+                for mt_result in mailtester_results:
+                    # Convert to ValidationResult format
+                    result_dict = self._convert_mailtester_result(mt_result)
+                    results.append(result_dict)
+                    
+                    # Update statistics
+                    self._update_stats(stats, result_dict)
+                
+                # Get API statistics
+                api_stats = client.get_stats()
+                
+                total_time = time.time() - start_time
+                acceptance_rate = stats['valid'] / max(1, stats['total_processed'])
+                
+                # Sort results by quality
+                valid_emails = [r for r in results if r['is_valid']]
+                invalid_emails = [r for r in results if not r['is_valid']]
+                
+                valid_emails.sort(key=lambda x: x.get('confidence_score', 0), reverse=True)
+                
+                return {
+                    'summary': {
+                        'total_emails': len(self.emails),
+                        'processed': stats['total_processed'],
+                        'valid_emails': stats['valid'],
+                        'invalid_emails': stats['total_processed'] - stats['valid'],
+                        'acceptance_rate': acceptance_rate,
+                        'processing_time_seconds': total_time,
+                        'emails_per_second': stats['total_processed'] / max(0.001, total_time),
+                        'validation_method': f'Mailtester Ninja API ({validation_level.value})',
+                        'api_requests': api_stats.get('total_requests', 0),
+                        'cache_hits': api_stats.get('cache_hits', 0)
+                    },
+                    'validation_stats': stats,
+                    'quality_distribution': {
+                        'high': stats['high_quality'],
+                        'medium': stats['medium_quality'], 
+                        'low': stats['low_quality'],
+                        'spam': stats['spam']
+                    },
+                    'mailtester_stats': {
+                        'valid_count': len([r for r in mailtester_results if r.status == EmailStatus.VALID]),
+                        'risky_count': len([r for r in mailtester_results if r.status == EmailStatus.RISKY]),
+                        'catch_all_count': len([r for r in mailtester_results if r.status == EmailStatus.CATCH_ALL]),
+                        'disposable_count': len([r for r in mailtester_results if r.is_disposable]),
+                        'role_account_count': len([r for r in mailtester_results if r.is_role_account])
+                    },
+                    'valid_emails': valid_emails,
+                    'invalid_emails': invalid_emails,
+                    'all_results': results
+                }
+                
+        except Exception as e:
+            logging.error(f"Mailtester API validation failed: {e}")
+            logging.info("Falling back to local validation methods")
+            return self._validate_with_fallback_methods()
+    
+    def _validate_with_fallback_methods(self) -> Dict[str, Any]:
+        """Validate emails using local validation methods as fallback"""
+        start_time = time.time()
+        
+        # Configure local validators
         syntax_config = {
             "check_deliverability": self.enable_deliverability_check,
             "tld_whitelist": self.tld_whitelist or []
@@ -96,19 +232,7 @@ class EmailValidationTool(BaseTool):
         
         # Validate emails
         results = []
-        stats = {
-            'total_processed': 0,
-            'valid': 0,
-            'invalid_syntax': 0,
-            'invalid_domain': 0,
-            'blacklisted': 0,
-            'no_mx_record': 0,
-            'dns_errors': 0,
-            'high_quality': 0,
-            'medium_quality': 0,
-            'low_quality': 0,
-            'spam': 0
-        }
+        stats = self._initialize_stats()
         
         for email in self.emails:
             if not email or not isinstance(email, str):
@@ -127,35 +251,9 @@ class EmailValidationTool(BaseTool):
                         # Step 3: Blacklist filtering
                         result = blacklist_filter.check_blacklist(email, result)
                 
-                # Update statistics
-                stats['total_processed'] += 1
-                
-                if result.is_valid:
-                    stats['valid'] += 1
-                else:
-                    # Count rejection reasons
-                    if result.status == ValidationStatus.INVALID_SYNTAX:
-                        stats['invalid_syntax'] += 1
-                    elif result.status == ValidationStatus.INVALID_DOMAIN:
-                        stats['invalid_domain'] += 1
-                    elif result.status == ValidationStatus.BLACKLISTED:
-                        stats['blacklisted'] += 1
-                    elif result.status == ValidationStatus.NO_MX_RECORD:
-                        stats['no_mx_record'] += 1
-                    elif result.status == ValidationStatus.DNS_ERROR:
-                        stats['dns_errors'] += 1
-                
-                # Count quality levels
-                if result.quality == EmailQuality.HIGH:
-                    stats['high_quality'] += 1
-                elif result.quality == EmailQuality.MEDIUM:
-                    stats['medium_quality'] += 1
-                elif result.quality == EmailQuality.LOW:
-                    stats['low_quality'] += 1
-                else:
-                    stats['spam'] += 1
-                
-                results.append(result.to_dict())
+                result_dict = result.to_dict()
+                results.append(result_dict)
+                self._update_stats(stats, result_dict)
                 
             except Exception as e:
                 logging.error(f"Error validating email {email}: {e}")
@@ -166,7 +264,8 @@ class EmailValidationTool(BaseTool):
                     status=ValidationStatus.UNKNOWN_ERROR,
                     reason=f"Validation error: {str(e)}"
                 )
-                results.append(error_result.to_dict())
+                result_dict = error_result.to_dict()
+                results.append(result_dict)
                 stats['total_processed'] += 1
         
         # Calculate summary metrics
@@ -179,8 +278,8 @@ class EmailValidationTool(BaseTool):
         
         # Sort by quality and confidence
         valid_emails.sort(key=lambda x: (
-            {'high': 3, 'medium': 2, 'low': 1, 'spam': 0}.get(x['quality'], 0),
-            x['confidence_score']
+            {'high': 3, 'medium': 2, 'low': 1, 'spam': 0}.get(x.get('quality', 'spam'), 0),
+            x.get('confidence_score', 0)
         ), reverse=True)
         
         return {
@@ -191,7 +290,8 @@ class EmailValidationTool(BaseTool):
                 'invalid_emails': stats['total_processed'] - stats['valid'],
                 'acceptance_rate': acceptance_rate,
                 'processing_time_seconds': total_time,
-                'emails_per_second': stats['total_processed'] / max(0.001, total_time)
+                'emails_per_second': stats['total_processed'] / max(0.001, total_time),
+                'validation_method': 'Local validation (fallback)'
             },
             'validation_stats': stats,
             'quality_distribution': {
@@ -204,6 +304,174 @@ class EmailValidationTool(BaseTool):
             'invalid_emails': invalid_emails,
             'all_results': results
         }
+    
+    def _initialize_stats(self) -> Dict[str, int]:
+        """Initialize statistics dictionary"""
+        return {
+            'total_processed': 0,
+            'valid': 0,
+            'invalid_syntax': 0,
+            'invalid_domain': 0,
+            'blacklisted': 0,
+            'no_mx_record': 0,
+            'dns_errors': 0,
+            'high_quality': 0,
+            'medium_quality': 0,
+            'low_quality': 0,
+            'spam': 0
+        }
+    
+    def _update_stats(self, stats: Dict[str, int], result_dict: Dict[str, Any]):
+        """Update statistics with result"""
+        stats['total_processed'] += 1
+        
+        if result_dict.get('is_valid', False):
+            stats['valid'] += 1
+        else:
+            # Count rejection reasons
+            status = result_dict.get('status', 'unknown_error')
+            if status == 'invalid_syntax':
+                stats['invalid_syntax'] += 1
+            elif status == 'invalid_domain':
+                stats['invalid_domain'] += 1
+            elif status == 'blacklisted':
+                stats['blacklisted'] += 1
+            elif status == 'no_mx_record':
+                stats['no_mx_record'] += 1
+            elif status == 'dns_error':
+                stats['dns_errors'] += 1
+        
+        # Count quality levels
+        quality = result_dict.get('quality', 'spam')
+        if quality == 'high':
+            stats['high_quality'] += 1
+        elif quality == 'medium':
+            stats['medium_quality'] += 1
+        elif quality == 'low':
+            stats['low_quality'] += 1
+        else:
+            stats['spam'] += 1
+    
+    def _convert_mailtester_result(self, mt_result) -> Dict[str, Any]:
+        """Convert MailtesterResult to our ValidationResult format"""
+        
+        # Map Mailtester status to our status with improved logic
+        if mt_result.status == EmailStatus.VALID:
+            our_status = ValidationStatus.VALID
+            is_valid = True
+        elif mt_result.status == EmailStatus.RISKY:
+            # Accept risky emails but lower the confidence
+            our_status = ValidationStatus.VALID
+            is_valid = True
+        elif mt_result.status == EmailStatus.CATCH_ALL:
+            # Accept catch-all but note the limitation
+            our_status = ValidationStatus.VALID
+            is_valid = True
+        else:
+            our_status = ValidationStatus.INVALID_DOMAIN
+            is_valid = False
+        
+        # Enhanced quality scoring using Mailtester's comprehensive data
+        quality_score = mt_result.get_quality_score()
+        
+        # Apply additional business-context scoring adjustments
+        if mt_result.is_role_account and not mt_result.is_disposable:
+            # Role accounts from legitimate domains are valuable for B2B
+            quality_score = min(1.0, quality_score + 0.1)
+        
+        if mt_result.smtp_check and mt_result.smtp_check.get('mailbox_exists'):
+            # SMTP verification is highly valuable
+            quality_score = min(1.0, quality_score + 0.15)
+        
+        if mt_result.is_disposable:
+            # Heavily penalize disposable emails
+            quality_score = max(0.0, quality_score - 0.4)
+        
+        # Map to quality levels with adjusted thresholds
+        if quality_score >= 0.75:
+            quality = EmailQuality.HIGH
+        elif quality_score >= 0.45:
+            quality = EmailQuality.MEDIUM
+        elif quality_score >= 0.15:
+            quality = EmailQuality.LOW
+        else:
+            quality = EmailQuality.SPAM
+        
+        # Build comprehensive validation reason
+        reasons = []
+        if not mt_result.is_valid_format:
+            reasons.append("Invalid format")
+        if not mt_result.domain_exists:
+            reasons.append("Domain doesn't exist")
+        if not mt_result.has_mx_records:
+            reasons.append("No MX records")
+        if mt_result.is_disposable:
+            reasons.append("Disposable email provider")
+        if mt_result.status == EmailStatus.RISKY:
+            reasons.append("Risky email (deliverability concerns)")
+        if mt_result.status == EmailStatus.CATCH_ALL:
+            reasons.append("Catch-all domain (accepts all emails)")
+        if mt_result.smtp_check and not mt_result.smtp_check.get('mailbox_exists'):
+            reasons.append("Mailbox existence unverified")
+        
+        reason = "; ".join(reasons) if reasons else "Valid email with API verification"
+        
+        # Enhanced domain classification
+        is_business_domain = (
+            mt_result.is_role_account and 
+            not mt_result.is_disposable and 
+            not self._is_personal_email_provider(mt_result.email.split('@')[1] if '@' in mt_result.email else '')
+        )
+        
+        is_personal_domain = (
+            not is_business_domain and 
+            self._is_personal_email_provider(mt_result.email.split('@')[1] if '@' in mt_result.email else '')
+        )
+        
+        return {
+            'email': mt_result.email,
+            'status': our_status.value,
+            'is_valid': is_valid,
+            'quality': quality.value,
+            'confidence_score': quality_score,
+            'reason': reason,
+            'normalized_email': mt_result.email.lower(),
+            'domain': mt_result.email.split('@')[1] if '@' in mt_result.email else '',
+            'validation_time_ms': mt_result.api_response_time_ms,
+            'tld': mt_result.email.split('@')[1].split('.')[-1] if '@' in mt_result.email else '',
+            'is_business_domain': is_business_domain,
+            'is_personal_domain': is_personal_domain,
+            
+            # Enhanced Mailtester-specific fields
+            'mailtester_score': mt_result.score,
+            'mailtester_status': mt_result.status.value,
+            'mailtester_confidence_level': mt_result.confidence_level,
+            'is_disposable': mt_result.is_disposable,
+            'is_role_account': mt_result.is_role_account,
+            'smtp_verified': mt_result.smtp_check.get('mailbox_exists', False) if mt_result.smtp_check else False,
+            'is_catch_all': mt_result.smtp_check.get('is_catch_all', False) if mt_result.smtp_check else False,
+            'has_mx_records': mt_result.has_mx_records,
+            'domain_exists': mt_result.domain_exists,
+            
+            # Additional SMTP insights if available
+            'smtp_can_connect': mt_result.smtp_check.get('can_connect', False) if mt_result.smtp_check else False,
+            'smtp_accepts_mail': mt_result.smtp_check.get('accepts_mail', False) if mt_result.smtp_check else False,
+            
+            # API validation metadata
+            'validation_method': 'Mailtester Ninja API',
+            'api_validation_level': mt_result.validation_level.value,
+            'deliverability_verified': mt_result.is_deliverable()
+        }
+    
+    def _is_personal_email_provider(self, domain: str) -> bool:
+        """Check if domain is a known personal email provider"""
+        personal_domains = {
+            'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+            'aol.com', 'icloud.com', 'me.com', 'protonmail.com',
+            'tutanota.com', 'fastmail.com', 'zoho.com', 'yandex.com',
+            'mail.com', 'gmx.com', 'web.de', 'live.com', 'msn.com'
+        }
+        return domain.lower() in personal_domains
 
 
 class BulkEmailValidationTool(BaseTool):

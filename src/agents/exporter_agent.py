@@ -133,6 +133,21 @@ class CSVExporter:
             "response_likelihood",
             "validation_status",
             
+            # Email Validation Details (Mailtester API)
+            "email_validation_method",
+            "mailtester_score",
+            "mailtester_status",
+            "mailtester_confidence_level",
+            "is_disposable_email",
+            "is_role_account",
+            "smtp_verified",
+            "is_catch_all_domain",
+            "has_mx_records",
+            "domain_exists",
+            "smtp_can_connect",
+            "smtp_accepts_mail",
+            "deliverability_verified",
+            
             # Podcast Metrics
             "estimated_downloads",
             "audience_size_category",
@@ -184,7 +199,20 @@ class CSVExporter:
             'estimated_downloads': 'int64',
             'episode_count': 'int64',
             'rating': 'float64',
-            'ai_relevance_score': 'float64'
+            'ai_relevance_score': 'float64',
+            
+            # Email validation field types
+            'mailtester_score': 'float64',
+            'mailtester_confidence_level': 'string',
+            'is_disposable_email': 'boolean',
+            'is_role_account': 'boolean',
+            'smtp_verified': 'boolean',
+            'is_catch_all_domain': 'boolean',
+            'has_mx_records': 'boolean',
+            'domain_exists': 'boolean',
+            'smtp_can_connect': 'boolean',
+            'smtp_accepts_mail': 'boolean',
+            'deliverability_verified': 'boolean'
         }
         
         self.logger.info("CSVExporter initialized with podcast outreach schema")

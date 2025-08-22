@@ -1,0 +1,42 @@
+{
+  "csv_file": "lawyer_leads_output\\quick_campaign_1755806331_20250821_155900.csv",
+  "total_leads": 0,
+  "campaign_config": {
+    "name": "quick_campaign_1755806331",
+    "description": "Quick campaign for: lawyer New York",
+    "search_queries": [
+      "lawyer New York"
+    ],
+    "max_leads_per_query": 150,
+    "max_pages_per_query": 3,
+    "search_engine": "bing",
+    "location": "New York, NY",
+    "country_code": "US",
+    "language": "en",
+    "business_types": [],
+    "exclude_keywords": [],
+    "min_business_score": 0.4,
+    "enable_email_validation": true,
+    "enable_dns_checking": false,
+    "min_email_confidence": 0.5,
+    "output_directory": "lawyer_leads_output",
+    "csv_filename": "quick_campaign_1755806331_20250821_155900.csv",
+    "include_report": true,
+    "max_concurrent_extractions": 3,
+    "request_delay_seconds": 2.0,
+    "timeout_seconds": 15,
+    "max_retries": 2,
+    "use_rotating_user_agents": true,
+    "use_residential_proxies": false,
+    "headless_mode": true
+  },
+  "statistics": {
+    "campaign_start_time": 1755806331.7776046,
+    "queries_processed": 1,
+    "urls_discovered": 0,
+    "leads_extracted": 0,
+    "leads_validated": 0,
+    "final_leads": 0,
+    "errors": 0
+  }
+}

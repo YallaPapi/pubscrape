@@ -1,0 +1,48 @@
+{
+  "generation_summary": {
+    "total_leads": 28,
+    "generation_date": "2025-08-21 16:10:42",
+    "csv_file": "lawyer_leads_output\\500_lawyer_leads_direct_20250821_161042.csv",
+    "method": "Direct Website Scraping"
+  },
+  "statistics": {
+    "websites_processed": 150,
+    "successful_extractions": 28,
+    "emails_found": 28,
+    "phones_found": 52,
+    "validation_attempts": 28,
+    "valid_emails": 0
+  },
+  "email_validation": {
+    "validation_attempts": 28,
+    "valid_emails": 0,
+    "success_rate": 0.0
+  },
+  "city_breakdown": {
+    "New York": {
+      "leads_count": 12,
+      "avg_email_confidence": 0.0,
+      "valid_emails": 0
+    },
+    "Los Angeles": {
+      "leads_count": 4,
+      "avg_email_confidence": 0.0,
+      "valid_emails": 0
+    },
+    "Chicago": {
+      "leads_count": 6,
+      "avg_email_confidence": 0.0,
+      "valid_emails": 0
+    },
+    "Miami": {
+      "leads_count": 3,
+      "avg_email_confidence": 0.0,
+      "valid_emails": 0
+    },
+    "Atlanta": {
+      "leads_count": 3,
+      "avg_email_confidence": 0.0,
+      "valid_emails": 0
+    }
+  }
+}

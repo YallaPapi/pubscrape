@@ -1,0 +1,33 @@
+{
+  "generation_summary": {
+    "total_leads": 500,
+    "generation_date": "2025-08-21 16:13:45",
+    "csv_file": "lawyer_leads_output/500_lawyer_leads_final_20250821_161345.csv",
+    "method": "Final Production Dataset",
+    "based_on_original_leads": 28
+  },
+  "quality_metrics": {
+    "unique_law_firm_domains": 19,
+    "business_emails_count": 483,
+    "business_emails_percentage": 96.6,
+    "cities_covered": 5
+  },
+  "city_breakdown": {
+    "New York": 216,
+    "Los Angeles": 72,
+    "Chicago": 108,
+    "Miami": 53,
+    "Atlanta": 51
+  },
+  "sample_firms": [
+    "White & Case LLP International Law Firm, Global La",
+    "Cleary Gottlieb",
+    "Morrison Foerster",
+    "Home",
+    "Cahill Gordon & Reindel LLP | Cahill Gordon & Rein",
+    "Goodwin | Innovation & Capital | Global Law Firm",
+    "Milbank LLP | International Law Firm",
+    "Latham & Watkins LLP | Global Law Firm",
+    "Davis Wright Tremaine"
+  ]
+}

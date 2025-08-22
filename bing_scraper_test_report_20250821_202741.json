@@ -1,0 +1,214 @@
+{
+  "test_summary": {
+    "timestamp": "2025-08-21T20:27:41.679480",
+    "total_queries_tested": 12,
+    "total_execution_time_seconds": 41.3,
+    "overall_success": false
+  },
+  "aggregate_metrics": {
+    "total_urls_found": 0,
+    "average_urls_per_query": 0.0,
+    "total_individual_firms": 0,
+    "total_directories": 0,
+    "individual_firm_percentage": 0.0,
+    "contact_extraction_attempts": 0,
+    "contact_extraction_success": 0,
+    "contact_extraction_rate": 0.0
+  },
+  "success_criteria": {
+    "minimum_individual_firm_percentage": 60.0,
+    "minimum_contact_extraction_rate": 50.0,
+    "minimum_urls_per_query": 5
+  },
+  "performance_by_query": [
+    {
+      "query": "personal injury law firm Manhattan contact",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 17.25,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "divorce attorney Manhattan office phone",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.02,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "Manhattan personal injury lawyer contact email",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "divorce attorney Chicago contact information",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "Chicago family law firm contact",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "personal injury lawyer Chicago office",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "criminal defense lawyer Beverly Hills contact",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "Beverly Hills attorney office phone",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "Los Angeles criminal defense firm contact",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "family lawyer Boston consultation contact",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "Boston divorce attorney office",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    },
+    {
+      "query": "Massachusetts family law firm contact",
+      "urls_found": 0,
+      "individual_firms": 0,
+      "directories": 0,
+      "individual_firm_percentage": 0.0,
+      "contact_extraction_rate": 0.0,
+      "execution_time_seconds": 0.0,
+      "errors": [
+        "Test execution error: cannot import name 'ChromeException' from 'botasaurus_driver.exceptions' (C:\\Users\\Stuart\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages\\botasaurus_driver\\exceptions.py)"
+      ],
+      "sample_firms": []
+    }
+  ],
+  "geographical_analysis": {
+    "Manhattan/NYC": {
+      "queries_tested": 3,
+      "total_urls_found": 0,
+      "individual_firms_found": 0,
+      "individual_firm_percentage": 0.0,
+      "average_urls_per_query": 0.0
+    },
+    "Chicago": {
+      "queries_tested": 3,
+      "total_urls_found": 0,
+      "individual_firms_found": 0,
+      "individual_firm_percentage": 0.0,
+      "average_urls_per_query": 0.0
+    },
+    "Beverly Hills/LA": {
+      "queries_tested": 3,
+      "total_urls_found": 0,
+      "individual_firms_found": 0,
+      "individual_firm_percentage": 0.0,
+      "average_urls_per_query": 0.0
+    },
+    "Boston": {
+      "queries_tested": 3,
+      "total_urls_found": 0,
+      "individual_firms_found": 0,
+      "individual_firm_percentage": 0.0,
+      "average_urls_per_query": 0.0
+    }
+  },
+  "recommendations": [
+    "CRITICAL: No search results found. Check Bing scraper implementation and anti-detection measures."
+  ]
+}

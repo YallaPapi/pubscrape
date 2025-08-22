@@ -1,0 +1,153 @@
+{
+  "test_query": "lawyer New York",
+  "html_file": "output\\html_cache\\bing_serp_51c65e70_1755821874.html",
+  "urls_extracted": 18,
+  "urls": [
+    {
+      "url": "https://www.legalmatch.com/",
+      "domain": "www.legalmatch.com",
+      "path": "/",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.martindale.com/",
+      "domain": "www.martindale.com",
+      "path": "/",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://lawyers.findlaw.com/",
+      "domain": "lawyers.findlaw.com",
+      "path": "/",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "lawyers"
+    },
+    {
+      "url": "https://www.legalmatch.com",
+      "domain": "www.legalmatch.com",
+      "path": "",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://lawyers.findlaw.com",
+      "domain": "lawyers.findlaw.com",
+      "path": "",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "lawyers"
+    },
+    {
+      "url": "https://www.lawyers.com/",
+      "domain": "www.lawyers.com",
+      "path": "/",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.lawyers.com",
+      "domain": "www.lawyers.com",
+      "path": "",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.martindale.com",
+      "domain": "www.martindale.com",
+      "path": "",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.superlawyers.com",
+      "domain": "www.superlawyers.com",
+      "path": "",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.superlawyers.com/",
+      "domain": "www.superlawyers.com",
+      "path": "/",
+      "is_root": true,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.britannica.com/topic/lawyer",
+      "domain": "www.britannica.com",
+      "path": "/topic/lawyer",
+      "is_root": false,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.justia.com/lawyers",
+      "domain": "www.justia.com",
+      "path": "/lawyers",
+      "is_root": false,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.lawyers.com/find-a-lawyer/",
+      "domain": "www.lawyers.com",
+      "path": "/find-a-lawyer/",
+      "is_root": false,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.avvo.com/find-a-lawyer",
+      "domain": "www.avvo.com",
+      "path": "/find-a-lawyer",
+      "is_root": false,
+      "tld": "com",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.avvo.com \u203a find-a-lawyer",
+      "domain": "www.avvo.com \u203a find-a-lawyer",
+      "path": "",
+      "is_root": true,
+      "tld": "com \u203a find-a-lawyer",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.lawyers.com \u203a find-a-lawyer",
+      "domain": "www.lawyers.com \u203a find-a-lawyer",
+      "path": "",
+      "is_root": true,
+      "tld": "com \u203a find-a-lawyer",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.britannica.com \u203a topic \u203a lawyer",
+      "domain": "www.britannica.com \u203a topic \u203a lawyer",
+      "path": "",
+      "is_root": true,
+      "tld": "com \u203a topic \u203a lawyer",
+      "subdomain": "www"
+    },
+    {
+      "url": "https://www.justia.com \u203a lawyers",
+      "domain": "www.justia.com \u203a lawyers",
+      "path": "",
+      "is_root": true,
+      "tld": "com \u203a lawyers",
+      "subdomain": "www"
+    }
+  ],
+  "timestamp": 1755821875.4995472,
+  "pipeline_working": true
+}

@@ -1,0 +1,67 @@
+REAL LEAD EXTRACTION TEST REPORT
+==================================================
+Test Duration: 2.84 seconds
+Timestamp: 2025-08-21 12:45:35
+
+1. BING SEARCH TEST
+Status: success
+Results Found: 5
+
+2. WEBSITE EXTRACTION TESTS
+URLs Tested: 5
+Successful Extractions: 5
+
+Extracted Data Summary:
+  URL 1: https://www.bing.com/ck/a?!&&p=80b9091cbc26c88d325...
+    Business: Bing
+    Emails: 0
+    Phones: 0
+    Names: 0
+    Lead Score: 0.00
+
+  URL 2: https://www.bing.com/ck/a?!&&p=86e55394b9140a769e3...
+    Business: Bing
+    Emails: 0
+    Phones: 0
+    Names: 0
+    Lead Score: 0.00
+
+  URL 3: https://www.bing.com/ck/a?!&&p=ae614d552887664c743...
+    Business: Bing
+    Emails: 0
+    Phones: 0
+    Names: 0
+    Lead Score: 0.00
+
+  URL 4: https://httpbin.org/html...
+    Business: Herman Melville - Moby-Dick
+    Emails: 0
+    Phones: 0
+    Names: 0
+    Lead Score: 0.00
+
+  URL 5: https://example.com...
+    Business: Example Domain
+    Emails: 0
+    Phones: 0
+    Names: 0
+    Lead Score: 0.00
+
+3. LEAD QUALITY ANALYSIS
+Total Contacts: 5
+High Quality Leads: 0
+Actionable Leads: 0
+Average Emails per Contact: 0.0
+Average Phones per Contact: 0.0
+
+ISSUES FOUND
+  - No high-quality leads extracted
+  - No actionable leads extracted
+  - Low email extraction rate
+
+RECOMMENDATIONS
+  - Enhance lead scoring algorithm
+  - Improve business name extraction
+
+OVERALL ASSESSMENT
+Major issues found - pipeline requires significant fixes

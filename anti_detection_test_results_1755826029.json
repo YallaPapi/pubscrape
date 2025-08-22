@@ -1,0 +1,49 @@
+{
+  "timestamp": 1755826029,
+  "test_type": "anti_detection_bing_search",
+  "query": "lawyer Chicago",
+  "execution_time_seconds": 237.3144016265869,
+  "raw_results": {
+    "success": false,
+    "query": "lawyer Chicago",
+    "session_id": "anti_detection_test_1755825792",
+    "pages_retrieved": 0,
+    "total_pages_attempted": 1,
+    "total_time_seconds": 237.3144016265869,
+    "results": [
+      {
+        "query": "lawyer Chicago",
+        "url": "https://www.bing.com/",
+        "page_number": 1,
+        "success": false,
+        "html_file_path": null,
+        "response_time_ms": null,
+        "status_code": null,
+        "error_message": "CAPTCHA challenge could not be resolved",
+        "timestamp": 1755826028.9686723,
+        "session_id": "anti_detection_test_1755825792",
+        "proxy_used": null
+      }
+    ],
+    "html_files": [],
+    "summary": {
+      "success_rate": 0.0,
+      "avg_response_time_ms": null,
+      "errors_encountered": [
+        "CAPTCHA challenge could not be resolved"
+      ]
+    }
+  },
+  "analysis": {
+    "has_real_results": false,
+    "blocking_detected": false,
+    "captcha_detected": false,
+    "law_firm_count": 0,
+    "sample_urls": [],
+    "blocking_signals": [],
+    "captcha_types": []
+  },
+  "success": false,
+  "blocking_bypassed": true,
+  "captcha_handled": false
+}

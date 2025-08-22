@@ -230,6 +230,13 @@ class CSVValidationTool(BaseTool):
                     "overall_intelligence_score", "relevance_score", "popularity_score",
                     "authority_score", "content_quality_score", "guest_potential_score",
                     "contact_quality_score", "response_likelihood", "validation_status",
+                    
+                    # Email validation fields (Mailtester API)
+                    "email_validation_method", "mailtester_score", "mailtester_status",
+                    "mailtester_confidence_level", "is_disposable_email", "is_role_account",
+                    "smtp_verified", "is_catch_all_domain", "has_mx_records", "domain_exists",
+                    "smtp_can_connect", "smtp_accepts_mail", "deliverability_verified",
+                    
                     "estimated_downloads", "audience_size_category", "episode_count",
                     "rating", "host_authority_level", "platform_source",
                     "apple_podcasts_url", "spotify_url", "youtube_url",

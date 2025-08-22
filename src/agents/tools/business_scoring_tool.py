@@ -913,3 +913,335 @@ class BusinessScoringTool(BaseTool):
                 "processing_time_seconds": time.time() - start_time,
                 "partial_results": None
             }
+
+
+class EnhancedBusinessScoringTool(BaseTool):
+    """
+    Enhanced Agency Swarm tool for business website scoring with email validation integration.
+    
+    This tool combines traditional business scoring with Mailtester Ninja API validation results
+    to provide comprehensive lead quality assessment and prioritization.
+    """
+    
+    contact_data: List[Dict[str, Any]] = Field(
+        ...,
+        description="List of contact data dictionaries containing domain and email validation information"
+    )
+    
+    business_threshold: float = Field(
+        default=0.6,
+        description="Threshold score for classifying sites as business (0.0-1.0)"
+    )
+    
+    email_quality_weight: float = Field(
+        default=0.4,
+        description="Weight of email validation quality in final scoring (0.0-1.0)"
+    )
+    
+    prioritize_verified_emails: bool = Field(
+        default=True,
+        description="Whether to boost scores for SMTP-verified emails"
+    )
+    
+    penalty_for_disposable: float = Field(
+        default=0.3,
+        description="Score penalty for disposable email addresses"
+    )
+    
+    def run(self) -> Dict[str, Any]:
+        """
+        Run enhanced business scoring with email validation integration.
+        
+        Returns:
+            Dictionary containing enhanced scoring results and lead prioritization
+        """
+        start_time = time.time()
+        
+        logger.info(f"Starting enhanced business scoring for {len(self.contact_data)} contacts")
+        
+        try:
+            enhanced_results = []
+            
+            for contact in self.contact_data:
+                enhanced_score = self._calculate_enhanced_score(contact)
+                enhanced_results.append(enhanced_score)
+            
+            # Sort by priority score (highest first)
+            enhanced_results.sort(key=lambda x: x.get('final_priority_score', 0), reverse=True)
+            
+            # Categorize results by lead quality
+            lead_categories = self._categorize_leads(enhanced_results)
+            
+            # Calculate summary statistics
+            processing_time = time.time() - start_time
+            
+            logger.info(f"Enhanced business scoring completed in {processing_time:.2f}s")
+            
+            return {
+                "success": True,
+                "processing_summary": {
+                    "total_contacts": len(self.contact_data),
+                    "high_priority_leads": lead_categories['high_priority_count'],
+                    "medium_priority_leads": lead_categories['medium_priority_count'],
+                    "low_priority_leads": lead_categories['low_priority_count'],
+                    "verified_email_count": lead_categories['verified_email_count'],
+                    "disposable_email_count": lead_categories['disposable_email_count'],
+                    "processing_time_seconds": processing_time
+                },
+                "lead_prioritization": {
+                    "high_priority_leads": lead_categories['high_priority'],
+                    "medium_priority_leads": lead_categories['medium_priority'],
+                    "low_priority_leads": lead_categories['low_priority']
+                },
+                "enhanced_scoring_results": enhanced_results,
+                "configuration": {
+                    "business_threshold": self.business_threshold,
+                    "email_quality_weight": self.email_quality_weight,
+                    "prioritize_verified_emails": self.prioritize_verified_emails,
+                    "penalty_for_disposable": self.penalty_for_disposable
+                }
+            }
+            
+        except Exception as e:
+            logger.error(f"Error during enhanced business scoring: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "processing_time_seconds": time.time() - start_time
+            }
+    
+    def _calculate_enhanced_score(self, contact: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate enhanced business score incorporating email validation data"""
+        
+        # Extract key contact information
+        email = contact.get('host_email', contact.get('email', ''))
+        domain = contact.get('domain', email.split('@')[1] if '@' in email else '')
+        
+        # Base business scoring factors
+        base_business_score = self._calculate_base_business_score(contact, domain)
+        
+        # Email validation scoring
+        email_quality_score = self._calculate_email_quality_score(contact)
+        
+        # Combine scores with weighting
+        website_weight = 1.0 - self.email_quality_weight
+        final_score = (base_business_score * website_weight) + (email_quality_score * self.email_quality_weight)
+        
+        # Apply special bonuses and penalties
+        final_score = self._apply_scoring_adjustments(contact, final_score)
+        
+        # Ensure score is within bounds
+        final_score = max(0.0, min(1.0, final_score))
+        
+        # Calculate confidence level
+        confidence = self._calculate_confidence(contact, base_business_score, email_quality_score)
+        
+        # Determine lead priority category
+        priority_category = self._determine_priority_category(final_score, confidence, contact)
+        
+        return {
+            **contact,  # Preserve original contact data
+            'base_business_score': base_business_score,
+            'email_quality_score': email_quality_score,
+            'final_priority_score': final_score,
+            'confidence_level': confidence,
+            'priority_category': priority_category,
+            'scoring_breakdown': {
+                'website_component': base_business_score * website_weight,
+                'email_component': email_quality_score * self.email_quality_weight,
+                'is_verified_email': contact.get('smtp_verified', False),
+                'is_disposable': contact.get('is_disposable_email', False),
+                'is_role_account': contact.get('is_role_account', False),
+                'mailtester_score': contact.get('mailtester_score', 0.0)
+            }
+        }
+    
+    def _calculate_base_business_score(self, contact: Dict[str, Any], domain: str) -> float:
+        """Calculate base business score from contact and domain information"""
+        
+        score = 0.5  # Base score
+        
+        # Domain type indicators
+        if self._is_business_domain(domain):
+            score += 0.2
+        elif self._is_personal_domain(domain):
+            score -= 0.1
+        
+        # Title/role indicators
+        title = contact.get('title', '').lower()
+        executive_titles = ['ceo', 'founder', 'president', 'director', 'vp', 'vice president', 'chief', 'head', 'owner']
+        if any(exec_title in title for exec_title in executive_titles):
+            score += 0.25
+        
+        # Company information
+        company = contact.get('company', '')
+        if company and len(company) > 3:
+            score += 0.15
+        
+        # Website quality indicators
+        website = contact.get('website', contact.get('podcast_website', ''))
+        if website and website.startswith('http'):
+            score += 0.1
+        
+        # Contact page availability
+        if contact.get('contact_page_url', '') or contact.get('contact_forms_available', False):
+            score += 0.1
+        
+        return max(0.0, min(1.0, score))
+    
+    def _calculate_email_quality_score(self, contact: Dict[str, Any]) -> float:
+        """Calculate email quality score from Mailtester validation data"""
+        
+        # Start with Mailtester score if available
+        base_score = contact.get('mailtester_score', 0.5)
+        
+        # Apply validation-based adjustments
+        if contact.get('smtp_verified', False):
+            base_score += 0.2  # Verified emails are highly valuable
+        
+        if contact.get('is_role_account', False) and not contact.get('is_disposable_email', False):
+            base_score += 0.15  # Business role accounts are valuable
+        
+        if contact.get('is_disposable_email', False):
+            base_score -= self.penalty_for_disposable  # Heavily penalize disposable emails
+        
+        if contact.get('is_catch_all_domain', False):
+            base_score -= 0.1  # Catch-all domains are less reliable
+        
+        # Domain existence and MX records
+        if contact.get('has_mx_records', False) and contact.get('domain_exists', False):
+            base_score += 0.1
+        
+        # SMTP connectivity
+        if contact.get('smtp_can_connect', False):
+            base_score += 0.05
+        
+        # Validation method bonus (API validation is preferred)
+        if contact.get('email_validation_method') == 'Mailtester Ninja API':
+            base_score += 0.05
+        
+        return max(0.0, min(1.0, base_score))
+    
+    def _apply_scoring_adjustments(self, contact: Dict[str, Any], score: float) -> float:
+        """Apply final scoring adjustments based on special conditions"""
+        
+        # Bonus for SMTP-verified business contacts
+        if (self.prioritize_verified_emails and 
+            contact.get('smtp_verified', False) and 
+            contact.get('is_role_account', False) and 
+            not contact.get('is_disposable_email', False)):
+            score += 0.1
+        
+        # Penalty for multiple risk factors
+        risk_factors = sum([
+            contact.get('is_disposable_email', False),
+            contact.get('is_catch_all_domain', False),
+            not contact.get('has_mx_records', True),
+            not contact.get('domain_exists', True)
+        ])
+        
+        if risk_factors >= 2:
+            score -= 0.15  # Multiple risk factors compound
+        
+        # Bonus for high-confidence Mailtester results
+        if contact.get('mailtester_confidence_level') == 'high':
+            score += 0.05
+        
+        return score
+    
+    def _calculate_confidence(self, contact: Dict[str, Any], business_score: float, email_score: float) -> float:
+        """Calculate overall confidence in the lead quality assessment"""
+        
+        confidence = 0.5  # Base confidence
+        
+        # Email validation confidence
+        if contact.get('email_validation_method') == 'Mailtester Ninja API':
+            confidence += 0.2
+        
+        if contact.get('smtp_verified', False):
+            confidence += 0.2
+        
+        # Business information completeness
+        info_completeness = sum([
+            bool(contact.get('company')),
+            bool(contact.get('title')),
+            bool(contact.get('website', contact.get('podcast_website', ''))),
+            bool(contact.get('contact_page_url'))
+        ]) / 4.0
+        
+        confidence += info_completeness * 0.3
+        
+        # Score consistency
+        score_difference = abs(business_score - email_score)
+        if score_difference < 0.2:  # Scores are consistent
+            confidence += 0.1
+        
+        return max(0.0, min(1.0, confidence))
+    
+    def _determine_priority_category(self, score: float, confidence: float, contact: Dict[str, Any]) -> str:
+        """Determine lead priority category"""
+        
+        # High priority: High score with high confidence OR verified business email
+        if ((score >= 0.75 and confidence >= 0.7) or 
+            (contact.get('smtp_verified', False) and 
+             contact.get('is_role_account', False) and 
+             not contact.get('is_disposable_email', False) and
+             score >= 0.6)):
+            return 'high'
+        
+        # Medium priority: Good score OR verified email
+        elif (score >= 0.5 and confidence >= 0.5) or contact.get('smtp_verified', False):
+            return 'medium'
+        
+        # Low priority: Everything else
+        else:
+            return 'low'
+    
+    def _categorize_leads(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Categorize leads by priority and calculate statistics"""
+        
+        categories = {
+            'high_priority': [],
+            'medium_priority': [],
+            'low_priority': [],
+            'high_priority_count': 0,
+            'medium_priority_count': 0,
+            'low_priority_count': 0,
+            'verified_email_count': 0,
+            'disposable_email_count': 0
+        }
+        
+        for result in results:
+            priority = result.get('priority_category', 'low')
+            
+            categories[f'{priority}_priority'].append(result)
+            categories[f'{priority}_priority_count'] += 1
+            
+            if result.get('smtp_verified', False):
+                categories['verified_email_count'] += 1
+            
+            if result.get('is_disposable_email', False):
+                categories['disposable_email_count'] += 1
+        
+        return categories
+    
+    def _is_business_domain(self, domain: str) -> bool:
+        """Check if domain appears to be business-oriented"""
+        business_indicators = [
+            'corp', 'inc', 'ltd', 'llc', 'company', 'enterprises',
+            'group', 'solutions', 'consulting', 'services', 'tech',
+            'digital', 'agency', 'partners', 'business'
+        ]
+        
+        domain_lower = domain.lower()
+        return any(indicator in domain_lower for indicator in business_indicators)
+    
+    def _is_personal_domain(self, domain: str) -> bool:
+        """Check if domain is a personal email provider"""
+        personal_domains = {
+            'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+            'aol.com', 'icloud.com', 'me.com', 'protonmail.com',
+            'tutanota.com', 'fastmail.com', 'zoho.com', 'yandex.com',
+            'mail.com', 'gmx.com', 'web.de', 'live.com', 'msn.com'
+        }
+        return domain.lower() in personal_domains

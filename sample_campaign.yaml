@@ -1,44 +1,37 @@
-name: "Multi-Vertical Contact Discovery Campaign"
-description: "Comprehensive contact discovery campaign targeting restaurants and law firms"
-vertical: "restaurants"
-service_terms:
-  - "restaurant"
-  - "cafe"
-  - "bistro"
-  - "diner"
-query_templates:
-  - "{service_type} {city} contact"
-  - "{service_type} {city} owner email"
-  - "{service_type} {city} manager phone"
-  - "restaurant {city} {state} contact information"
-cities:
-  - "New York"
-  - "Los Angeles"
-  - "Chicago"
-  - "Houston"
-  - "Phoenix"
-  - "Philadelphia"
-  - "San Antonio"
-  - "San Diego"
-  - "Dallas"
-  - "San Jose"
-states:
-  - "CA"
-  - "NY"
-  - "TX"
-  - "FL"
-  - "IL"
-max_queries_per_template: 25
-priority_filter: 1
-intent_filters:
-  - "contact_discovery"
-  - "email_finding"
-exclusions:
-  - "spam"
-  - "scam"
-  - "fake"
-metadata:
-  created_by: "query_builder_system"
-  version: "1.0"
-  target_audience: "restaurant_owners"
-  campaign_type: "contact_discovery"
+business_types:
+- optometry
+- eye care
+- vision
+- ophthalmology
+country_code: US
+csv_filename: ''
+description: Lead generation for optometrists in Atlanta area
+enable_dns_checking: false
+enable_email_validation: true
+exclude_keywords:
+- yelp
+- reviews
+- directory
+- wikipedia
+headless_mode: true
+include_report: true
+language: en
+location: Atlanta, GA
+max_concurrent_extractions: 3
+max_leads_per_query: 25
+max_pages_per_query: 3
+max_retries: 2
+min_business_score: 0.5
+min_email_confidence: 0.6
+name: optometrist_atlanta_campaign
+output_directory: campaign_output
+request_delay_seconds: 2.5
+search_engine: bing
+search_queries:
+- optometrist Atlanta
+- eye doctor Atlanta
+- vision care Atlanta
+- ophthalmologist Atlanta
+timeout_seconds: 20
+use_residential_proxies: false
+use_rotating_user_agents: true

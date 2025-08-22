@@ -1,0 +1,112 @@
+[
+  {
+    "title": "wikipedia.orghttps://en.m.wikipedia.org \u203a wiki \u203a Lawyer",
+    "url": "https://en.m.wikipedia.org/wiki/Lawyer",
+    "description": "A lawyer is a person who is qualified to offer advice about the law, draft legal documents, or represent individuals in legal matters. The exact nature of a lawyer's work varies depending on \u2026",
+    "domain": "en.m.wikipedia.org",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 2,
+    "is_excluded": false,
+    "position": 1,
+    "is_decoded": true
+  },
+  {
+    "title": "lawyers.comhttps://www.lawyers.com",
+    "url": "https://www.lawyers.com/",
+    "description": "Find the right lawyer for your legal issue. Get free legal information. Ask lawyers for advice. Solve your legal problem.",
+    "domain": "www.lawyers.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 2,
+    "is_excluded": false,
+    "position": 2,
+    "is_decoded": true
+  },
+  {
+    "title": "britannica.comhttps://www.britannica.com \u203a topic \u203a lawyer",
+    "url": "https://www.britannica.com/topic/lawyer",
+    "description": "Jul 19, 2025\u00b7 Lawyer, one trained and licensed to prepare, manage, and either prosecute or defend a court action as an agent for another and who also gives advice on legal matters that \u2026",
+    "domain": "www.britannica.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 2,
+    "is_excluded": false,
+    "position": 3,
+    "is_decoded": true
+  },
+  {
+    "title": "findlaw.comhttps://lawyers.findlaw.com",
+    "url": "https://lawyers.findlaw.com/",
+    "description": "Find a lawyer with the FindLaw Lawyer Directory - the largest US Legal Directory to search for attorneys and law firms near you.",
+    "domain": "lawyers.findlaw.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 4,
+    "is_excluded": false,
+    "position": 4,
+    "is_decoded": true
+  },
+  {
+    "title": "avvo.comhttps://www.avvo.com \u203a find-a-lawyer",
+    "url": "https://www.avvo.com/find-a-lawyer",
+    "description": "Find the best lawyers in your area by practice area. Read client reviews and peer endorsements. See the Avvo Rating and contact info.",
+    "domain": "www.avvo.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 2,
+    "is_excluded": false,
+    "position": 5,
+    "is_decoded": true
+  },
+  {
+    "title": "justia.comhttps://www.justia.com \u203a lawyers",
+    "url": "https://www.justia.com/lawyers",
+    "description": "Justia Lawyer Directory The Justia Lawyer Directory provides lawyer, legal aid & services profiles by practice area and location. Whatever your legal issue, our lawyer directory will simplify \u2026",
+    "domain": "www.justia.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 3,
+    "is_excluded": false,
+    "position": 6,
+    "is_decoded": true
+  },
+  {
+    "title": "legalmatch.comhttps://www.legalmatch.com",
+    "url": "https://www.legalmatch.com/",
+    "description": "Don't Just Find a Lawyer \u2010 Find the Right Lawyer When you need to find a lawyer, our no\u2010cost system provides you with access to pre\u2010screened lawyers through a quick and painless \u2026",
+    "domain": "www.legalmatch.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 2,
+    "is_excluded": false,
+    "position": 7,
+    "is_decoded": true
+  },
+  {
+    "title": "superlawyers.comhttps://www.superlawyers.com",
+    "url": "https://www.superlawyers.com/",
+    "description": "Super Lawyers provides lawyer ratings of selected lawyers and helps you find the rated lawyer / attorneys in your location focused on all legal issues",
+    "domain": "www.superlawyers.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 3,
+    "is_excluded": false,
+    "position": 8,
+    "is_decoded": true
+  },
+  {
+    "title": "martindale.comhttps://www.martindale.com",
+    "url": "https://www.martindale.com/",
+    "description": "Locate and connect with attorneys, read attorney's peer & client reviews, and find fellow graduates and alumni from your law school.",
+    "domain": "www.martindale.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 1,
+    "is_excluded": false,
+    "position": 9,
+    "is_decoded": true
+  },
+  {
+    "title": "lawyers.comhttps://www.lawyers.com \u203a find-a-lawyer",
+    "url": "https://www.lawyers.com/find-a-lawyer/",
+    "description": "Why Use Lawyers.com to Find a Lawyer? Lawyers.com is an excellent starting point as you look to find a successful resolution to your legal challenge. We make it easy to search for attorneys \u2026",
+    "domain": "www.lawyers.com",
+    "is_lawyer_relevant": true,
+    "lawyer_indicators": 3,
+    "is_excluded": false,
+    "position": 10,
+    "is_decoded": true
+  }
+]

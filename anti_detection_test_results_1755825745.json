@@ -1,0 +1,49 @@
+{
+  "timestamp": 1755825745,
+  "test_type": "anti_detection_bing_search",
+  "query": "lawyer Chicago",
+  "execution_time_seconds": 0.0009975433349609375,
+  "raw_results": {
+    "success": false,
+    "query": "lawyer Chicago",
+    "session_id": "anti_detection_test_1755825745",
+    "pages_retrieved": 0,
+    "total_pages_attempted": 1,
+    "total_time_seconds": 0.0,
+    "results": [
+      {
+        "query": "lawyer Chicago",
+        "url": "unknown",
+        "page_number": 1,
+        "success": false,
+        "html_file_path": null,
+        "response_time_ms": null,
+        "status_code": null,
+        "error_message": "Botasaurus execution failed: browser() got an unexpected keyword argument 'block_css'",
+        "timestamp": 1755825745.0372405,
+        "session_id": "anti_detection_test_1755825745",
+        "proxy_used": null
+      }
+    ],
+    "html_files": [],
+    "summary": {
+      "success_rate": 0.0,
+      "avg_response_time_ms": null,
+      "errors_encountered": [
+        "Botasaurus execution failed: browser() got an unexpected keyword argument 'block_css'"
+      ]
+    }
+  },
+  "analysis": {
+    "has_real_results": false,
+    "blocking_detected": false,
+    "captcha_detected": false,
+    "law_firm_count": 0,
+    "sample_urls": [],
+    "blocking_signals": [],
+    "captcha_types": []
+  },
+  "success": false,
+  "blocking_bypassed": true,
+  "captcha_handled": false
+}

@@ -1,0 +1,42 @@
+{
+  "csv_file": "test_output\\test_campaign_20250821_140034.csv",
+  "total_leads": 0,
+  "campaign_config": {
+    "name": "test_campaign",
+    "description": "Test campaign to verify system functionality",
+    "search_queries": [
+      "optometrist Atlanta"
+    ],
+    "max_leads_per_query": 5,
+    "max_pages_per_query": 1,
+    "search_engine": "bing",
+    "location": "Atlanta",
+    "country_code": "US",
+    "language": "en",
+    "business_types": [],
+    "exclude_keywords": [],
+    "min_business_score": 0.4,
+    "enable_email_validation": true,
+    "enable_dns_checking": false,
+    "min_email_confidence": 0.5,
+    "output_directory": "test_output",
+    "csv_filename": "test_campaign_20250821_140034.csv",
+    "include_report": true,
+    "max_concurrent_extractions": 3,
+    "request_delay_seconds": 1.0,
+    "timeout_seconds": 10,
+    "max_retries": 2,
+    "use_rotating_user_agents": true,
+    "use_residential_proxies": false,
+    "headless_mode": true
+  },
+  "statistics": {
+    "campaign_start_time": 1755799232.7655637,
+    "queries_processed": 1,
+    "urls_discovered": 3,
+    "leads_extracted": 0,
+    "leads_validated": 0,
+    "final_leads": 0,
+    "errors": 0
+  }
+}

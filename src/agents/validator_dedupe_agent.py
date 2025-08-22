@@ -282,8 +282,8 @@ class EmailSyntaxValidator:
             is_business_domain = self._is_business_domain(domain)
             is_personal_domain = self._is_personal_domain(domain)
             
-            # Calculate quality score
-            quality, confidence = self._assess_email_quality(normalized_email, domain)
+            # Calculate quality score (no Mailtester data available in syntax-only validation)
+            quality, confidence = self._assess_email_quality(normalized_email, domain, mailtester_data=None)
             
             validation_time = (time.time() - start_time) * 1000
             
@@ -360,72 +360,135 @@ class EmailSyntaxValidator:
         
         return domain.lower() in personal_domains
     
-    def _assess_email_quality(self, email: str, domain: str) -> Tuple[EmailQuality, float]:
-        """Assess email quality and confidence"""
+    def _assess_email_quality(self, email: str, domain: str, mailtester_data: Optional[Dict[str, Any]] = None) -> Tuple[EmailQuality, float]:
+        """
+        Assess email quality and confidence, incorporating Mailtester API results when available.
+        
+        Args:
+            email: Email address to assess
+            domain: Domain part of the email
+            mailtester_data: Optional Mailtester validation results
+            
+        Returns:
+            Tuple of (EmailQuality, confidence_score)
+        """
         email_lower = email.lower()
         local_part = email_lower.split('@')[0]
         
-        confidence = 0.5  # Base confidence
+        # Start with Mailtester score if available, otherwise use base confidence
+        if mailtester_data and 'mailtester_score' in mailtester_data:
+            confidence = mailtester_data['mailtester_score']
+            
+            # Apply Mailtester-specific adjustments
+            if mailtester_data.get('is_disposable', False):
+                confidence = max(0.0, confidence - 0.4)
+            
+            if mailtester_data.get('is_role_account', False) and not mailtester_data.get('is_disposable', False):
+                confidence = min(1.0, confidence + 0.15)  # Business role accounts are valuable
+            
+            if mailtester_data.get('smtp_verified', False):
+                confidence = min(1.0, confidence + 0.2)  # SMTP verification is highly valuable
+            
+            if mailtester_data.get('is_catch_all', False):
+                confidence = max(0.0, confidence - 0.1)  # Catch-all domains are less reliable
+                
+            # Additional bonus for domain existence and MX records
+            if mailtester_data.get('has_mx_records', False) and mailtester_data.get('domain_exists', False):
+                confidence = min(1.0, confidence + 0.1)
+        else:
+            # Fallback to traditional pattern-based scoring
+            confidence = 0.5  # Base confidence
+            
+            # High-quality indicators
+            high_quality_patterns = [
+                r'^(ceo|founder|president|director|manager|lead|head|chief|owner)@',
+                r'^(contact|business|sales|marketing|pr|press|media)@',
+                r'^[a-z]+\.[a-z]+@',  # firstname.lastname format
+            ]
+            
+            for pattern in high_quality_patterns:
+                if re.match(pattern, email_lower):
+                    confidence += 0.3
+                    break
+            
+            # Medium-quality patterns
+            medium_quality_patterns = [
+                r'^(info|hello|team|support|admin|hr)@',
+                r'^[a-z]+@',  # Simple name
+            ]
+            
+            for pattern in medium_quality_patterns:
+                if re.match(pattern, email_lower):
+                    confidence += 0.1
+                    break
+            
+            # Low-quality/spam patterns (penalties)
+            spam_patterns = [
+                r'^(noreply|no-reply|donotreply|test|testing|example)@',
+                r'^(webmaster|postmaster|administrator|root)@',
+            ]
+            
+            for pattern in spam_patterns:
+                if re.match(pattern, email_lower):
+                    confidence -= 0.4
+                    break
+            
+            # Domain type adjustments
+            if self._is_business_domain(domain):
+                confidence += 0.2
+            elif self._is_personal_domain(domain):
+                confidence -= 0.1
+            
+            # Format bonuses
+            if '.' in local_part:
+                confidence += 0.1  # firstname.lastname format
+            
+            if len(local_part) >= 4:  # Not too short
+                confidence += 0.05
         
-        # High-quality indicators
-        high_quality_patterns = [
-            r'^(ceo|founder|president|director|manager|lead|head|chief|owner)@',
-            r'^(contact|business|sales|marketing|pr|press|media)@',
-            r'^[a-z]+\.[a-z]+@',  # firstname.lastname format
+        # Universal pattern bonuses (apply regardless of validation method)
+        # Executive/decision maker patterns
+        executive_patterns = [
+            r'(ceo|founder|president|director|vp|vice.?president)',
+            r'(chief|head|lead|manager|owner)',
+            r'(partner|principal|senior|sr\.?)'
         ]
         
-        for pattern in high_quality_patterns:
-            if re.match(pattern, email_lower):
-                confidence += 0.3
+        for pattern in executive_patterns:
+            if re.search(pattern, local_part, re.IGNORECASE):
+                confidence = min(1.0, confidence + 0.1)
                 break
         
-        # Medium-quality patterns
-        medium_quality_patterns = [
-            r'^(info|hello|team|support|admin|hr)@',
-            r'^[a-z]+@',  # Simple name
-        ]
-        
-        for pattern in medium_quality_patterns:
-            if re.match(pattern, email_lower):
-                confidence += 0.1
-                break
-        
-        # Low-quality/spam patterns (penalties)
-        spam_patterns = [
-            r'^(noreply|no-reply|donotreply|test|testing|example)@',
-            r'^(webmaster|postmaster|administrator|root)@',
-        ]
-        
-        for pattern in spam_patterns:
-            if re.match(pattern, email_lower):
-                confidence -= 0.4
-                break
-        
-        # Domain type adjustments
-        if self._is_business_domain(domain):
-            confidence += 0.2
-        elif self._is_personal_domain(domain):
-            confidence -= 0.1
-        
-        # Format bonuses
-        if '.' in local_part:
-            confidence += 0.1  # firstname.lastname format
-        
-        if len(local_part) >= 4:  # Not too short
-            confidence += 0.05
+        # Professional format bonuses
+        if re.match(r'^[a-z]+\.[a-z]+$', local_part):  # firstname.lastname
+            confidence = min(1.0, confidence + 0.05)
+        elif re.match(r'^[a-z][a-z]+$', local_part) and len(local_part) >= 4:  # reasonable name length
+            confidence = min(1.0, confidence + 0.02)
         
         # Ensure confidence is within bounds
         confidence = max(0.0, min(1.0, confidence))
         
-        # Determine quality level
-        if confidence >= 0.7:
-            quality = EmailQuality.HIGH
-        elif confidence >= 0.4:
-            quality = EmailQuality.MEDIUM
-        elif confidence >= 0.1:
-            quality = EmailQuality.LOW
+        # Determine quality level with enhanced thresholds for API-validated emails
+        if mailtester_data:
+            # Use enhanced thresholds when we have API validation
+            if confidence >= 0.75:
+                quality = EmailQuality.HIGH
+            elif confidence >= 0.45:
+                quality = EmailQuality.MEDIUM
+            elif confidence >= 0.15:
+                quality = EmailQuality.LOW
+            else:
+                quality = EmailQuality.SPAM
         else:
-            quality = EmailQuality.SPAM
+            # Use traditional thresholds for fallback validation
+            if confidence >= 0.7:
+                quality = EmailQuality.HIGH
+            elif confidence >= 0.4:
+                quality = EmailQuality.MEDIUM
+            elif confidence >= 0.1:
+                quality = EmailQuality.LOW
+            else:
+                quality = EmailQuality.SPAM
         
         return quality, confidence
 
@@ -1147,13 +1210,24 @@ class ValidatorDedupeAgent(Agent):
         return ordered_results
     
     def _validate_single_email(self, email: str, contact_data: Optional[Dict[str, Any]] = None) -> ValidationResult:
-        """Validate a single email address"""
+        """Validate a single email address, with optional Mailtester API integration"""
+        
+        # Check if contact_data contains Mailtester validation results
+        mailtester_data = None
+        if contact_data and any(key.startswith('mailtester_') for key in contact_data.keys()):
+            mailtester_data = contact_data
+        
         # Step 1: Syntax validation
         result = self.syntax_validator.validate_syntax(email)
         
+        # If we have Mailtester data, enhance the result with API insights
+        if result.is_valid and mailtester_data:
+            result = self._enhance_with_mailtester_data(result, mailtester_data)
+        
         if result.is_valid:
-            # Step 2: DNS validation (if enabled)
-            result = self.dns_validator.validate_domain(result.domain, result)
+            # Step 2: DNS validation (if enabled and no API data available)
+            if not mailtester_data:  # Skip DNS check if we have API data
+                result = self.dns_validator.validate_domain(result.domain, result)
             
             if result.is_valid:
                 # Step 3: Blacklist filtering
@@ -1167,6 +1241,55 @@ class ValidatorDedupeAgent(Agent):
         
         # Record for reporting
         self.reporter.record_validation(result)
+        
+        return result
+    
+    def _enhance_with_mailtester_data(self, result: ValidationResult, mailtester_data: Dict[str, Any]) -> ValidationResult:
+        """Enhance ValidationResult with Mailtester API data"""
+        
+        # Re-assess quality using Mailtester data
+        quality, confidence = self.syntax_validator._assess_email_quality(
+            result.email, result.domain, mailtester_data
+        )
+        
+        # Update the result with enhanced information
+        result.quality = quality
+        result.confidence_score = confidence
+        
+        # Update validation status based on Mailtester results
+        mailtester_status = mailtester_data.get('mailtester_status', 'unknown')
+        if mailtester_status in ['valid', 'risky', 'catch_all']:
+            result.is_valid = True
+            result.status = ValidationStatus.VALID
+        elif mailtester_status == 'invalid':
+            result.is_valid = False
+            result.status = ValidationStatus.INVALID_DOMAIN
+        
+        # Enhance reason with API insights
+        api_reasons = []
+        if mailtester_data.get('is_disposable', False):
+            api_reasons.append("disposable email provider")
+        if mailtester_data.get('is_catch_all', False):
+            api_reasons.append("catch-all domain")
+        if not mailtester_data.get('smtp_verified', True):
+            api_reasons.append("SMTP unverified")
+        if mailtester_data.get('is_role_account', False):
+            api_reasons.append("role account")
+        
+        if api_reasons:
+            enhanced_reason = f"{result.reason} (API: {', '.join(api_reasons)})"
+        else:
+            enhanced_reason = f"{result.reason} (API verified)"
+        
+        result.reason = enhanced_reason
+        
+        # Update domain classification based on API data
+        if mailtester_data.get('is_role_account', False) and not mailtester_data.get('is_disposable', False):
+            result.is_business_domain = True
+            result.is_personal_domain = False
+        elif mailtester_data.get('is_disposable', False):
+            result.is_business_domain = False
+            result.is_personal_domain = True
         
         return result
     

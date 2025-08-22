@@ -20,12 +20,11 @@ from pydantic import Field
 
 # Optional import for Botasaurus - will work in mock mode if not available
 try:
-    from botasaurus import browser, Request
+    from botasaurus.browser import browser
     BOTASAURUS_AVAILABLE = True
 except ImportError:
     BOTASAURUS_AVAILABLE = False
     browser = None
-    Request = None
 
 # Import project infrastructure
 try:
@@ -209,7 +208,7 @@ class BingSearchTool(BaseTool):
             browser_options = self._get_botasaurus_options(session_id)
             
             @browser(**browser_options)
-            def search_bing(request: Request, data):
+            def search_bing(driver, data):
                 """Botasaurus function to search Bing"""
                 page_results = []
                 query = data['query']
@@ -217,27 +216,61 @@ class BingSearchTool(BaseTool):
                 session_id = data['session_id']
                 
                 try:
-                    # Navigate to Bing
-                    driver = request.driver
-                    bing_url = "https://www.bing.com"
+                    # Enhanced navigation with human behavior simulation
                     
-                    logger.debug(f"Navigating to {bing_url}")
-                    driver.get(bing_url)
+                    # First, visit Bing homepage to establish session
+                    logger.debug("Establishing session on Bing homepage")
+                    driver.get("https://www.bing.com")
                     
-                    # Human-like delay after page load
-                    self._human_delay(driver, "navigation")
-                    
-                    # Find search box and enter query
-                    search_box = driver.find_element("name", "q")
-                    if not search_box:
-                        raise Exception("Could not find Bing search box")
-                    
-                    # Clear any existing text and type query with human-like timing
-                    search_box.clear()
-                    self._human_type(search_box, query)
-                    
-                    # Submit search
-                    search_box.submit()
+                    # Simulate human session start behavior
+                    try:
+                        from bing_scraper.src.anti_detection.delays import HumanLikeDelays
+                        from bing_scraper.src.anti_detection.captcha_handler import CaptchaHandler
+                        
+                        delays = HumanLikeDelays(type('Settings', (), {
+                            'base_delay_seconds': 3.0
+                        })())
+                        
+                        captcha_handler = CaptchaHandler(type('Settings', (), {})())
+                        
+                        # Simulate human session start
+                        delays.simulate_human_session_start(driver)
+                        
+                        # Check for CAPTCHA on homepage
+                        captcha_info = captcha_handler.detect_captcha(driver)
+                        if captcha_info:
+                            logger.warning(f"CAPTCHA detected on homepage: {captcha_info['type']}")
+                            if not captcha_handler.handle_captcha(driver, captcha_info):
+                                # CAPTCHA couldn't be handled, need session rotation
+                                raise Exception("CAPTCHA challenge could not be resolved")
+                        
+                        # Navigate to search with query (more human-like)
+                        search_url = f"https://www.bing.com/search?q={query.replace(' ', '+')}"
+                        logger.debug(f"Navigating to search URL: {search_url}")
+                        
+                        # Simulate search behavior
+                        delays.simulate_search_behavior(driver, query)
+                        
+                        # Navigate to search results
+                        driver.get(search_url)
+                        
+                        # Execute stealth JavaScript to mask automation
+                        self._execute_stealth_scripts(driver)
+                        
+                        # Wait with human-like delays
+                        delays.page_load_delay()
+                        
+                        # Check for CAPTCHA on search results
+                        captcha_info = captcha_handler.detect_captcha(driver)
+                        if captcha_info:
+                            logger.warning(f"CAPTCHA detected on search results: {captcha_info['type']}")
+                            if not captcha_handler.handle_captcha(driver, captcha_info):
+                                raise Exception("Search blocked by CAPTCHA")
+                        
+                    except ImportError:
+                        # Fallback if anti-detection modules not available
+                        logger.warning("Anti-detection modules not available, using basic delays")
+                        driver.sleep(5)
                     
                     # Process each page
                     for page_num in range(1, max_pages + 1):
@@ -274,7 +307,7 @@ class BingSearchTool(BaseTool):
                     )
                     page_results.append(error_result)
                 
-                return page_results
+                return [asdict(result) for result in page_results]
             
             # Execute the search
             search_data = {
@@ -283,7 +316,12 @@ class BingSearchTool(BaseTool):
                 'session_id': session_id
             }
             
-            results = search_bing(data=search_data)
+            result_dicts = search_bing(data=search_data)
+            
+            # Convert back to SearchResult objects
+            results = []
+            for result_dict in result_dicts:
+                results.append(SearchResult(**result_dict))
             
         except Exception as e:
             logger.error(f"Botasaurus execution failed: {str(e)}")
@@ -368,53 +406,183 @@ class BingSearchTool(BaseTool):
             return None
     
     def _get_botasaurus_options(self, session_id: str) -> Dict[str, Any]:
-        """Get Botasaurus browser configuration options"""
+        """Get advanced Botasaurus browser configuration with enhanced stealth."""
+        
+        # Simplified anti-detection options for Botasaurus
         options = {
-            'headless': True,
-            'block_images': True,
-            'block_css': True,
-            'stealth': True,
-            'user_agent_rotation': True,
+            # Core browser settings
+            'headless': False,  # Visible browser appears more human
             'profile': f"bing_session_{session_id}",
-            'page_load_strategy': 'eager'
+            'wait_for_complete_page_load': True,
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
         }
         
-        # Add proxy if available and preferred
+        # Add proxy configuration if available and preferred
         if self.proxy_preference != "none" and self._anti_detection:
-            # Get proxy from anti-detection supervisor if available
             try:
-                session_config = self._anti_detection.create_session(session_id, "bing.com")
-                if session_config.get("proxy"):
-                    proxy_info = session_config["proxy"]
-                    if proxy_info.get("proxy_url"):
-                        options['proxy'] = proxy_info["proxy_url"]
-                        logger.debug(f"Using proxy: {proxy_info.get('host', 'unknown')}")
+                # Enhanced anti-detection with session management
+                from bing_scraper.src.anti_detection.manager import AntiDetectionManager
+                anti_detection = AntiDetectionManager(type('Settings', (), {
+                    'headless_mode': False,
+                    'user_agent_rotation': True,
+                    'proxy_enabled': True,
+                    'block_images': False,
+                    'block_css': False,
+                    'block_js': False,
+                    'base_delay_seconds': 3.0
+                })())
+                
+                config = anti_detection.get_browser_config(session_id)
+                
+                # Update options with anti-detection config
+                if config.get('user_agent'):
+                    options['user_agent'] = config['user_agent']
+                if config.get('window_size'):
+                    options['window_size'] = config['window_size']
+                if config.get('proxy'):
+                    options['proxy'] = config['proxy']
+                    
+                logger.debug(f"Applied enhanced anti-detection config")
+                
             except Exception as e:
-                logger.warning(f"Could not configure proxy: {e}")
+                logger.warning(f"Could not apply enhanced anti-detection: {e}")
         
-        logger.debug(f"Botasaurus options: {options}")
+        logger.debug(f"Enhanced Botasaurus options configured for session {session_id}")
         return options
     
+    def _execute_stealth_scripts(self, driver):
+        """Execute JavaScript to enhance stealth and mask automation."""
+        try:
+            # Remove webdriver traces
+            driver.run_js("""
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined,
+                });
+            """)
+            
+            # Override automation detection
+            driver.run_js("""
+                window.chrome = {
+                    runtime: {}
+                };
+            """)
+            
+            # Override permissions API
+            driver.run_js("""
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                );
+            """)
+            
+            # Override plugins
+            driver.run_js("""
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5],
+                });
+            """)
+            
+            # Override languages
+            driver.run_js("""
+                Object.defineProperty(navigator, 'languages', {
+                    get: () => ['en-US', 'en'],
+                });
+            """)
+            
+            # Set realistic screen properties
+            driver.run_js("""
+                Object.defineProperty(screen, 'width', {
+                    get: () => 1920,
+                });
+                Object.defineProperty(screen, 'height', {
+                    get: () => 1080,
+                });
+                Object.defineProperty(screen, 'colorDepth', {
+                    get: () => 24,
+                });
+            """)
+            
+            logger.debug("Stealth scripts executed successfully")
+            
+        except Exception as e:
+            logger.warning(f"Failed to execute stealth scripts: {e}")
+    
     def _process_search_page(self, driver, query: str, page_num: int, session_id: str) -> SearchResult:
-        """Process a single search results page"""
+        """Process a single search results page with enhanced human behavior"""
         start_time = time.time()
         
         try:
-            # Wait for search results to load
+            # Wait for search results to load with human-like behavior
             self._wait_for_search_results(driver)
+            
+            # Simulate human reading behavior on search results
+            try:
+                from bing_scraper.src.anti_detection.delays import HumanLikeDelays
+                from bing_scraper.src.anti_detection.captcha_handler import CaptchaHandler
+                
+                delays = HumanLikeDelays(type('Settings', (), {
+                    'base_delay_seconds': 3.0
+                })())
+                
+                captcha_handler = CaptchaHandler(type('Settings', (), {})())
+                
+                # Simulate reading search results
+                delays.simulate_reading_behavior(driver, 'search_results')
+                
+                # Random mouse movements and scrolling
+                if random.random() < 0.7:  # 70% chance
+                    delays.simulate_mouse_movements(driver, random.randint(2, 4))
+                
+                if random.random() < 0.5:  # 50% chance  
+                    delays.simulate_scrolling(driver, 'scanning')
+                
+            except ImportError:
+                # Fallback without anti-detection
+                time.sleep(random.uniform(2.0, 5.0))
             
             # Get current URL and response details
             current_url = driver.current_url
+            page_source = driver.page_html
             
-            # Check for blocking signals in page content
-            page_source = driver.page_source
-            if self._detect_blocking_signals(page_source, current_url):
+            # Enhanced blocking signal detection
+            blocking_detected = False
+            
+            # Check for CAPTCHA first
+            try:
+                from bing_scraper.src.anti_detection.captcha_handler import CaptchaHandler
+                captcha_handler = CaptchaHandler(type('Settings', (), {})())
+                captcha_info = captcha_handler.detect_captcha(driver, page_source, current_url)
+                
+                if captcha_info:
+                    logger.warning(f"CAPTCHA detected during page processing: {captcha_info['type']}")
+                    blocking_detected = True
+                    error_message = f"CAPTCHA challenge detected: {captcha_info['type']}"
+                    
+                    # Try to handle CAPTCHA
+                    if captcha_handler.handle_captcha(driver, captcha_info):
+                        logger.info("CAPTCHA resolved, continuing...")
+                        blocking_detected = False
+                        # Re-get page content after CAPTCHA resolution
+                        page_source = driver.page_html
+                        current_url = driver.current_url
+                    else:
+                        error_message = f"CAPTCHA challenge could not be resolved: {captcha_info['type']}"
+                        
+            except ImportError:
+                # Fallback to basic blocking detection
+                if self._detect_blocking_signals(page_source, current_url):
+                    blocking_detected = True
+                    error_message = "Blocking signal detected in page content"
+            
+            if blocking_detected:
                 return SearchResult(
                     query=query,
                     url=current_url,
                     page_number=page_num,
                     success=False,
-                    error_message="Blocking signal detected in page content",
+                    error_message=error_message,
                     response_time_ms=(time.time() - start_time) * 1000,
                     session_id=session_id
                 )
@@ -457,8 +625,8 @@ class BingSearchTool(BaseTool):
     def _wait_for_search_results(self, driver, timeout: int = 10):
         """Wait for search results to load"""
         try:
-            # Wait for main search results container
-            driver.wait_for_element("#b_results", timeout=timeout)
+            # Wait for main search results container using correct API
+            driver.wait_for_element("#b_results", timeout)
             
             # Additional human-like delay
             self._human_delay(driver, "extraction")
@@ -478,23 +646,22 @@ class BingSearchTool(BaseTool):
                 "#ns a[aria-label*='page']"
             ]
             
-            next_link = None
+            next_link_found = False
             for selector in next_selectors:
                 try:
-                    next_link = driver.find_element("css", selector)
-                    if next_link and next_link.is_displayed():
+                    if driver.is_element_present(selector):
+                        # Human-like delay before clicking
+                        self._human_delay(driver, "navigation")
+                        
+                        # Click next page
+                        driver.click(selector)
+                        next_link_found = True
                         break
                 except:
                     continue
             
-            if not next_link:
+            if not next_link_found:
                 return False
-            
-            # Human-like delay before clicking
-            self._human_delay(driver, "navigation")
-            
-            # Click next page
-            next_link.click()
             
             # Wait for new page to load
             self._wait_for_search_results(driver)
@@ -598,12 +765,12 @@ class BingSearchTool(BaseTool):
             import random
             time.sleep(random.uniform(1.0, 3.0))
     
-    def _human_type(self, element, text: str):
+    def _human_type(self, driver, selector: str, text: str):
         """Type text with human-like timing"""
         import random
         
         for char in text:
-            element.send_keys(char)
+            driver.type(selector, char)
             # Random short delay between keystrokes
             time.sleep(random.uniform(0.05, 0.15))
     
