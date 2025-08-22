@@ -640,11 +640,83 @@
             "testStrategy": "Perform integration testing of the complete Exporter agent. Verify all export types work correctly in sequence. Test with realistic data volumes. Validate logs contain all required metrics. Ensure files open correctly in target applications."
           }
         ]
+      },
+      {
+        "id": 70,
+        "title": "Real Lead Generation Campaign Validation",
+        "description": "Execute a complete end-to-end lead generation campaign to validate the entire pipeline, generating 100 real doctor leads with verification at each processing stage.",
+        "details": "1. **Campaign Configuration Setup**:\n   - Create a specialized YAML configuration for doctor lead generation\n   - Define search templates targeting medical professionals (e.g., \"doctors in [city]\", \"medical practice [specialty] [city]\")\n   - Configure geographic targeting for major metropolitan areas\n   - Set validation thresholds and deduplication rules specific to medical domain\n\n2. **Search Query Execution**:\n   - Execute the QueryBuilder agent with the doctor-specific templates\n   - Run Bing search scraping with real queries through the SearchExecutor\n   - Capture and log search result metrics (result counts, domain diversity)\n   - Verify search results contain relevant medical practice websites\n\n3. **Website Processing Pipeline**:\n   - Process domains through DomainClassifier to identify medical practice websites\n   - Crawl prioritized medical websites with SiteCrawler\n   - Extract emails using EmailExtractor with medical-domain specific scoring\n   - Apply ValidatorDedupe with stricter validation for medical professionals\n   - Generate CSV export with the Exporter agent\n\n4. **Validation Checkpoints**:\n   - After search: Verify result quality with manual spot checks of 10 random results\n   - After domain classification: Confirm correct identification of medical websites\n   - After crawling: Verify proper page discovery on medical practice sites\n   - After email extraction: Validate email format and relevance to medical professionals\n   - After validation: Confirm proper filtering of non-doctor emails\n\n5. **Performance Monitoring**:\n   - Track execution time for each pipeline stage\n   - Monitor resource usage (memory, CPU, network)\n   - Record success rates at each validation checkpoint\n   - Document any failures or bottlenecks\n\n6. **Final Verification**:\n   - Manually verify a 20% sample of the final leads for accuracy\n   - Confirm CSV export contains all required fields\n   - Validate that the campaign generated at least 100 unique, valid doctor leads\n   - Generate comprehensive campaign performance report",
+        "testStrategy": "1. **Pre-Execution Validation**:\n   - Review the doctor-specific campaign YAML for correctness\n   - Verify search templates are properly formed and relevant to medical professionals\n   - Confirm geographic targeting covers diverse regions\n\n2. **Search Results Validation**:\n   - Manually review a sample of 10 search results to confirm relevance\n   - Verify that search results contain medical practice websites\n   - Check search execution logs for any rate limiting or blocking issues\n\n3. **Domain Processing Validation**:\n   - Verify domain classification correctly identifies medical websites\n   - Confirm crawling prioritizes contact and about pages on medical sites\n   - Check that email extraction correctly identifies doctor/practice emails\n\n4. **Email Quality Validation**:\n   - Verify extracted emails follow expected patterns for medical professionals\n   - Confirm validation properly filters out non-professional emails\n   - Check deduplication correctly preserves the highest quality leads\n\n5. **Output Validation**:\n   - Open the exported CSV in Excel to verify formatting and completeness\n   - Confirm all required fields are present and properly populated\n   - Verify the final dataset contains at least 100 unique doctor leads\n   - Check that JSON summary statistics match expected metrics\n\n6. **End-to-End Verification**:\n   - Randomly select 20 leads and manually verify their validity\n   - Calculate and document accuracy rate of the final dataset\n   - Compare performance metrics against expected benchmarks\n   - Document any discrepancies or areas for improvement",
+        "status": "pending",
+        "dependencies": [
+          69,
+          68,
+          67,
+          66,
+          65,
+          62
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Campaign Configuration and Search Query Setup",
+            "description": "Create and validate the specialized YAML configuration for doctor lead generation, including search templates, geographic targeting, and validation rules.",
+            "dependencies": [],
+            "details": "Create a specialized YAML configuration file with doctor-specific search templates (e.g., 'doctors in [city]', 'medical practice [specialty] [city]'). Configure geographic targeting for at least 10 major metropolitan areas. Define validation thresholds and deduplication rules specific to the medical domain. Ensure all configuration parameters are properly formatted and validated before proceeding to execution.",
+            "status": "done",
+            "testStrategy": "Review the doctor-specific campaign YAML for correctness. Validate search templates with sample substitutions to ensure they generate relevant queries. Confirm geographic targeting covers diverse regions. Verify validation rules are appropriate for medical professional identification."
+          },
+          {
+            "id": 2,
+            "title": "Search Execution and Result Validation",
+            "description": "Execute the QueryBuilder and SearchExecutor agents with the doctor-specific templates and validate the quality of search results.",
+            "dependencies": [
+              "70.1"
+            ],
+            "details": "Run the QueryBuilder agent with the doctor-specific templates to generate search queries. Execute Bing search scraping through the SearchExecutor with the generated queries. Capture and log search result metrics including result counts and domain diversity. Perform manual spot checks on 10 random results to verify they contain relevant medical practice websites. Document any issues encountered during the search process.",
+            "status": "pending",
+            "testStrategy": "Manually review a sample of generated queries to confirm relevance. Verify search results contain medical practice websites. Check that result metrics are properly logged. Confirm the anti-detection mechanisms are working properly during search execution."
+          },
+          {
+            "id": 3,
+            "title": "Website Processing and Email Extraction",
+            "description": "Process domains through the pipeline including classification, crawling, and email extraction with medical-domain specific scoring.",
+            "dependencies": [
+              "70.2"
+            ],
+            "details": "Process domains through DomainClassifier to identify medical practice websites. Crawl prioritized medical websites with SiteCrawler, ensuring proper page discovery. Extract emails using EmailExtractor with medical-domain specific scoring rules. Apply ValidatorDedupe with stricter validation parameters for medical professionals. Generate an initial CSV export with the extracted data for review.",
+            "status": "pending",
+            "testStrategy": "Confirm correct identification of medical websites after domain classification. Verify proper page discovery on medical practice sites after crawling. Validate email format and relevance to medical professionals after extraction. Check that non-doctor emails are properly filtered after validation."
+          },
+          {
+            "id": 4,
+            "title": "Performance Monitoring and Pipeline Optimization",
+            "description": "Track execution metrics, monitor resource usage, and optimize the pipeline to ensure efficient lead generation.",
+            "dependencies": [
+              "70.3"
+            ],
+            "details": "Implement comprehensive logging to track execution time for each pipeline stage. Monitor resource usage including memory, CPU, and network utilization. Record success rates at each validation checkpoint. Document any failures or bottlenecks encountered during execution. Make real-time adjustments to optimize performance based on monitoring data. Ensure the campaign is on track to generate at least 100 unique doctor leads.",
+            "status": "pending",
+            "testStrategy": "Verify that performance metrics are accurately captured for each pipeline stage. Check resource utilization stays within acceptable limits. Confirm that success rates are properly recorded at each checkpoint. Review optimization adjustments for effectiveness."
+          },
+          {
+            "id": 5,
+            "title": "Final Verification and Campaign Report Generation",
+            "description": "Perform final validation of generated leads and create a comprehensive campaign performance report.",
+            "dependencies": [
+              "70.4"
+            ],
+            "details": "Manually verify a 20% random sample of the final leads for accuracy and relevance to the medical domain. Confirm the final CSV export contains all required fields and at least 100 unique, valid doctor leads. Generate a comprehensive campaign performance report including metrics from all pipeline stages, validation checkpoint results, and recommendations for future campaigns. Document any lessons learned during the execution process.",
+            "status": "pending",
+            "testStrategy": "Verify that the final lead count meets or exceeds the 100 lead target. Confirm lead quality through manual review of the 20% sample. Check that the campaign report includes all required metrics and insights. Ensure all files open correctly and match the expected schema."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-08-19T15:35:53.275Z",
-      "updated": "2025-08-21T05:55:47.679Z",
+      "updated": "2025-08-22T11:01:46.690Z",
       "description": "Tasks for master context"
     }
   }

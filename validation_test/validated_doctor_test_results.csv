@@ -1,0 +1,2 @@
+﻿business_name,industry,primary_email,primary_phone,contact_name,contact_title,website,address,city,state,linkedin_url,facebook_url,secondary_emails,additional_phones,lead_score,email_confidence,data_completeness,is_actionable,source_url,source_query,extraction_date,validation_status,notes
+Health and wellbeing for everyone,,commsteam@rvohealth.com,(141) 477-4326,Vendor Travel,Contact,https://www.rvohealth.com/,,,,https://www.linkedin.com/company/rvohealth/,,,,0.8,0.75,0.8,True,https://www.rvohealth.com/,doctors Miami Florida,2025-08-22,valid,

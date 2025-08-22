@@ -1,0 +1,213 @@
+# Real Doctor Lead Generation Campaign Configuration
+# Target: 100 verified doctor/medical practice leads
+# Date: 2025-08-22
+
+campaign:
+  name: "Real Doctor Lead Generation Campaign"
+  target_leads: 100
+  vertical: "healthcare"
+  lead_type: "medical_professionals"
+  validation_mode: "strict"
+  
+search_config:
+  engine: "bing"
+  max_results_per_query: 30
+  pages_per_query: 3
+  use_stealth: true
+  timeout_seconds: 30
+  rate_limit_delay: 2.0
+  
+search_templates:
+  # Primary doctor search patterns
+  primary:
+    - "doctors {city} contact email"
+    - "medical practice {city} contact information"
+    - "physician {city} email directory"
+    - "{specialty} doctor {city} contact"
+    - "family doctor {city} email"
+    
+  # Secondary patterns for better coverage
+  secondary:
+    - "medical clinic {city} contact email"
+    - "healthcare provider {city} email"
+    - "doctor office {city} contact information"
+    - "{city} physicians directory email"
+    - "medical professionals {city} contact"
+    
+  # Specialty-specific patterns
+  specialty:
+    - "cardiologist {city} contact email"
+    - "pediatrician {city} email"
+    - "dermatologist {city} contact"
+    - "orthopedic surgeon {city} email"
+    - "internal medicine {city} contact"
+
+geographic_targets:
+  # Major US metropolitan areas for medical professionals
+  primary_cities:
+    - "New York"
+    - "Los Angeles"
+    - "Chicago"
+    - "Houston"
+    - "Phoenix"
+    - "Philadelphia"
+    - "San Antonio"
+    - "San Diego"
+    - "Dallas"
+    - "Austin"
+    
+  secondary_cities:
+    - "San Francisco"
+    - "Seattle"
+    - "Denver"
+    - "Boston"
+    - "Atlanta"
+    - "Miami"
+    - "Las Vegas"
+    - "Portland"
+    - "Nashville"
+    - "Charlotte"
+    
+  specialties:
+    - "cardiology"
+    - "pediatrics"
+    - "family medicine"
+    - "internal medicine"
+    - "orthopedics"
+
+domain_filters:
+  # Prioritize these medical domains
+  priority_domains:
+    - ".md"
+    - "doctor"
+    - "physician"
+    - "medical"
+    - "clinic"
+    - "health"
+    - "care"
+    - "practice"
+    
+  # Exclude these non-medical domains
+  exclude_patterns:
+    - "insurance"
+    - "pharmacy"
+    - "equipment"
+    - "supplies"
+    - "recruitment"
+    - "jobs"
+    - "review"
+    - "rating"
+    
+email_validation:
+  # Strict validation for medical professionals
+  required_patterns:
+    - "@.*\\.com$"
+    - "@.*\\.org$"
+    - "@.*\\.net$"
+    - "@.*\\.edu$"
+    - "@.*\\.health$"
+    - "@.*\\.clinic$"
+    
+  blacklist_patterns:
+    - "noreply@"
+    - "no-reply@"
+    - "info@"
+    - "admin@"
+    - "webmaster@"
+    - "support@"
+    - "sales@"
+    - "marketing@"
+    
+  quality_indicators:
+    - "doctor"
+    - "dr"
+    - "md"
+    - "physician"
+    - "practice"
+    - "clinic"
+    - "medical"
+    
+  min_quality_score: 0.7
+  require_dns_validation: true
+  
+crawl_config:
+  max_pages_per_site: 5
+  prioritize_pages:
+    - "/contact"
+    - "/about"
+    - "/team"
+    - "/staff"
+    - "/physicians"
+    - "/doctors"
+    - "/providers"
+    - "/locations"
+    
+  timeout_per_page: 10
+  use_javascript: true
+  respect_robots: false  # Many medical sites block crawlers unnecessarily
+  
+extraction_config:
+  methods:
+    - "mailto_links"
+    - "contact_forms"
+    - "text_patterns"
+    - "structured_data"
+    
+  context_boost_keywords:
+    - "appointment"
+    - "schedule"
+    - "consultation"
+    - "office"
+    - "practice"
+    - "clinic"
+    
+  min_confidence_score: 0.6
+  
+output_config:
+  base_dir: "output/doctor_leads"
+  csv_filename: "doctor_leads_real_{timestamp}.csv"
+  include_fields:
+    - "doctor_name"
+    - "practice_name"
+    - "email"
+    - "phone"
+    - "website"
+    - "specialty"
+    - "city"
+    - "state"
+    - "confidence_score"
+    - "extraction_date"
+    - "source_query"
+    
+  generate_report: true
+  report_metrics:
+    - "total_leads"
+    - "leads_per_city"
+    - "leads_per_specialty"
+    - "average_confidence"
+    - "validation_pass_rate"
+    - "extraction_success_rate"
+    
+validation_checkpoints:
+  after_search:
+    min_results: 20
+    verify_medical_relevance: true
+    spot_check_count: 5
+    
+  after_domain_filter:
+    min_medical_sites: 10
+    verify_site_legitimacy: true
+    
+  after_extraction:
+    min_emails_found: 5
+    verify_email_format: true
+    verify_medical_context: true
+    
+  after_validation:
+    min_valid_leads: 3
+    verify_no_duplicates: true
+    
+  final_check:
+    min_total_leads: 100
+    manual_review_sample: 0.2
+    quality_threshold: 0.8

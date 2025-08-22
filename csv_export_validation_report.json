@@ -1,0 +1,41 @@
+{
+  "test_timestamp": "2025-08-22T07:19:25.572100",
+  "sites_tested": [
+    "https://www.dentistdirectory.com",
+    "https://www.healthline.com",
+    "https://example.com"
+  ],
+  "leads_extracted": 2,
+  "csv_file": "validated_real_leads_20250822_071925.csv",
+  "real_data_validated": true,
+  "leads_data": [
+    {
+      "business_name": "DentistDirectory.com",
+      "primary_email": "support@obout.com",
+      "primary_phone": "(567) 520-5162",
+      "contact_name": "",
+      "website": "https://www.dentistdirectory.com",
+      "lead_score": 0.5700000000000001,
+      "extraction_date": "2025-08-22 07:19:24",
+      "source_query": "manual_validation_test",
+      "is_actionable": true,
+      "emails_found": 1,
+      "phones_found": 1,
+      "names_found": 0
+    },
+    {
+      "business_name": "Healthline: Medical information and health advice you can trust.",
+      "primary_email": "emcelroy@rvohealth.com",
+      "primary_phone": "(391) 806-1184",
+      "contact_name": "",
+      "website": "https://www.healthline.com",
+      "lead_score": 0.5700000000000001,
+      "extraction_date": "2025-08-22 07:19:25",
+      "source_query": "manual_validation_test",
+      "is_actionable": true,
+      "emails_found": 1,
+      "phones_found": 2,
+      "names_found": 0
+    }
+  ]
+}

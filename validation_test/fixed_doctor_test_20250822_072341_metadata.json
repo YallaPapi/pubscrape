@@ -1,0 +1,42 @@
+{
+  "csv_file": "validation_test\\fixed_doctor_test_20250822_072341.csv",
+  "total_leads": 0,
+  "campaign_config": {
+    "name": "fixed_doctor_test",
+    "description": "Test fixed doctor lead generation",
+    "search_queries": [
+      "doctors Miami Florida"
+    ],
+    "max_leads_per_query": 5,
+    "max_pages_per_query": 2,
+    "search_engine": "bing",
+    "location": "",
+    "country_code": "US",
+    "language": "en",
+    "business_types": [],
+    "exclude_keywords": [],
+    "min_business_score": 0.3,
+    "enable_email_validation": true,
+    "enable_dns_checking": false,
+    "min_email_confidence": 0.4,
+    "output_directory": "validation_test",
+    "csv_filename": "fixed_doctor_test_20250822_072341.csv",
+    "include_report": true,
+    "max_concurrent_extractions": 3,
+    "request_delay_seconds": 1.0,
+    "timeout_seconds": 15,
+    "max_retries": 2,
+    "use_rotating_user_agents": true,
+    "use_residential_proxies": false,
+    "headless_mode": true
+  },
+  "statistics": {
+    "campaign_start_time": 1755861803.3203502,
+    "queries_processed": 1,
+    "urls_discovered": 5,
+    "leads_extracted": 0,
+    "leads_validated": 0,
+    "final_leads": 0,
+    "errors": 0
+  }
+}

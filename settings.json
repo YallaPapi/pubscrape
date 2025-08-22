@@ -12,7 +12,7 @@
             {
                 "function": {
                     "name": "SerpFetchTool",
-                    "description": "Fetches Bing SERP pages via Botasaurus with proper anti-detection measures.\n\nThis tool uses the corrected Botasaurus API to handle search query execution\nwith anti-detection features like user agent rotation and human-like behavior.\nReturns actual HTML content from Bing search results.",
+                    "description": "Fetches Bing SERP pages via requests (fallback when Botasaurus has issues).\n\nThis tool provides a working alternative to Botasaurus for basic search functionality.\nReturns actual HTML content from Bing search results.",
                     "parameters": {
                         "properties": {
                             "query": {
@@ -38,7 +38,7 @@
                             },
                             "use_stealth": {
                                 "default": true,
-                                "description": "Enable anti-detection stealth mode with user agent rotation and human-like behavior.",
+                                "description": "Enable basic stealth mode with realistic user agent.",
                                 "title": "Use Stealth",
                                 "type": "boolean"
                             }
@@ -154,6 +154,60 @@
                         },
                         "required": [
                             "html_file"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as they do not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "enum": [
+                                    "DomainClassifier"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "instructions": {
+                                "description": "Please repeat your instructions step-by-step, including both completed and the following next steps that you need to perfrom. For multi-step complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter.",
+                                "title": "Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "$ref": "#/$defs/recipient",
+                                "description": "DomainClassifier: Filters and prioritizes domains for business relevance\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to the message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "items": {
+                                    "type": "string"
+                                },
+                                "title": "Message Files",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "instructions",
+                            "message",
+                            "recipient"
                         ],
                         "type": "object"
                     },

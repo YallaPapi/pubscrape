@@ -1,0 +1,21 @@
+REAL LEAD EXTRACTION VALIDATION LOG
+============================================================
+Date: 2025-08-22 07:01:23
+Total Leads: 5
+============================================================
+
+✅ Processed bing_serp_02cfd156_1755781996.html: 7 medical URLs
+✅ Processed bing_serp_1fdf24be_1755782047.html: 3 medical URLs
+✅ Processed bing_serp_2b2b48e9_1755782024.html: 10 medical URLs
+✅ Processed bing_serp_37f2f270_1755781973.html: 10 medical URLs
+✅ Processed bing_serp_51c65e70_1755821874.html: 3 medical URLs
+✅ Processed bing_serp_563798a3_1755826934.html: 2 medical URLs
+✅ Processed bing_serp_563798a3_1755827014.html: 2 medical URLs
+✅ Processed bing_serp_563798a3_1755827358.html: 0 medical URLs
+✅ Processed bing_serp_c46778a6_1755827460.html: 0 medical URLs
+✅ Processed bing_serp_c46778a6_1755827500.html: 1 medical URLs
+✅ Valid lead: smart.journey.prober@gmail.com from https://support.google.com/websearch/ans...
+✅ Valid lead: smart.journey.prober@gmail.com from https://support.google.com/youtubetv/ans...
+✅ Valid lead: gtrial@google.com from https://support.google.com/fitbit/answer...
+✅ Valid lead: gtrial@google.com from https://support.google.com/fitbit/answer...
+✅ Valid lead: support@dictionary.com from https://www.dictionary.com/browse/family...

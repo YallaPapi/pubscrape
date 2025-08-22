@@ -1,0 +1,21 @@
+{
+  "error": "No leads to analyze",
+  "campaign": {
+    "name": "quick_campaign_1755861599",
+    "description": "Quick campaign for: doctors Miami Florida",
+    "queries": [
+      "doctors Miami Florida"
+    ],
+    "location": "",
+    "execution_time": 7.386096000671387
+  },
+  "performance": {
+    "campaign_start_time": 1755861599.4709558,
+    "queries_processed": 1,
+    "urls_discovered": 0,
+    "leads_extracted": 0,
+    "leads_validated": 0,
+    "final_leads": 0,
+    "errors": 0
+  }
+}

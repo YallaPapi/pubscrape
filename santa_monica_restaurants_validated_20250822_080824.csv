@@ -1,0 +1,7 @@
+lead_id,business_name,primary_email,primary_phone,contact_name,website,address,city,state,lead_score,validation_score,extraction_date,source_query,business_type,is_validated
+REST_001,Nobu Malibu,,(170) 372-4696,,https://www.noburestaurants.com/malibu,,Santa Monica,CA,0.35,0.5,2025-08-22 08:07:50,restaurant Santa Monica California,restaurant,True
+REST_002,The Lobster Seafood Restaurant at the Santa Monica Pier,user@domain.com,(310) 458-9294,,https://www.thelobster.com,,Santa Monica,CA,0.55,0.9999999999999999,2025-08-22 08:07:53,restaurant Santa Monica California,restaurant,True
+REST_003,Ark,,,,https://www.rusticcanyon.com,,Santa Monica,CA,0.15,0.5,2025-08-22 08:07:57,restaurant Santa Monica California,restaurant,True
+REST_004,Forma Restaurant Santa Monica,formasm@formarestaurant.com,(424) 231-2868,Executive Chef Piero,https://www.formarestaurant.com,"1610 Montana Avenue, Santa Monica, CA 90403",Santa Monica,CA,0.9,0.9999999999999999,2025-08-22 08:08:01,restaurant Santa Monica California,restaurant,True
+REST_005,Ready to get started?,hello@greyblock.co,(828) 222-4180,Digital Agency,https://www.greyblock.com,,Santa Monica,CA,0.78,0.7,2025-08-22 08:08:04,restaurant Santa Monica California,restaurant,True
+REST_006,The Freshest Wholesale Seafood,,,,https://www.santamonicaseafood.com,,Santa Monica,CA,0.15,0.8999999999999999,2025-08-22 08:08:12,restaurant Santa Monica California,restaurant,True

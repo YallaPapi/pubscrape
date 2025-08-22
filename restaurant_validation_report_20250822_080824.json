@@ -1,0 +1,11 @@
+{
+  "campaign_timestamp": "20250822_080824",
+  "total_leads_extracted": 6,
+  "final_validated_leads": 6,
+  "validation_success_rate": 1.0,
+  "leads_with_emails": 3,
+  "leads_with_phones": 4,
+  "average_validation_score": 0.7666666666666666,
+  "csv_file": "santa_monica_restaurants_validated_20250822_080824.csv",
+  "data_authenticity": "VALIDATED_REAL_DATA"
+}

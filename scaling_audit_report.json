@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-08-22T07:45:03.168900",
+  "current_metrics": {
+    "test_duration_seconds": 53,
+    "urls_processed": 19,
+    "leads_generated": 13,
+    "emails_found": 4,
+    "total_processing_time": 53,
+    "avg_time_per_url": 2.789473684210526,
+    "email_success_rate": 0.3076923076923077,
+    "lead_success_rate": 0.6842105263157895,
+    "urls_per_second": 0.3584905660377358
+  },
+  "scaling_target": {
+    "emails_per_day": 1000,
+    "scaling_factor_needed": 0.15335648148148148
+  },
+  "bottlenecks": [
+    {
+      "issue": "Low Email Success Rate",
+      "current": "30.8%",
+      "impact": "Major - limits effective throughput",
+      "solution": "Enhanced extraction patterns, better site targeting"
+    },
+    {
+      "issue": "Sequential URL Processing",
+      "current": "0.36 URLs/sec",
+      "impact": "Critical - prevents concurrent scaling",
+      "solution": "Parallel processing with Botasaurus pools"
+    },
+    {
+      "issue": "Browser Automation Overhead",
+      "current": "2.0s per URL",
+      "impact": "High - slows individual extractions",
+      "solution": "Optimized Botasaurus settings, headless mode"
+    }
+  ],
+  "optimizations": [
+    {
+      "area": "Concurrency",
+      "current": "1 browser instance",
+      "optimized": "10-20 concurrent instances",
+      "improvement": "10-20x throughput"
+    },
+    {
+      "area": "Email Extraction",
+      "current": "30.8% success rate",
+      "optimized": "60-80% with better patterns",
+      "improvement": "2-3x email yield"
+    },
+    {
+      "area": "Site Selection",
+      "current": "Mixed medical sites",
+      "optimized": "Targeted practice directories",
+      "improvement": "2-5x contact density"
+    },
+    {
+      "area": "Anti-Detection",
+      "current": "Basic stealth mode",
+      "optimized": "Advanced rotation + proxies",
+      "improvement": "Sustained high volume"
+    }
+  ],
+  "infrastructure_requirements": {
+    "concurrent_browsers": 10,
+    "memory_gb": 1.953125,
+    "estimated_monthly_cost_range": [
+      273.6,
+      552.96
+    ]
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "framework_config": {
+    "validation_level": "strict",
+    "thresholds": {
+      "pass": 0.8,
+      "warning": 0.6
+    },
+    "timestamp": "2025-08-22T08:04:45.992177"
+  },
+  "validation_history": [
+    {
+      "timestamp": "2025-08-22T08:04:14.559455",
+      "lead_name": "Boa Steakhouse",
+      "overall_score": 0.975,
+      "is_authentic": true,
+      "validation_time": 4.858375072479248,
+      "validations": {
+        "business_authenticity": "pass",
+        "santa_monica_location": "pass",
+        "phone_validation": "pass",
+        "email_domain": "pass"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:18.791769",
+      "lead_name": "Rustic Canyon Wine Bar",
+      "overall_score": 0.975,
+      "is_authentic": true,
+      "validation_time": 4.232314109802246,
+      "validations": {
+        "business_authenticity": "pass",
+        "santa_monica_location": "pass",
+        "phone_validation": "pass",
+        "email_domain": "pass"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:22.991376",
+      "lead_name": "The Lobster Restaurant",
+      "overall_score": 0.975,
+      "is_authentic": true,
+      "validation_time": 4.1996073722839355,
+      "validations": {
+        "business_authenticity": "pass",
+        "santa_monica_location": "pass",
+        "phone_validation": "pass",
+        "email_domain": "pass"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:27.162497",
+      "lead_name": "Giorgio Baldi",
+      "overall_score": 0.95,
+      "is_authentic": true,
+      "validation_time": 4.1711204051971436,
+      "validations": {
+        "business_authenticity": "pass",
+        "santa_monica_location": "pass",
+        "phone_validation": "pass",
+        "email_domain": "pass"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:31.255051",
+      "lead_name": "Test Restaurant 123",
+      "overall_score": 0.1285714285714286,
+      "is_authentic": false,
+      "validation_time": 4.092554092407227,
+      "validations": {
+        "business_authenticity": "fail",
+        "santa_monica_location": "fail",
+        "phone_validation": "pass",
+        "email_domain": "fail"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:35.364213",
+      "lead_name": "Sample Diner",
+      "overall_score": 0.0375,
+      "is_authentic": false,
+      "validation_time": 4.109161615371704,
+      "validations": {
+        "business_authenticity": "fail",
+        "santa_monica_location": "fail",
+        "phone_validation": "fail",
+        "email_domain": "fail"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:37.414844",
+      "lead_name": "Restaurant 001",
+      "overall_score": 0.045,
+      "is_authentic": false,
+      "validation_time": 2.050631284713745,
+      "validations": {
+        "business_authenticity": "fail",
+        "santa_monica_location": "fail",
+        "phone_validation": "fail",
+        "email_domain": "fail"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:41.787712",
+      "lead_name": "Café José's Taquería",
+      "overall_score": 0.9,
+      "is_authentic": true,
+      "validation_time": 4.372868061065674,
+      "validations": {
+        "business_authenticity": "pass",
+        "santa_monica_location": "pass",
+        "phone_validation": "pass",
+        "email_domain": "pass"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T08:04:45.992177",
+      "lead_name": "",
+      "overall_score": 0.5640000000000001,
+      "is_authentic": false,
+      "validation_time": 4.20446515083313,
+      "validations": {
+        "business_authenticity": "pass",
+        "santa_monica_location": "pass",
+        "phone_validation": "fail",
+        "email_domain": "pass"
+      }
+    }
+  ],
+  "validation_report": {
+    "validation_summary": {
+      "total_leads_validated": 9,
+      "authentic_leads": 5,
+      "rejection_rate": 0.4444444444444444,
+      "average_score": 0.6166746031746032,
+      "average_validation_time": 4.0323441293504505
+    },
+    "validation_level": "strict",
+    "quality_distribution": {
+      "authentic": 5,
+      "rejected": 4
+    },
+    "common_failures": {
+      "business_authenticity": 3,
+      "santa_monica_location": 3,
+      "email_domain": 3,
+      "phone_validation": 3
+    },
+    "score_thresholds": {
+      "pass": 0.8,
+      "warning": 0.6
+    },
+    "recent_validations": [
+      {
+        "timestamp": "2025-08-22T08:04:14.559455",
+        "lead_name": "Boa Steakhouse",
+        "overall_score": 0.975,
+        "is_authentic": true,
+        "validation_time": 4.858375072479248,
+        "validations": {
+          "business_authenticity": "pass",
+          "santa_monica_location": "pass",
+          "phone_validation": "pass",
+          "email_domain": "pass"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:18.791769",
+        "lead_name": "Rustic Canyon Wine Bar",
+        "overall_score": 0.975,
+        "is_authentic": true,
+        "validation_time": 4.232314109802246,
+        "validations": {
+          "business_authenticity": "pass",
+          "santa_monica_location": "pass",
+          "phone_validation": "pass",
+          "email_domain": "pass"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:22.991376",
+        "lead_name": "The Lobster Restaurant",
+        "overall_score": 0.975,
+        "is_authentic": true,
+        "validation_time": 4.1996073722839355,
+        "validations": {
+          "business_authenticity": "pass",
+          "santa_monica_location": "pass",
+          "phone_validation": "pass",
+          "email_domain": "pass"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:27.162497",
+        "lead_name": "Giorgio Baldi",
+        "overall_score": 0.95,
+        "is_authentic": true,
+        "validation_time": 4.1711204051971436,
+        "validations": {
+          "business_authenticity": "pass",
+          "santa_monica_location": "pass",
+          "phone_validation": "pass",
+          "email_domain": "pass"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:31.255051",
+        "lead_name": "Test Restaurant 123",
+        "overall_score": 0.1285714285714286,
+        "is_authentic": false,
+        "validation_time": 4.092554092407227,
+        "validations": {
+          "business_authenticity": "fail",
+          "santa_monica_location": "fail",
+          "phone_validation": "pass",
+          "email_domain": "fail"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:35.364213",
+        "lead_name": "Sample Diner",
+        "overall_score": 0.0375,
+        "is_authentic": false,
+        "validation_time": 4.109161615371704,
+        "validations": {
+          "business_authenticity": "fail",
+          "santa_monica_location": "fail",
+          "phone_validation": "fail",
+          "email_domain": "fail"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:37.414844",
+        "lead_name": "Restaurant 001",
+        "overall_score": 0.045,
+        "is_authentic": false,
+        "validation_time": 2.050631284713745,
+        "validations": {
+          "business_authenticity": "fail",
+          "santa_monica_location": "fail",
+          "phone_validation": "fail",
+          "email_domain": "fail"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:41.787712",
+        "lead_name": "Café José's Taquería",
+        "overall_score": 0.9,
+        "is_authentic": true,
+        "validation_time": 4.372868061065674,
+        "validations": {
+          "business_authenticity": "pass",
+          "santa_monica_location": "pass",
+          "phone_validation": "pass",
+          "email_domain": "pass"
+        }
+      },
+      {
+        "timestamp": "2025-08-22T08:04:45.992177",
+        "lead_name": "",
+        "overall_score": 0.5640000000000001,
+        "is_authentic": false,
+        "validation_time": 4.20446515083313,
+        "validations": {
+          "business_authenticity": "pass",
+          "santa_monica_location": "pass",
+          "phone_validation": "fail",
+          "email_domain": "pass"
+        }
+      }
+    ]
+  }
+}
