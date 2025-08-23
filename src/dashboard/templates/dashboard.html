@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Scraping Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0a0e1a; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .metric-card {
+            background: linear-gradient(145deg, #1a1f2e, #252b3d);
+            border: 1px solid #3a4553;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+        .metric-label {
+            color: #8892b0;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-running { background-color: #00d4aa; }
+        .status-stopped { background-color: #ff6b6b; }
+        .status-idle { background-color: #ffa726; }
+        
+        .console-output {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .screenshot-viewer {
+            background: #1a1f2e;
+            border: 2px solid #3a4553;
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .screenshot-img {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .screenshot-img:hover {
+            transform: scale(1.05);
+        }
+        
+        .config-panel {
+            background: linear-gradient(145deg, #2a3441, #1e2832);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #3a4553;
+        }
+        
+        .form-control, .form-select {
+            background: #1a1f2e;
+            border: 1px solid #3a4553;
+            color: #ffffff;
+        }
+        .form-control:focus, .form-select:focus {
+            background: #1a1f2e;
+            border-color: #00d4aa;
+            color: #ffffff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 212, 170, 0.25);
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            border: none;
+            font-weight: bold;
+        }
+        .btn-stop {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            background: linear-gradient(145deg, #1a1f2e, #252b3d);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .log-entry {
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-left: 3px solid #00d4aa;
+            background: rgba(0, 212, 170, 0.1);
+        }
+        .log-entry.error {
+            border-left-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .log-entry.warning {
+            border-left-color: #ffa726;
+            background: rgba(255, 167, 38, 0.1);
+        }
+        
+        .results-table {
+            background: #1a1f2e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table-dark {
+            --bs-table-bg: #1a1f2e;
+            --bs-table-border-color: #3a4553;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .glow {
+            box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: #00d4aa !important;
+        }
+        
+        .verification-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-eye"></i>
+                Real-Time Scraping Observatory
+            </span>
+            <div id="connectionStatus" class="text-light">
+                <span class="status-indicator status-idle"></span>
+                Connecting...
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header text-center">
+            <h1><i class="fas fa-rocket"></i> Live Scraping Proof System</h1>
+            <p class="mb-0">Watch real browser activity, see actual data extraction, get undeniable proof</p>
+            <div class="mt-2">
+                <span class="verification-badge">Real Screenshots</span>
+                <span class="verification-badge">Live HTTP Logs</span>
+                <span class="verification-badge">Actual Browser Windows</span>
+                <span class="verification-badge">Timestamped Results</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Configuration Panel -->
+            <div class="col-md-4">
+                <div class="config-panel">
+                    <h4><i class="fas fa-cog"></i> Scraping Configuration</h4>
+                    
+                    <div class="mb-3">
+                        <label for="searchQuery" class="form-label">Search Query</label>
+                        <input type="text" class="form-control" id="searchQuery" 
+                               placeholder="restaurants in Chicago" value="coffee shops in New York">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" 
+                               placeholder="New York, NY" value="New York, NY">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="maxResults" class="form-label">Number of Leads</label>
+                        <select class="form-select" id="maxResults">
+                            <option value="10" selected>10 (Quick Test)</option>
+                            <option value="25">25 (Demo)</option>
+                            <option value="50">50 (Standard)</option>
+                            <option value="100">100 (Extended)</option>
+                            <option value="250">250 (Large)</option>
+                            <option value="500">500 (Comprehensive)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extractEmails" checked>
+                            <label class="form-check-label" for="extractEmails">
+                                Extract Email Addresses
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="extractPhones" checked>
+                            <label class="form-check-label" for="extractPhones">
+                                Extract Phone Numbers
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="visibleBrowser">
+                            <label class="form-check-label" for="visibleBrowser">
+                                Show Browser Windows (Proof Mode)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="antiDetection" checked>
+                            <label class="form-check-label" for="antiDetection">
+                                Anti-Detection Mode
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button id="startScraping" class="btn btn-start btn-lg">
+                            <i class="fas fa-play"></i> Start Live Scraping
+                        </button>
+                        <button id="stopScraping" class="btn btn-stop btn-lg" disabled>
+                            <i class="fas fa-stop"></i> Stop Scraping
+                        </button>
+                        <button id="exportResults" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Export Proof Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <div class="metric-card text-center">
+                            <div class="metric-value" id="totalLeads">0</div>
+                            <div class="metric-label">Leads Found</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="metric-card text-center">
+                            <div class="metric-value" id="successRate">0%</div>
+                            <div class="metric-label">Success Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-Time Monitoring -->
+            <div class="col-md-8">
+                <div class="row">
+                    <!-- Live Metrics -->
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <div class="metric-value" id="emailsFound">0</div>
+                            <div class="metric-label">Emails</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <div class="metric-value" id="phonesFound">0</div>
+                            <div class="metric-label">Phones</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <div class="metric-value" id="pagesVisited">0</div>
+                            <div class="metric-label">Pages</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card text-center">
+                            <div class="metric-value" id="errorsCount">0</div>
+                            <div class="metric-label">Errors</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Browser Screenshots -->
+                <div class="screenshot-viewer">
+                    <h5><i class="fas fa-camera"></i> Live Browser Activity</h5>
+                    <div id="screenshotContainer">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-eye fa-2x"></i>
+                            <p>Screenshots will appear here during scraping</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Live Console Output -->
+            <div class="col-md-6">
+                <h5><i class="fas fa-terminal"></i> Live Console Output</h5>
+                <div class="console-output" id="consoleOutput">
+                    <div class="text-center text-muted py-4">
+                        Console output will appear here...
+                    </div>
+                </div>
+            </div>
+
+            <!-- HTTP Request Monitor -->
+            <div class="col-md-6">
+                <h5><i class="fas fa-network-wired"></i> HTTP Request Monitor</h5>
+                <div class="console-output" id="httpMonitor">
+                    <div class="text-center text-muted py-4">
+                        HTTP requests will appear here...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-line"></i> Leads Over Time</h5>
+                    <canvas id="leadsChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-tachometer-alt"></i> Performance Metrics</h5>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="results-table">
+                    <h5 class="p-3"><i class="fas fa-table"></i> Real-Time Results</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Business Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Address</th>
+                                    <th>Source URL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        Results will appear here in real-time...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div class="modal fade" id="screenshotModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">Browser Screenshot</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalScreenshot" class="img-fluid" src="" alt="Screenshot">
+                    <div class="mt-3">
+                        <small class="text-muted" id="screenshotContext"></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize Socket.IO connection
+        const socket = io();
+        
+        // Dashboard state
+        let isScrapingRunning = false;
+        let sessionStartTime = null;
+        let sessionData = {
+            leads: [],
+            screenshots: [],
+            logs: [],
+            httpRequests: []
+        };
+        
+        // Charts
+        let leadsChart, performanceChart;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            bindEventListeners();
+        });
+        
+        // Socket event handlers
+        socket.on('connected', function(data) {
+            updateConnectionStatus('connected', data.message);
+        });
+        
+        socket.on('dashboard_update', function(data) {
+            handleDashboardUpdate(data);
+        });
+        
+        socket.on('disconnect', function() {
+            updateConnectionStatus('disconnected', 'Connection lost');
+        });
+        
+        function updateConnectionStatus(status, message) {
+            const statusEl = document.getElementById('connectionStatus');
+            const indicator = statusEl.querySelector('.status-indicator');
+            
+            switch(status) {
+                case 'connected':
+                    indicator.className = 'status-indicator status-running';
+                    statusEl.innerHTML = `<span class="status-indicator status-running"></span>Connected`;
+                    break;
+                case 'disconnected':
+                    indicator.className = 'status-indicator status-stopped';
+                    statusEl.innerHTML = `<span class="status-indicator status-stopped"></span>Disconnected`;
+                    break;
+            }
+        }
+        
+        function handleDashboardUpdate(data) {
+            const timestamp = new Date(data.timestamp).toLocaleTimeString();
+            
+            switch(data.type) {
+                case 'session_started':
+                    handleSessionStarted(data);
+                    break;
+                case 'result_found':
+                    handleResultFound(data);
+                    break;
+                case 'screenshot_captured':
+                    handleScreenshotCaptured(data);
+                    break;
+                case 'log_message':
+                    handleLogMessage(data);
+                    break;
+                case 'http_request':
+                    handleHttpRequest(data);
+                    break;
+                case 'progress_update':
+                    handleProgressUpdate(data);
+                    break;
+                case 'session_completed':
+                    handleSessionCompleted(data);
+                    break;
+                case 'error':
+                    handleError(data);
+                    break;
+            }
+            
+            updateCharts();
+        }
+        
+        function handleSessionStarted(data) {
+            isScrapingRunning = true;
+            sessionStartTime = new Date();
+            updateScrapingControls();
+            
+            addConsoleLog('INFO', `Session started: ${data.message}`);
+            clearResults();
+        }
+        
+        function handleResultFound(data) {
+            sessionData.leads.push(data.result);
+            addResultToTable(data.result, data.timestamp);
+            updateMetrics();
+            
+            // Add visual feedback
+            const leadsElement = document.getElementById('totalLeads');
+            leadsElement.classList.add('pulse', 'glow');
+            setTimeout(() => {
+                leadsElement.classList.remove('pulse', 'glow');
+            }, 2000);
+        }
+        
+        function handleScreenshotCaptured(data) {
+            sessionData.screenshots.push(data);
+            displayScreenshot(data);
+        }
+        
+        function handleLogMessage(data) {
+            sessionData.logs.push(data);
+            addConsoleLog(data.level, data.message);
+        }
+        
+        function handleHttpRequest(data) {
+            sessionData.httpRequests.push(data);
+            addHttpLog(data);
+        }
+        
+        function handleProgressUpdate(data) {
+            updateMetrics();
+        }
+        
+        function handleSessionCompleted(data) {
+            isScrapingRunning = false;
+            updateScrapingControls();
+            addConsoleLog('SUCCESS', data.message);
+        }
+        
+        function handleError(data) {
+            isScrapingRunning = false;
+            updateScrapingControls();
+            addConsoleLog('ERROR', data.message);
+        }
+        
+        function bindEventListeners() {
+            document.getElementById('startScraping').addEventListener('click', startScraping);
+            document.getElementById('stopScraping').addEventListener('click', stopScraping);
+            document.getElementById('exportResults').addEventListener('click', exportResults);
+        }
+        
+        async function startScraping() {
+            const config = getScrapingConfig();
+            
+            try {
+                const response = await fetch('/api/start_scraping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    isScrapingRunning = true;
+                    updateScrapingControls();
+                } else {
+                    alert('Error starting scraping: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function stopScraping() {
+            try {
+                const response = await fetch('/api/stop_scraping', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    isScrapingRunning = false;
+                    updateScrapingControls();
+                } else {
+                    alert('Error stopping scraping: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function exportResults() {
+            try {
+                const response = await fetch('/api/export_results');
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Create downloadable file
+                    const blob = new Blob([JSON.stringify(result.data, null, 2)], 
+                                        { type: 'application/json' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `scraping_proof_${new Date().getTime()}.json`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    
+                    alert('Proof report exported successfully!');
+                } else {
+                    alert('Error exporting results: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        function getScrapingConfig() {
+            return {
+                search_query: document.getElementById('searchQuery').value,
+                location: document.getElementById('location').value,
+                max_results: parseInt(document.getElementById('maxResults').value),
+                extract_emails: document.getElementById('extractEmails').checked,
+                extract_phones: document.getElementById('extractPhones').checked,
+                headless: !document.getElementById('visibleBrowser').checked,
+                anti_detection: document.getElementById('antiDetection').checked
+            };
+        }
+        
+        function updateScrapingControls() {
+            document.getElementById('startScraping').disabled = isScrapingRunning;
+            document.getElementById('stopScraping').disabled = !isScrapingRunning;
+        }
+        
+        function updateMetrics() {
+            document.getElementById('totalLeads').textContent = sessionData.leads.length;
+            document.getElementById('emailsFound').textContent = 
+                sessionData.leads.filter(lead => lead.email).length;
+            document.getElementById('phonesFound').textContent = 
+                sessionData.leads.filter(lead => lead.phone).length;
+            document.getElementById('pagesVisited').textContent = 
+                sessionData.httpRequests.filter(req => req.type === 'page_visit').length;
+            document.getElementById('errorsCount').textContent = 
+                sessionData.logs.filter(log => log.level === 'ERROR').length;
+            
+            // Calculate success rate
+            const totalRequests = sessionData.httpRequests.length;
+            const successfulRequests = sessionData.httpRequests.filter(req => req.success !== false).length;
+            const successRate = totalRequests > 0 ? (successfulRequests / totalRequests * 100).toFixed(1) : '0';
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+        
+        function addResultToTable(result, timestamp) {
+            const tbody = document.getElementById('resultsTableBody');
+            
+            // Clear placeholder row
+            if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
+                tbody.innerHTML = '';
+            }
+            
+            const row = document.createElement('tr');
+            row.className = 'table-success';
+            row.innerHTML = `
+                <td>${new Date(timestamp).toLocaleString()}</td>
+                <td>${result.name || 'N/A'}</td>
+                <td>${result.email || 'Not found'}</td>
+                <td>${result.phone || 'Not found'}</td>
+                <td>${result.address || 'N/A'}</td>
+                <td><a href="${result.source_url || '#'}" target="_blank" class="text-info">View Source</a></td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+            
+            // Limit table rows
+            if (tbody.children.length > 50) {
+                tbody.removeChild(tbody.lastChild);
+            }
+        }
+        
+        function displayScreenshot(data) {
+            const container = document.getElementById('screenshotContainer');
+            
+            // Clear placeholder
+            if (container.querySelector('.text-muted')) {
+                container.innerHTML = '';
+            }
+            
+            const screenshotEl = document.createElement('div');
+            screenshotEl.className = 'mb-2';
+            screenshotEl.innerHTML = `
+                <img src="data:image/png;base64,${data.screenshot}" 
+                     class="screenshot-img" 
+                     onclick="showScreenshotModal(this.src, '${data.context}', '${data.timestamp}')">
+                <small class="text-muted d-block">${new Date(data.timestamp).toLocaleString()} - ${data.context}</small>
+            `;
+            
+            container.insertBefore(screenshotEl, container.firstChild);
+            
+            // Limit screenshots displayed
+            if (container.children.length > 10) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        
+        function showScreenshotModal(src, context, timestamp) {
+            document.getElementById('modalScreenshot').src = src;
+            document.getElementById('screenshotContext').textContent = 
+                `${new Date(timestamp).toLocaleString()} - ${context}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('screenshotModal'));
+            modal.show();
+        }
+        
+        function addConsoleLog(level, message) {
+            const console = document.getElementById('consoleOutput');
+            
+            // Clear placeholder
+            if (console.querySelector('.text-muted')) {
+                console.innerHTML = '';
+            }
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${level.toLowerCase()}`;
+            logEntry.innerHTML = `
+                <span class="text-muted">[${new Date().toLocaleTimeString()}]</span>
+                <span class="fw-bold">${level}:</span>
+                ${message}
+            `;
+            
+            console.appendChild(logEntry);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        function addHttpLog(data) {
+            const monitor = document.getElementById('httpMonitor');
+            
+            // Clear placeholder
+            if (monitor.querySelector('.text-muted')) {
+                monitor.innerHTML = '';
+            }
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="text-muted">[${new Date(data.timestamp).toLocaleTimeString()}]</span>
+                <span class="text-info">${data.method || 'GET'}</span>
+                ${data.url || 'Unknown URL'}
+                <span class="text-success">(${data.status || 'N/A'})</span>
+            `;
+            
+            monitor.appendChild(logEntry);
+            monitor.scrollTop = monitor.scrollHeight;
+        }
+        
+        function initializeCharts() {
+            // Leads over time chart
+            const leadsCtx = document.getElementById('leadsChart').getContext('2d');
+            leadsChart = new Chart(leadsCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Leads Found',
+                        data: [],
+                        borderColor: '#00d4aa',
+                        backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#3a4553' },
+                            ticks: { color: '#8892b0' }
+                        },
+                        x: {
+                            grid: { color: '#3a4553' },
+                            ticks: { color: '#8892b0' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    }
+                }
+            });
+            
+            // Performance metrics chart
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(perfCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Successful', 'Failed', 'Pending'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#00d4aa', '#ff6b6b', '#ffa726']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    }
+                }
+            });
+        }
+        
+        function updateCharts() {
+            if (!sessionStartTime) return;
+            
+            // Update leads chart
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString();
+            
+            leadsChart.data.labels.push(timeLabel);
+            leadsChart.data.datasets[0].data.push(sessionData.leads.length);
+            
+            // Keep only last 20 data points
+            if (leadsChart.data.labels.length > 20) {
+                leadsChart.data.labels.shift();
+                leadsChart.data.datasets[0].data.shift();
+            }
+            
+            leadsChart.update('none');
+            
+            // Update performance chart
+            const totalRequests = sessionData.httpRequests.length;
+            const successful = sessionData.httpRequests.filter(req => req.success !== false).length;
+            const failed = sessionData.logs.filter(log => log.level === 'ERROR').length;
+            const pending = Math.max(0, totalRequests - successful - failed);
+            
+            performanceChart.data.datasets[0].data = [successful, failed, pending];
+            performanceChart.update('none');
+        }
+        
+        function clearResults() {
+            sessionData = {
+                leads: [],
+                screenshots: [],
+                logs: [],
+                httpRequests: []
+            };
+            
+            document.getElementById('resultsTableBody').innerHTML = 
+                '<tr><td colspan="6" class="text-center text-muted py-4">Results will appear here in real-time...</td></tr>';
+            
+            document.getElementById('screenshotContainer').innerHTML = 
+                '<div class="text-center text-muted py-4"><i class="fas fa-eye fa-2x"></i><p>Screenshots will appear here during scraping</p></div>';
+            
+            document.getElementById('consoleOutput').innerHTML = 
+                '<div class="text-center text-muted py-4">Console output will appear here...</div>';
+            
+            document.getElementById('httpMonitor').innerHTML = 
+                '<div class="text-center text-muted py-4">HTTP requests will appear here...</div>';
+            
+            updateMetrics();
+        }
+    </script>
+</body>
+</html>

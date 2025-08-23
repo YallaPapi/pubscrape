@@ -1,0 +1,239 @@
+{
+  "agent_spawn_recommendations": {
+    "hive_configuration": "hierarchical-topology",
+    "optimal_setup": {
+      "queen_coordinator": {
+        "agent": "hierarchical-coordinator",
+        "spawn_command": "mcp__claude-flow__agent_spawn",
+        "parameters": {
+          "type": "hierarchical-coordinator",
+          "role": "queen",
+          "max_workers": 12,
+          "coordination_mode": "hive-master"
+        },
+        "priority": 1,
+        "required": true
+      },
+      "forager_caste": {
+        "description": "Data collection and research specialists",
+        "recommended_count": 3,
+        "agents": [
+          {
+            "type": "researcher",
+            "specialization": "requirements_analysis",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "researcher", 
+              "caste": "forager",
+              "tools": ["WebSearch", "WebFetch", "Grep", "Glob"]
+            }
+          },
+          {
+            "type": "code-analyzer", 
+            "specialization": "codebase_analysis",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "code-analyzer",
+              "caste": "forager", 
+              "tools": ["Read", "Grep", "Glob", "repo_analyze"]
+            }
+          },
+          {
+            "type": "github-modes",
+            "specialization": "repository_intelligence", 
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "github-modes",
+              "caste": "forager",
+              "tools": ["github_swarm", "pr_enhance", "issue_triage"]
+            }
+          }
+        ]
+      },
+      "builder_caste": {
+        "description": "Implementation and development specialists",
+        "recommended_count": 4,
+        "agents": [
+          {
+            "type": "sparc-coder",
+            "specialization": "structured_development",
+            "spawn_command": "mcp__claude-flow__agent_spawn", 
+            "parameters": {
+              "type": "sparc-coder",
+              "caste": "builder",
+              "tools": ["Write", "Edit", "MultiEdit", "sparc_coord"]
+            }
+          },
+          {
+            "type": "backend-dev",
+            "specialization": "server_implementation",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "backend-dev", 
+              "caste": "builder",
+              "tools": ["Write", "Edit", "Bash", "system-architect"]
+            }
+          },
+          {
+            "type": "coder",
+            "specialization": "general_implementation",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "coder",
+              "caste": "builder", 
+              "tools": ["Write", "Edit", "MultiEdit", "base-template-generator"]
+            }
+          },
+          {
+            "type": "api-docs",
+            "specialization": "documentation_generation",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "api-docs",
+              "caste": "builder",
+              "tools": ["Write", "Edit", "api-docs"]
+            }
+          }
+        ]
+      },
+      "guardian_caste": {
+        "description": "Quality assurance and security specialists", 
+        "recommended_count": 2,
+        "agents": [
+          {
+            "type": "tester",
+            "specialization": "test_development",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "tester",
+              "caste": "guardian",
+              "tools": ["Write", "Bash", "tdd-london-swarm"]
+            }
+          },
+          {
+            "type": "reviewer", 
+            "specialization": "code_quality",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "reviewer",
+              "caste": "guardian",
+              "tools": ["Read", "Grep", "code-review-swarm"]
+            }
+          }
+        ]
+      },
+      "nurse_caste": {
+        "description": "Maintenance and operations specialists",
+        "recommended_count": 2, 
+        "agents": [
+          {
+            "type": "cicd-engineer",
+            "specialization": "deployment_automation",
+            "spawn_command": "mcp__claude-flow__agent_spawn",
+            "parameters": {
+              "type": "cicd-engineer",
+              "caste": "nurse", 
+              "tools": ["Bash", "workflow-automation", "benchmark_run"]
+            }
+          },
+          {
+            "type": "production-validator",
+            "specialization": "system_monitoring",
+            "spawn_command": "mcp__claude-flow__agent_spawn", 
+            "parameters": {
+              "type": "production-validator",
+              "caste": "nurse",
+              "tools": ["swarm_monitor", "performance-benchmarker"]
+            }
+          }
+        ]
+      }
+    },
+    "scaling_recommendations": {
+      "light_workload": {
+        "total_agents": 6,
+        "distribution": {
+          "queen": 1,
+          "foragers": 2, 
+          "builders": 2,
+          "guardians": 1,
+          "nurses": 0
+        }
+      },
+      "medium_workload": {
+        "total_agents": 11,
+        "distribution": {
+          "queen": 1,
+          "foragers": 3,
+          "builders": 4,
+          "guardians": 2, 
+          "nurses": 1
+        }
+      },
+      "heavy_workload": {
+        "total_agents": 16,
+        "distribution": {
+          "queen": 1,
+          "foragers": 4,
+          "builders": 6,
+          "guardians": 3,
+          "nurses": 2
+        }
+      }
+    },
+    "spawn_sequence": [
+      {
+        "step": 1,
+        "action": "Initialize hive topology",
+        "command": "mcp__claude-flow__swarm_init",
+        "parameters": {
+          "topology": "hierarchical-hive",
+          "maxAgents": 16,
+          "coordination_protocol": "queen-worker-mesh"
+        }
+      },
+      {
+        "step": 2, 
+        "action": "Spawn queen coordinator",
+        "command": "mcp__claude-flow__agent_spawn",
+        "parameters": {
+          "type": "hierarchical-coordinator",
+          "role": "queen",
+          "specialization": "hive_coordination"
+        }
+      },
+      {
+        "step": 3,
+        "action": "Spawn initial forager workers",
+        "command": "mcp__claude-flow__agent_spawn",
+        "batch": true,
+        "agents": ["researcher", "code-analyzer"]
+      },
+      {
+        "step": 4,
+        "action": "Spawn initial builder workers", 
+        "command": "mcp__claude-flow__agent_spawn",
+        "batch": true,
+        "agents": ["sparc-coder", "backend-dev"]
+      },
+      {
+        "step": 5,
+        "action": "Spawn guardian worker",
+        "command": "mcp__claude-flow__agent_spawn",
+        "parameters": {
+          "type": "tester",
+          "caste": "guardian"
+        }
+      },
+      {
+        "step": 6,
+        "action": "Enable adaptive scaling",
+        "command": "configuration_update",
+        "parameters": {
+          "adaptive_scaling": true,
+          "monitoring": true
+        }
+      }
+    ]
+  }
+}

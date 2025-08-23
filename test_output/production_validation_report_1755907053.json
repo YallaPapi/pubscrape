@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-08-22T19:57:33.356184",
+  "validation_type": "production_readiness_validation",
+  "execution_time_seconds": 0.20804786682128906,
+  "overall_metrics": {
+    "total_tests": 12,
+    "total_passed": 10,
+    "success_rate": 0.8333333333333334,
+    "status": "NEEDS IMPROVEMENT",
+    "grade": "ACCEPTABLE",
+    "deployment_recommendation": "\u26a0\ufe0f ADDRESS ISSUES BEFORE DEPLOYMENT"
+  },
+  "validation_results": {
+    "architecture": {
+      "passed": 2,
+      "total": 3,
+      "details": {
+        "security_integration": "FAILED: ",
+        "botasaurus_integration": "PASSED",
+        "business_logic": "PASSED"
+      },
+      "success_rate": 0.6666666666666666
+    },
+    "security": {
+      "passed": 2,
+      "total": 3,
+      "details": {
+        "no_hardcoded_vars": "PASSED",
+        "input_sanitization": "FAILED: Sanitization insufficient",
+        "memory_management": "PASSED: 5/5 features"
+      },
+      "success_rate": 0.6666666666666666
+    },
+    "performance": {
+      "passed": 3,
+      "total": 3,
+      "details": {
+        "import_performance": "PASSED: 0.000s total",
+        "config_performance": "PASSED: 0.001s",
+        "memory_usage": "PASSED: 0.2MB growth"
+      },
+      "success_rate": 1.0
+    },
+    "workflow": {
+      "passed": 3,
+      "total": 3,
+      "details": {
+        "workflow_simulation": "PASSED: 100.0% quality",
+        "data_export": "PASSED: 3981 bytes",
+        "scaling_readiness": "READY: ~60 leads/min estimated"
+      },
+      "success_rate": 1.0
+    }
+  },
+  "performance_metrics": {
+    "import_performance": "PASSED: 0.000s total",
+    "config_performance": "PASSED: 0.001s",
+    "memory_usage": "PASSED: 0.2MB growth"
+  },
+  "leads_generated_count": 25,
+  "production_ready": false
+}

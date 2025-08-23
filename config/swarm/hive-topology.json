@@ -1,0 +1,137 @@
+{
+  "topology": {
+    "type": "hierarchical",
+    "architecture": "hive",
+    "name": "adaptive-hive-coordination",
+    "version": "1.0.0",
+    "description": "Queen-led hierarchical coordination with specialized worker delegation"
+  },
+  "hierarchy": {
+    "levels": 3,
+    "queen": {
+      "role": "hierarchical-coordinator",
+      "responsibilities": [
+        "Strategic planning and task distribution",
+        "Resource allocation and load balancing", 
+        "Performance monitoring and optimization",
+        "Fault detection and recovery coordination",
+        "Cross-team communication orchestration"
+      ],
+      "authority": "absolute",
+      "span_of_control": 8
+    },
+    "lieutenants": {
+      "role": "adaptive-coordinator", 
+      "count": 2,
+      "responsibilities": [
+        "Team coordination and workflow management",
+        "Task breakdown and delegation",
+        "Quality assurance and validation",
+        "Performance reporting to queen"
+      ],
+      "span_of_control": 4
+    },
+    "workers": {
+      "specialized_roles": [
+        {
+          "type": "coder",
+          "count": 2,
+          "specialization": "implementation",
+          "skills": ["coding", "debugging", "optimization"]
+        },
+        {
+          "type": "tester", 
+          "count": 2,
+          "specialization": "validation",
+          "skills": ["testing", "qa", "verification"]
+        },
+        {
+          "type": "researcher",
+          "count": 1,
+          "specialization": "analysis",
+          "skills": ["research", "documentation", "planning"]
+        },
+        {
+          "type": "reviewer",
+          "count": 1,
+          "specialization": "quality",
+          "skills": ["code-review", "standards", "best-practices"]
+        }
+      ]
+    }
+  },
+  "adaptive_scaling": {
+    "enabled": true,
+    "min_workers": 3,
+    "max_workers": 12,
+    "scaling_triggers": {
+      "cpu_threshold": 80,
+      "queue_length": 10,
+      "response_time_ms": 5000
+    },
+    "scaling_policies": {
+      "scale_up_cooldown": 300,
+      "scale_down_cooldown": 600,
+      "scale_factor": 1.5
+    }
+  },
+  "fault_tolerance": {
+    "queen_backup": {
+      "enabled": true,
+      "type": "hot_standby",
+      "agent": "byzantine-coordinator"
+    },
+    "worker_redundancy": {
+      "replication_factor": 1.5,
+      "health_check_interval": 30,
+      "failure_threshold": 3
+    },
+    "recovery_strategies": {
+      "task_redistribution": true,
+      "automatic_respawn": true,
+      "circuit_breaker": true
+    }
+  },
+  "communication": {
+    "protocols": {
+      "queen_to_lieutenant": "command_control",
+      "lieutenant_to_worker": "task_delegation", 
+      "worker_to_worker": "peer_coordination",
+      "status_reporting": "hierarchical_rollup"
+    },
+    "channels": {
+      "command": "high_priority",
+      "coordination": "medium_priority",
+      "status": "low_priority"
+    },
+    "timeouts": {
+      "command_response": 5000,
+      "task_completion": 300000,
+      "health_check": 10000
+    }
+  },
+  "memory_namespaces": {
+    "global": "swarm/hive/global",
+    "queen": "swarm/hive/queen", 
+    "lieutenants": "swarm/hive/lieutenants",
+    "workers": "swarm/hive/workers",
+    "tasks": "swarm/hive/tasks",
+    "metrics": "swarm/hive/metrics"
+  },
+  "performance_monitoring": {
+    "metrics": [
+      "task_throughput",
+      "response_time",
+      "resource_utilization",
+      "error_rate",
+      "queue_depth"
+    ],
+    "collection_interval": 30,
+    "alert_thresholds": {
+      "high_cpu": 85,
+      "high_memory": 80,
+      "high_error_rate": 5,
+      "slow_response": 10000
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "application": {
+    "app_name": "BotasaurusScraper",
+    "version": "1.0.0",
+    "debug": false,
+    "log_level": "INFO",
+    "max_memory_mb": 2048,
+    "temp_dir": "./temp",
+    "output_dir": "./output",
+    "enable_metrics": true
+  },
+  "browser": {
+    "chrome_binary_location": "",
+    "headless": false,
+    "viewport_width": 1920,
+    "viewport_height": 1080,
+    "user_data_dir": null,
+    "disable_extensions": true,
+    "disable_images": false,
+    "disable_javascript": false,
+    "enable_logging": false
+  },
+  "security": {
+    "stealth_level": 3,
+    "enable_proxy": false,
+    "proxy_url": null,
+    "proxy_username": null,
+    "proxy_password": null,
+    "rate_limit_delay": 1.0,
+    "max_retries": 3,
+    "request_timeout": 30,
+    "user_agent_rotation": true,
+    "fingerprint_randomization": true
+  },
+  "database": {
+    "db_type": "sqlite",
+    "db_path": "./secure_leads.db",
+    "host": null,
+    "port": null,
+    "database": null,
+    "username": null,
+    "password": null,
+    "pool_size": 10,
+    "max_overflow": 20,
+    "pool_timeout": 30
+  },
+  "encrypted_fields": []
+}

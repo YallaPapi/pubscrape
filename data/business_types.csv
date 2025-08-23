@@ -1,0 +1,124 @@
+name,category,keywords,synonyms,tier,priority
+restaurants,food_dining,"restaurant,dining,eatery,bistro","food,cuisine,meals,diner",all,5
+cafes,food_dining,"cafe,coffee shop,coffee house","coffee,espresso,java",small,4
+bars,food_dining,"bar,pub,tavern,lounge","drinks,cocktails,brewery",small,3
+fast_food,food_dining,"fast food,quick service,drive thru","takeout,delivery,grab and go",medium,4
+pizza_restaurant,restaurants,"pizza,pizzeria,pizza place","italian,cheese",small,4
+chinese_restaurant,restaurants,"chinese food,chinese cuisine,asian restaurant","asian,takeout,noodles",small,4
+mexican_restaurant,restaurants,"mexican food,mexican cuisine,taco shop","tacos,burritos,latino",small,4
+italian_restaurant,restaurants,"italian food,italian cuisine,pasta","pasta,authentic,european",small,4
+sushi_restaurant,restaurants,"sushi,japanese food,japanese cuisine","japanese,raw fish,rolls",small,3
+steakhouse,restaurants,"steakhouse,steak restaurant,grill","beef,grilled,meat",medium,3
+seafood_restaurant,restaurants,"seafood,fish restaurant,crab house","fish,shellfish,ocean",medium,3
+bakery,food_dining,"bakery,bread shop,pastry shop","bread,cakes,pastries",small,3
+grocery_store,retail,"grocery,supermarket,food store","market,provisions,groceries",medium,5
+department_store,retail,"department store,big box store","shopping,merchandise,goods",medium,4
+clothing_store,retail,"clothing,apparel,fashion","clothes,garments,wear",all,4
+shoe_store,retail,"shoes,footwear,shoe shop","sneakers,boots,sandals",small,3
+electronics_store,retail,"electronics,tech,gadgets","computers,phones,devices",medium,4
+bookstore,retail,"bookstore,book shop,library","books,reading,literature",small,2
+pharmacy,retail,"pharmacy,drug store,chemist","medicine,prescriptions,health",medium,4
+gas_station,automotive,"gas station,fuel,petrol","gasoline,diesel,convenience",medium,4
+auto_repair,automotive,"auto repair,mechanic,garage","car repair,service center,maintenance",small,4
+car_dealership,automotive,"car dealer,auto sales,dealership","car lot,auto dealer,vehicles",medium,3
+tire_shop,automotive,"tire shop,tire store,wheels","tires,rims,auto parts",small,3
+lawyer,professional_services,"lawyer,attorney,legal","law firm,counsel,advocate",medium,3
+accountant,professional_services,"accountant,accounting,bookkeeping","CPA,tax,financial",small,3
+real_estate_agent,professional_services,"real estate,realtor,property","homes,houses,agent",medium,4
+dentist,healthcare,"dentist,dental,teeth","oral health,orthodontist,hygienist",small,4
+doctor,healthcare,"doctor,physician,medical","clinic,practice,health",medium,5
+veterinarian,healthcare,"veterinarian,vet,animal hospital","pet care,animal clinic,veterinary",small,3
+hospital,healthcare,"hospital,medical center,clinic","emergency,health care,medical",large,5
+urgent_care,healthcare,"urgent care,walk-in clinic,immediate care","medical,emergency,health",medium,4
+physical_therapy,healthcare,"physical therapy,physiotherapy,rehab","rehabilitation,therapy,injury",small,3
+chiropractor,healthcare,"chiropractor,chiropractic,spine","back pain,adjustment,wellness",small,3
+bank,finance,"bank,banking,financial","credit union,loans,money",medium,4
+credit_union,finance,"credit union,community bank","banking,savings,loans",small,3
+insurance_agency,finance,"insurance,coverage,policy","protection,claims,agent",medium,3
+investment_advisor,finance,"investment,financial advisor,wealth","money management,planning,retirement",medium,2
+hair_salon,beauty,"hair salon,hairdresser,barber","hair stylist,haircut,styling",small,4
+nail_salon,beauty,"nail salon,manicure,pedicure","nails,spa,beauty",small,3
+spa,beauty,"spa,wellness center,massage","relaxation,treatment,therapy",small,3
+gym,fitness,"gym,fitness,workout","exercise,health club,training",small,4
+yoga_studio,fitness,"yoga,yoga studio,meditation","wellness,mindfulness,exercise",small,3
+dance_studio,fitness,"dance studio,dance school,ballet","dancing,lessons,performance",small,2
+hotel,hospitality,"hotel,motel,accommodation","lodging,stay,travel",medium,4
+restaurant_chain,restaurants,"chain restaurant,franchise,corporate","fast casual,branded,national",large,4
+local_restaurant,restaurants,"local restaurant,family owned,independent","neighborhood,authentic,small business",small,5
+fine_dining,restaurants,"fine dining,upscale,gourmet","expensive,elegant,sophisticated",medium,3
+casual_dining,restaurants,"casual dining,family restaurant,informal","affordable,relaxed,comfortable",medium,4
+buffet,restaurants,"buffet,all you can eat,smorgasbord","unlimited,variety,self service",medium,3
+food_truck,restaurants,"food truck,mobile food,street food","outdoor,casual,quick",small,3
+catering,restaurants,"catering,event food,party service","weddings,corporate,events",small,3
+deli,restaurants,"deli,delicatessen,sandwich shop","sandwiches,meat,cheese",small,3
+ice_cream_shop,restaurants,"ice cream,gelato,frozen yogurt","dessert,cold treats,sweet",small,3
+smoothie_bar,restaurants,"smoothie,juice bar,health drinks","healthy,fruit,vitamins",small,2
+plumber,professional_services,"plumber,plumbing,pipe repair","water,drain,emergency",small,4
+electrician,professional_services,"electrician,electrical,wiring","power,lights,installation",small,4
+contractor,professional_services,"general contractor,construction,builder","renovation,remodeling,building",small,4
+landscaper,professional_services,"landscaper,lawn care,gardening","yard work,maintenance,outdoor",small,3
+cleaning_service,professional_services,"cleaning service,maid,housekeeping","residential,commercial,janitorial",small,4
+pest_control,professional_services,"pest control,exterminator,bug spray","insects,rodents,termites",small,3
+locksmith,professional_services,"locksmith,key service,security","locks,keys,emergency",small,3
+computer_repair,professional_services,"computer repair,tech support,IT","laptop,desktop,software",small,3
+dry_cleaner,professional_services,"dry cleaner,laundry,cleaning","clothes,garments,pressing",small,3
+florist,retail,"florist,flower shop,floral","flowers,arrangements,weddings",small,3
+jewelry_store,retail,"jewelry,jeweler,watches","rings,necklaces,diamonds",small,3
+furniture_store,retail,"furniture,home furnishing,decor","beds,sofas,tables",medium,3
+hardware_store,retail,"hardware,tools,home improvement","nails,screws,paint",small,4
+toy_store,retail,"toy store,games,children","kids,play,educational",small,2
+pet_store,retail,"pet store,animal supplies,pet food","dogs,cats,aquarium",small,3
+optical_shop,retail,"optical,glasses,eyewear","vision,contacts,sunglasses",small,3
+mattress_store,retail,"mattress,bedding,sleep","beds,pillows,comfort",small,3
+art_gallery,entertainment,"art gallery,museum,exhibition","paintings,sculpture,culture",small,2
+movie_theater,entertainment,"movie theater,cinema,films","entertainment,popcorn,blockbuster",medium,3
+bowling_alley,entertainment,"bowling,alley,lanes","strikes,sports,fun",small,2
+arcade,entertainment,"arcade,games,entertainment","video games,fun,tickets",small,2
+mini_golf,entertainment,"mini golf,putt putt,miniature golf","family fun,outdoor,course",small,2
+amusement_park,entertainment,"amusement park,theme park,rides","roller coaster,fun,family",large,2
+zoo,entertainment,"zoo,animals,wildlife","family,education,nature",medium,2
+aquarium,entertainment,"aquarium,marine life,fish","underwater,ocean,educational",medium,2
+library,education,"library,books,reading","public,study,research",public,3
+school,education,"school,education,learning","academy,institute,training",public,4
+daycare,education,"daycare,childcare,preschool","kids,children,early learning",small,4
+driving_school,education,"driving school,driver education,lessons","license,training,cars",small,3
+music_school,education,"music school,lessons,instruments","piano,guitar,voice",small,2
+tutoring,education,"tutoring,academic help,learning","homework,test prep,education",small,3
+church,community,"church,religious,worship","faith,spiritual,community",non_profit,3
+community_center,community,"community center,recreation,activities","public,events,programs",public,3
+post_office,government,"post office,mail,shipping","packages,stamps,delivery",government,4
+dmv,government,"DMV,motor vehicle,license","registration,ID,driving",government,3
+city_hall,government,"city hall,government,municipal","permits,taxes,services",government,2
+police_station,government,"police,law enforcement,safety","emergency,crime,protection",government,4
+fire_station,government,"fire department,emergency,rescue","firefighters,safety,ambulance",government,4
+airport,transportation,"airport,flights,travel","airlines,terminal,baggage",large,3
+bus_station,transportation,"bus station,public transit,transportation","routes,schedules,commute",public,3
+taxi_service,transportation,"taxi,cab,ride","transportation,airport,city",small,3
+car_rental,transportation,"car rental,vehicle rental,hire","vacation,business,temporary",medium,3
+parking_garage,transportation,"parking,garage,lot","cars,downtown,hourly",small,2
+storage_unit,services,"storage,self storage,warehouse","boxes,furniture,temporary",small,3
+laundromat,services,"laundromat,coin laundry,wash","clothes,washing,drying",small,3
+copy_center,services,"copy center,printing,office","documents,business cards,flyers",small,3
+shipping_store,services,"shipping,UPS,FedEx","packages,mail,delivery",small,3
+check_cashing,finance,"check cashing,payday loans,cash","quick cash,financial,money",small,2
+pawn_shop,retail,"pawn shop,second hand,used","jewelry,electronics,loans",small,2
+thrift_store,retail,"thrift store,goodwill,used","clothing,furniture,charity",non_profit,2
+flea_market,retail,"flea market,swap meet,vendors","antiques,crafts,outdoor",small,2
+farmers_market,retail,"farmers market,fresh produce,local","organic,vegetables,community",small,3
+convenience_store,retail,"convenience store,corner store,quick mart","snacks,drinks,cigarettes",small,4
+liquor_store,retail,"liquor store,wine shop,spirits","alcohol,beer,wine",small,3
+smoke_shop,retail,"smoke shop,tobacco,cigarettes","cigars,vaping,pipes",small,2
+adult_store,retail,"adult store,adult entertainment","18+,mature,private",small,1
+casino,entertainment,"casino,gambling,gaming","slots,poker,betting",large,2
+night_club,entertainment,"night club,dance club,bar","dancing,music,drinks",small,2
+strip_club,entertainment,"strip club,adult entertainment,gentlemen's club","18+,adult,entertainment",small,1
+tattoo_parlor,services,"tattoo,tattoo parlor,ink","body art,piercing,design",small,2
+piercing_studio,services,"piercing,body piercing,jewelry","ears,nose,body modification",small,2
+barber_shop,beauty,"barber,barber shop,men's hair","haircut,shave,grooming",small,4
+beauty_supply,retail,"beauty supply,cosmetics,hair products","makeup,shampoo,styling",small,3
+wedding_venue,services,"wedding venue,event space,reception","ceremonies,parties,celebrations",medium,2
+funeral_home,services,"funeral home,mortuary,cemetery","death,burial,memorial",small,2
+senior_center,community,"senior center,elderly care,retirement","activities,meals,social",non_profit,2
+homeless_shelter,community,"homeless shelter,emergency housing,support","assistance,temporary,social services",non_profit,2
+food_bank,community,"food bank,food pantry,charity","hunger,assistance,donations",non_profit,2
+blood_bank,healthcare,"blood bank,donation center,plasma","medical,donation,health",non_profit,2

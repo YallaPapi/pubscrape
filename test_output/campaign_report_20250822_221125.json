@@ -1,0 +1,21 @@
+{
+  "error": "No leads to analyze",
+  "campaign": {
+    "name": "test_campaign",
+    "description": "Test campaign to verify system functionality",
+    "queries": [
+      "optometrist Atlanta"
+    ],
+    "location": "Atlanta",
+    "execution_time": 1.3006055355072021
+  },
+  "performance": {
+    "campaign_start_time": 1755915083.798593,
+    "queries_processed": 1,
+    "urls_discovered": 4,
+    "leads_extracted": 0,
+    "leads_validated": 0,
+    "final_leads": 0,
+    "errors": 0
+  }
+}

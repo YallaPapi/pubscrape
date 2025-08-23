@@ -1,0 +1,477 @@
+# Anti-Detection Configuration
+# Comprehensive configuration for stealth web scraping and anti-detection measures
+
+# Global Anti-Detection Settings
+global:
+  stealth_level: "moderate"  # minimal, moderate, aggressive, maximum
+  enable_logging: true
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  statistics_retention_hours: 24
+  session_timeout_minutes: 30
+
+# User Agent Management
+user_agents:
+  rotation_enabled: true
+  rotation_interval_minutes: 5
+  pool_size: 20
+  
+  # User agent profiles with weights (higher = more likely to be selected)
+  profiles:
+    - user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      platform: "Windows"
+      browser: "Chrome"
+      version: "120.0.0.0"
+      weight: 15
+      mobile: false
+    
+    - user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      platform: "Windows"
+      browser: "Chrome"
+      version: "119.0.0.0"
+      weight: 12
+      mobile: false
+    
+    - user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      platform: "macOS"
+      browser: "Chrome"
+      version: "120.0.0.0"
+      weight: 10
+      mobile: false
+    
+    - user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      platform: "Windows"
+      browser: "Firefox"
+      version: "121.0"
+      weight: 8
+      mobile: false
+    
+    - user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
+      platform: "Windows"
+      browser: "Edge"
+      version: "120.0.0.0"
+      weight: 6
+      mobile: false
+    
+    - user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15"
+      platform: "macOS"
+      browser: "Safari"
+      version: "17.2"
+      weight: 5
+      mobile: false
+    
+    - user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      platform: "Linux"
+      browser: "Chrome"
+      version: "120.0.0.0"
+      weight: 4
+      mobile: false
+
+# Proxy Configuration
+proxies:
+  enabled: false  # Set to true to enable proxy rotation
+  rotation_strategy: "weighted"  # weighted, round_robin, random, geographic
+  rotation_interval_minutes: 10
+  health_check_enabled: true
+  health_check_interval_minutes: 5
+  health_check_url: "http://httpbin.org/ip"
+  concurrent_health_checks: 5
+  geographic_distribution: true
+  sticky_sessions: true
+  
+  # Proxy pool - add your proxies here
+  pool: []
+  #   - host: "proxy1.example.com"
+  #     port: 8080
+  #     type: "http"
+  #     username: "user1"
+  #     password: "pass1"
+  #     provider: "datacenter"
+  #     country: "US"
+  #     city: "New York"
+  #     max_failures: 5
+  #     concurrent_limit: 3
+  
+  # Proxy provider files (one proxy per line: host:port:user:pass)
+  files: []
+  #   - "/path/to/proxies.txt"
+
+# Rate Limiting Configuration
+rate_limiting:
+  adaptive_enabled: true
+  success_rate_threshold: 0.85
+  response_time_threshold: 5.0
+  adaptation_factor: 0.8
+  recovery_factor: 1.1
+  
+  # Exponential backoff
+  exponential_backoff:
+    enabled: true
+    base_seconds: 1.0
+    max_seconds: 300.0
+    multiplier: 2.0
+    jitter_factor: 0.1
+  
+  # Circuit breaker
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 5
+    success_threshold: 3
+    timeout_seconds: 300
+  
+  # Human-like patterns
+  human_patterns:
+    enabled: true
+    burst_probability: 0.1
+    idle_probability: 0.2
+    daily_peak_hours: [9, 10, 14, 15, 16]
+  
+  # Global rate limits
+  global:
+    requests_per_minute: 12
+    requests_per_hour: 200
+    max_concurrent_requests: 3
+    min_request_interval: 2.0
+  
+  # Domain-specific overrides
+  domain_overrides:
+    "bing.com":
+      requests_per_minute: 10
+      requests_per_hour: 150
+      min_request_interval: 3.0
+      max_concurrent_requests: 2
+    
+    "google.com":
+      requests_per_minute: 6
+      requests_per_hour: 100
+      min_request_interval: 5.0
+      max_concurrent_requests: 1
+    
+    "duckduckgo.com":
+      requests_per_minute: 6
+      requests_per_hour: 100
+      min_request_interval: 5.0
+      max_concurrent_requests: 1
+    
+    "yahoo.com":
+      requests_per_minute: 6
+      requests_per_hour: 100
+      min_request_interval: 5.0
+      max_concurrent_requests: 1
+
+# Human Behavior Simulation
+behavior_simulation:
+  enabled: true
+  intensity: "medium"  # minimal, low, medium, high, maximum
+  variability_factor: 0.3
+  
+  # Mouse behavior
+  mouse:
+    enabled: true
+    speed_range: [100, 300]  # pixels per second
+    path_curvature: 0.2
+    random_movements: true
+    idle_movements: true
+  
+  # Scrolling behavior
+  scrolling:
+    enabled: true
+    speed_range: [200, 800]  # pixels
+    pause_range: [0.1, 0.5]  # seconds
+    natural_patterns: true
+    read_scroll_behavior: true
+  
+  # Clicking behavior
+  clicking:
+    enabled: true
+    delay_range: [0.05, 0.2]
+    double_click_probability: 0.1
+    right_click_probability: 0.05
+  
+  # Typing behavior
+  typing:
+    enabled: true
+    speed_range: [40, 120]  # WPM
+    error_rate: 0.02
+    backspace_correction_probability: 0.8
+    pause_probability: 0.1
+  
+  # Reading and pauses
+  reading:
+    enabled: true
+    reading_speed_wpm: 200
+    content_scan_time: 2.0
+    focus_attention_span: [5.0, 30.0]  # seconds
+  
+  # Navigation behavior
+  navigation:
+    enabled: true
+    page_load_wait_range: [1.0, 3.0]
+    back_button_probability: 0.1
+    tab_switching_probability: 0.05
+  
+  # Idle behavior
+  idle:
+    movement_probability: 0.3
+    check_interval: 5.0
+    max_idle_time: 120.0
+  
+  # Behavior profiles
+  profiles:
+    careful_reader:
+      browsing_speed: 0.7
+      attention_span: 1.5
+      distraction_level: 0.05
+      precision: 0.9
+      scroll_preference: "smooth"
+      reading_pattern: "linear"
+      interaction_style: "careful"
+    
+    quick_scanner:
+      browsing_speed: 1.4
+      attention_span: 0.6
+      distraction_level: 0.2
+      precision: 0.7
+      scroll_preference: "step"
+      reading_pattern: "scanning"
+      interaction_style: "quick"
+    
+    distracted_browser:
+      browsing_speed: 1.1
+      attention_span: 0.4
+      distraction_level: 0.4
+      precision: 0.6
+      scroll_preference: "jerky"
+      reading_pattern: "skipping"
+      interaction_style: "exploratory"
+    
+    focused_researcher:
+      browsing_speed: 0.8
+      attention_span: 2.0
+      distraction_level: 0.02
+      precision: 0.95
+      scroll_preference: "smooth"
+      reading_pattern: "linear"
+      interaction_style: "careful"
+
+# Browser Configuration
+browser:
+  headless: false  # Set to true for headless mode
+  window_size: [1920, 1080]
+  profile_isolation: true
+  profile_base_path: "browser_profiles"
+  
+  # Resource blocking for performance and stealth
+  resource_blocking:
+    block_images: true
+    block_stylesheets: false
+    block_fonts: true
+    block_media: true
+    block_ads: true
+    block_analytics: true
+    
+    # File extensions to block
+    blocked_extensions:
+      - ".png"
+      - ".jpg"
+      - ".jpeg"
+      - ".gif"
+      - ".webp"
+      - ".svg"
+      - ".woff"
+      - ".woff2"
+      - ".ttf"
+      - ".otf"
+      - ".mp4"
+      - ".mp3"
+      - ".avi"
+      - ".mov"
+    
+    # URL patterns to block
+    blocked_patterns:
+      - "*analytics*"
+      - "*tracking*"
+      - "*ads*"
+      - "*facebook.com/tr*"
+      - "*google-analytics*"
+      - "*googletagmanager*"
+      - "*doubleclick*"
+  
+  # Stealth options
+  stealth:
+    webrtc_leak_protection: true
+    disable_blink_features: true
+    disable_extensions: true
+    disable_plugins: true
+    disable_notifications: true
+    disable_popups: true
+    navigator_override: true
+    webgl_vendor_override: true
+    timezone_override: true
+    geolocation_override: true
+
+# Session Management
+sessions:
+  rotation_interval_minutes: 30
+  cookie_persistence: true
+  max_concurrent_sessions: 5
+  cleanup_interval_minutes: 60
+  
+  # Session-specific overrides
+  overrides: {}
+
+# Detection Monitoring
+detection:
+  monitoring_enabled: true
+  
+  # Patterns that indicate detection
+  patterns:
+    cloudflare:
+      - "cloudflare"
+      - "cf-ray"
+      - "enable-javascript"
+      - "checking your browser"
+      - "please wait"
+      - "ddos protection"
+    
+    recaptcha:
+      - "recaptcha"
+      - "i'm not a robot"
+      - "verify you are human"
+      - "captcha"
+      - "prove you are not a robot"
+    
+    rate_limiting:
+      - "too many requests"
+      - "rate limit"
+      - "429"
+      - "slow down"
+      - "try again later"
+      - "request limit exceeded"
+    
+    bot_detection:
+      - "bot detected"
+      - "automated traffic"
+      - "suspicious activity"
+      - "access denied"
+      - "blocked"
+      - "forbidden"
+  
+  # Response to detection events
+  responses:
+    cloudflare:
+      action: "bypass_and_rotate"
+      delay_multiplier: 3.0
+      rotate_user_agent: true
+      rotate_proxy: true
+    
+    recaptcha:
+      action: "abort_and_rotate"
+      delay_multiplier: 5.0
+      rotate_user_agent: true
+      rotate_proxy: true
+    
+    rate_limiting:
+      action: "backoff_and_adapt"
+      delay_multiplier: 2.0
+      adaptive_reduction: 0.7
+    
+    bot_detection:
+      action: "full_rotation"
+      delay_multiplier: 4.0
+      rotate_user_agent: true
+      rotate_proxy: true
+      new_session: true
+
+# Botasaurus Integration
+botasaurus:
+  enabled: true
+  
+  # Botasaurus-specific settings
+  settings:
+    headless: false
+    block_images: true
+    reuse_driver: true
+    use_stealth: true
+    cloudflare_bypass: true
+    
+    # Browser options
+    browser_options:
+      window_size: "1920,1080"
+      disable_blink_features: "AutomationControlled"
+      exclude_switches: ["enable-automation"]
+      use_chromium: true
+      add_argument: 
+        - "--disable-blink-features=AutomationControlled"
+        - "--disable-extensions"
+        - "--no-sandbox"
+        - "--disable-application-cache"
+        - "--disable-gpu"
+        - "--no-default-browser-check"
+        - "--no-first-run"
+        - "--disable-default-apps"
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # File logging
+  file_logging:
+    enabled: true
+    file_path: "logs/anti_detection.log"
+    max_size_mb: 100
+    backup_count: 5
+    rotation: true
+  
+  # Component-specific log levels
+  components:
+    stealth_manager: "INFO"
+    proxy_rotator: "INFO"
+    behavior_simulator: "INFO"
+    rate_limiter: "INFO"
+    user_agent_manager: "DEBUG"
+
+# Monitoring and Statistics
+monitoring:
+  enabled: true
+  metrics_retention_hours: 168  # 1 week
+  export_interval_minutes: 30
+  
+  # Metrics to track
+  metrics:
+    - "request_count"
+    - "success_rate"
+    - "average_response_time"
+    - "detection_events"
+    - "circuit_breaker_trips"
+    - "proxy_failures"
+    - "user_agent_rotations"
+    - "backoff_events"
+    - "adaptation_events"
+  
+  # Export formats
+  export:
+    enabled: true
+    formats: ["json", "csv"]
+    destination: "metrics/"
+
+# Development and Testing
+development:
+  debug_mode: false
+  test_mode: false
+  
+  # Test URLs for validation
+  test_urls:
+    - "http://httpbin.org/user-agent"
+    - "http://httpbin.org/headers"
+    - "http://httpbin.org/ip"
+  
+  # Mock responses for testing
+  mock_responses: false
+  
+  # Validation checks
+  validation:
+    check_user_agents: true
+    check_proxies: true
+    check_rate_limits: true
+    check_detection_patterns: true

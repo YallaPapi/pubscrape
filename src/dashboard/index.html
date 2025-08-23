@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Scraper Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-robot"></i> Business Scraper Dashboard</h1>
+                <div class="status-indicator" id="connectionStatus">
+                    <span class="status-dot offline"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" id="startScraping">
+                    <i class="fas fa-play"></i> Start Scraping
+                </button>
+                <button class="btn btn-danger" id="stopScraping" disabled>
+                    <i class="fas fa-stop"></i> Stop Scraping
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Left Panel - Configuration -->
+            <div class="left-panel">
+                <div class="config-section">
+                    <h3><i class="fas fa-cog"></i> Configuration</h3>
+                    
+                    <div class="form-group">
+                        <label>Search Query</label>
+                        <div class="input-group">
+                            <input type="text" id="businessType" placeholder="e.g., restaurants" value="restaurants">
+                            <span class="input-separator">in</span>
+                            <input type="text" id="location" placeholder="e.g., New York" value="New York">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lead Count: <span id="leadCountValue">100</span></label>
+                        <input type="range" id="leadCount" min="10" max="1000" value="100" class="slider">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Geographic Region</label>
+                        <select id="region">
+                            <option value="us">United States</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="ca">Canada</option>
+                            <option value="au">Australia</option>
+                            <option value="global">Global</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Anti-Detection Level</label>
+                        <select id="antiDetection">
+                            <option value="low">Low (Fast)</option>
+                            <option value="medium" selected>Medium (Balanced)</option>
+                            <option value="high">High (Stealth)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Export Format</label>
+                        <select id="exportFormat">
+                            <option value="csv">CSV</option>
+                            <option value="json">JSON</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Live Screenshots -->
+                <div class="screenshot-section">
+                    <h3><i class="fas fa-camera"></i> Live Browser Activity</h3>
+                    <div class="screenshot-carousel" id="screenshotCarousel">
+                        <div class="screenshot-placeholder">
+                            <i class="fas fa-image"></i>
+                            <p>Screenshots will appear here during scraping</p>
+                        </div>
+                    </div>
+                    <div class="screenshot-controls">
+                        <button class="btn btn-sm" id="prevScreenshot"><i class="fas fa-chevron-left"></i></button>
+                        <span class="screenshot-counter">0 / 0</span>
+                        <button class="btn btn-sm" id="nextScreenshot"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Progress and Charts -->
+            <div class="center-panel">
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-card">
+                        <h3><i class="fas fa-tasks"></i> Scraping Progress</h3>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <span class="stat-value" id="totalProgress">0%</span>
+                                <span class="stat-label">Complete</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="leadsExtracted">0</span>
+                                <span class="stat-label">Leads Found</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="successRate">0%</span>
+                                <span class="stat-label">Success Rate</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="avgTime">0s</span>
+                                <span class="stat-label">Avg Time/Lead</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="mainProgressBar">
+                                <div class="progress-fill"></div>
+                            </div>
+                        </div>
+                        <div class="current-activity" id="currentActivity">
+                            Ready to start scraping...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <canvas id="leadsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Live Data and Logs -->
+            <div class="right-panel">
+                <!-- Live Data Table -->
+                <div class="data-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-table"></i> Live Data</h3>
+                        <button class="btn btn-sm btn-success" id="exportData" disabled>
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                    <div class="data-table-container" id="dataTableContainer">
+                        <table class="data-table" id="liveDataTable">
+                            <thead>
+                                <tr>
+                                    <th>Business Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Website</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Console Logs -->
+                <div class="logs-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-terminal"></i> Console Logs</h3>
+                        <button class="btn btn-sm" id="clearLogs">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="logs-container" id="logsContainer">
+                        <div class="log-entry info">
+                            <span class="log-time">00:00:00</span>
+                            <span class="log-message">Dashboard initialized</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Metrics Bar -->
+        <div class="metrics-bar">
+            <div class="metric-item">
+                <i class="fas fa-memory"></i>
+                <span>Memory: <span id="memoryUsage">0 MB</span></span>
+            </div>
+            <div class="metric-item">
+                <i class="fas fa-microchip"></i>
+                <span>CPU: <span id="cpuUsage">0%</span></span>
+            </div>
+            <div class="metric-item">
+                <i class="fas fa-network-wired"></i>
+                <span>Requests/min: <span id="requestRate">0</span></span>
+            </div>
+            <div class="metric-item">
+                <i class="fas fa-clock"></i>
+                <span>Runtime: <span id="runtime">00:00:00</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div class="modal" id="screenshotModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalScreenshot" src="" alt="Browser Screenshot">
+            <div class="modal-caption">
+                <p id="screenshotCaption">Screenshot details</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

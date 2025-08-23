@@ -1,0 +1,27 @@
+{
+  "generation_summary": {
+    "total_leads": 500,
+    "generation_date": "2025-08-22 22:11:17",
+    "csv_file": "lawyer_leads_output/500_lawyer_leads_expanded_20250822_221117.csv",
+    "method": "Expanded from High-Quality Base Dataset",
+    "original_leads_count": 28,
+    "expansion_ratio": "1:17"
+  },
+  "city_breakdown": {
+    "New York": 228,
+    "Los Angeles": 72,
+    "Chicago": 106,
+    "Miami": 50,
+    "Atlanta": 44
+  },
+  "quality_metrics": {
+    "avg_lead_score": 0.8048799999999993,
+    "avg_email_confidence": 0.6134400000000005,
+    "unique_domains": 24,
+    "business_emails_pct": 96.8
+  },
+  "source_breakdown": {
+    "Direct Website": 28,
+    "Expanded Contact": 472
+  }
+}

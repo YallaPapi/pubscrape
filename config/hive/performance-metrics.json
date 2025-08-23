@@ -1,0 +1,67 @@
+{
+  "performance_metrics": {
+    "coordination_effectiveness": {
+      "task_completion_rate": {
+        "target": ">95%",
+        "measurement": "successful_tasks / total_tasks",
+        "alert_threshold": "<90%"
+      },
+      "time_to_market": {
+        "target": "delivery_time <= estimate + 10%", 
+        "measurement": "actual_delivery - estimated_delivery",
+        "alert_threshold": ">20% over estimate"
+      },
+      "resource_utilization": {
+        "target": "70-85% average utilization",
+        "measurement": "active_time / total_time per agent",
+        "alert_threshold": ">90% or <50%"
+      }
+    },
+    "quality_metrics": {
+      "defect_rate": {
+        "target": "<5%",
+        "measurement": "rework_tasks / completed_tasks", 
+        "alert_threshold": ">10%"
+      },
+      "compliance_score": {
+        "target": "100%",
+        "measurement": "passed_quality_gates / total_quality_gates",
+        "alert_threshold": "<95%"
+      },
+      "customer_satisfaction": {
+        "target": ">4.0/5.0",
+        "measurement": "stakeholder_feedback_average",
+        "alert_threshold": "<3.5/5.0"
+      }
+    },
+    "communication_metrics": {
+      "response_time": {
+        "target": "<5 minutes for status updates",
+        "measurement": "response_time_average",
+        "alert_threshold": ">10 minutes"
+      },
+      "sync_effectiveness": {
+        "target": ">90% attendance at sync points",
+        "measurement": "attended_syncs / total_syncs", 
+        "alert_threshold": "<80%"
+      },
+      "escalation_speed": {
+        "target": "<60 seconds for critical issues",
+        "measurement": "escalation_time_average",
+        "alert_threshold": ">120 seconds"
+      }
+    },
+    "fault_tolerance_metrics": {
+      "recovery_time": {
+        "target": "<30 seconds for auto-healing",
+        "measurement": "failure_detection_to_recovery",
+        "alert_threshold": ">60 seconds"
+      },
+      "success_after_retry": {
+        "target": ">90% tasks succeed within 3 retries",
+        "measurement": "recovered_tasks / failed_tasks",
+        "alert_threshold": "<75%"
+      }
+    }
+  }
+}

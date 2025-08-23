@@ -1,0 +1,117 @@
+{
+  "hive_structure": {
+    "topology": "hierarchical",
+    "coordination_model": "queen-led",
+    "swarm_id": "swarm-1755889040327-rduas4bnv",
+    "max_agents": 12,
+    "queen": {
+      "role": "hierarchical_coordinator",
+      "responsibilities": [
+        "Strategic planning and task decomposition",
+        "Agent supervision and delegation", 
+        "Coordination protocol management",
+        "Performance monitoring and optimization"
+      ],
+      "coordination_rules": [
+        "delegate_by_capability",
+        "monitor_every_5min", 
+        "escalate_on_delay_20pct",
+        "maintain_one_task_in_progress"
+      ]
+    },
+    "worker_specialists": {
+      "research_worker": {
+        "agent_id": "agent-1755889046764-ps9qyvm40",
+        "name": "research-specialist",
+        "capabilities": [
+          "research",
+          "analysis", 
+          "information_gathering",
+          "market_research"
+        ],
+        "hierarchy_level": 1,
+        "use_cases": [
+          "Requirements analysis",
+          "Technology research", 
+          "Feasibility studies",
+          "Competitive analysis"
+        ]
+      },
+      "code_worker": {
+        "agent_id": "agent-1755889052152-isd3ggurt", 
+        "name": "code-specialist",
+        "capabilities": [
+          "code_generation",
+          "implementation",
+          "optimization", 
+          "testing"
+        ],
+        "hierarchy_level": 1,
+        "use_cases": [
+          "Feature development",
+          "Bug fixes",
+          "Code optimization",
+          "Technical implementation"
+        ]
+      },
+      "analyst_worker": {
+        "agent_id": "agent-1755889057389-jgvihaw2z",
+        "name": "data-specialist", 
+        "capabilities": [
+          "data_analysis",
+          "performance_monitoring",
+          "reporting",
+          "metrics"
+        ],
+        "hierarchy_level": 1,
+        "use_cases": [
+          "Metrics analysis",
+          "Performance optimization", 
+          "Reporting",
+          "Data insights"
+        ]
+      },
+      "test_worker": {
+        "agent_id": "agent-1755889062761-8m8xf391l",
+        "name": "qa-specialist",
+        "capabilities": [
+          "testing",
+          "validation",
+          "quality_assurance", 
+          "compliance"
+        ],
+        "hierarchy_level": 1,
+        "use_cases": [
+          "Testing and validation",
+          "Quality gates",
+          "Compliance checking",
+          "Quality assurance"
+        ]
+      }
+    },
+    "delegation_patterns": {
+      "assignment_strategy": "capability_based_assignment",
+      "load_balancing": "workload_balancing", 
+      "priority_handling": "priority_queuing",
+      "escalation": "escalation_protocols"
+    },
+    "communication_protocols": {
+      "status_reporting": "5_minute_intervals",
+      "sync_points": "daily_standups",
+      "escalation_thresholds": "auto_alerts", 
+      "cross_team_coordination": "handoff_protocols"
+    },
+    "fault_tolerance": {
+      "auto_healing": "enabled",
+      "worker_redundancy": "enabled", 
+      "task_retry": "3_attempts",
+      "escalation_timeout": "60_seconds"
+    },
+    "resource_management": {
+      "auto_scaling": "enabled",
+      "max_workers_per_type": 3,
+      "load_balancing": "capability_based",
+      "priority_queuing": "enabled"
+    }
+  }
+}

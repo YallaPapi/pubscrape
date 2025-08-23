@@ -1,0 +1,55 @@
+# Claude Flow Configuration Template
+# Copy this to your new projects
+
+version: "2.0.0"
+name: "project-hive-coordination"
+
+# MCP Tools Configuration
+mcp:
+  server: "claude-flow"
+  version: "alpha"
+  tools:
+    - swarm_init
+    - agent_spawn  
+    - task_orchestrate
+    - swarm_status
+    - agent_list
+    - memory_usage
+
+# Agent Configuration
+agents:
+  max_agents: 16
+  default_topology: "hierarchical"
+  scaling:
+    min_workers: 4
+    max_workers: 12
+    scale_threshold: 0.8
+
+# Coordination Patterns
+coordination:
+  batch_operations: true
+  concurrent_execution: true
+  hook_commands: false  # CRITICAL: Never use hooks
+  
+# File Organization
+file_structure:
+  src: "source code"
+  tests: "test files"
+  docs: "documentation" 
+  config: "configuration"
+  scripts: "utility scripts"
+  examples: "example code"
+
+# Performance Targets
+performance:
+  task_success_rate: 0.95
+  token_reduction: 0.32
+  speed_improvement: 2.8
+  recovery_time: 30  # seconds
+
+# Quality Gates
+quality:
+  concurrent_batching: required
+  mcp_only_tools: required
+  file_organization: required
+  taskmaster_research: preferred

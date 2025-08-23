@@ -1,0 +1,105 @@
+{
+  "hive": {
+    "name": "VRSEN-Hive-Coordination",
+    "version": "1.0.0",
+    "topology": "hierarchical-hive",
+    "created": "2025-08-22T18:56:00Z",
+    "structure": {
+      "queen": {
+        "role": "master-coordinator",
+        "agent_type": "hierarchical-coordinator",
+        "responsibilities": [
+          "strategic_planning",
+          "resource_allocation",
+          "task_orchestration",
+          "performance_monitoring",
+          "fault_tolerance_management"
+        ],
+        "max_workers": 12,
+        "scaling_policy": "adaptive"
+      },
+      "worker_castes": {
+        "foragers": {
+          "specialization": "data_collection",
+          "agents": ["researcher", "code-analyzer", "github-modes"],
+          "min_count": 2,
+          "max_count": 4,
+          "scaling_metric": "data_volume"
+        },
+        "builders": {
+          "specialization": "implementation",
+          "agents": ["coder", "backend-dev", "sparc-coder"],
+          "min_count": 2,
+          "max_count": 6,
+          "scaling_metric": "task_complexity"
+        },
+        "guardians": {
+          "specialization": "quality_assurance",
+          "agents": ["tester", "reviewer", "security-manager"],
+          "min_count": 1,
+          "max_count": 3,
+          "scaling_metric": "code_changes"
+        },
+        "nurses": {
+          "specialization": "maintenance",
+          "agents": ["cicd-engineer", "production-validator", "performance-benchmarker"],
+          "min_count": 1,
+          "max_count": 2,
+          "scaling_metric": "system_health"
+        }
+      }
+    },
+    "communication": {
+      "protocol": "queen-worker-mesh",
+      "channels": {
+        "command": "queen_to_workers",
+        "report": "workers_to_queen", 
+        "coordination": "worker_to_worker",
+        "emergency": "broadcast_all"
+      },
+      "message_types": {
+        "task_assignment": "priority_queue",
+        "status_report": "periodic_batch",
+        "coordination_request": "immediate",
+        "fault_notification": "emergency_broadcast"
+      }
+    },
+    "adaptive_scaling": {
+      "enabled": true,
+      "metrics": [
+        "task_queue_length",
+        "worker_utilization",
+        "response_time",
+        "error_rate"
+      ],
+      "thresholds": {
+        "scale_up": {
+          "queue_length": 10,
+          "utilization": 0.8,
+          "response_time": 5000
+        },
+        "scale_down": {
+          "queue_length": 2,
+          "utilization": 0.3,
+          "idle_time": 300000
+        }
+      }
+    },
+    "fault_tolerance": {
+      "redundancy": {
+        "critical_roles": ["queen", "foragers"],
+        "backup_count": 1
+      },
+      "health_checks": {
+        "interval": 30000,
+        "timeout": 10000,
+        "max_failures": 3
+      },
+      "recovery": {
+        "auto_restart": true,
+        "failover_delay": 5000,
+        "state_persistence": true
+      }
+    }
+  }
+}

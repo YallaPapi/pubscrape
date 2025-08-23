@@ -1,0 +1,47 @@
+# Task ID: 65
+# Title: Business Website Classification & Prioritization
+# Status: done
+# Dependencies: 64
+# Priority: medium
+# Description: Develop DomainClassifier agent to prioritize SMB/business sites and detect platform hints (WordPress, Shopify, etc.).
+# Details:
+- Deduplicate domains and probe for platform hints using HEAD/GET requests (e.g., /wp-json, headers).
+- Score and filter domains, tagging website_type.
+- Queue domains for crawling with per-domain budgets.
+- Use requests v2.31+ for lightweight probes.
+- Log platform hit rates and exclusion reasons.
+
+# Test Strategy:
+Unit test platform detection logic; integration test with sample domains; verify output contains correct website_type and filtered list; logs should show hit rates.
+
+# Subtasks:
+## 1. Domain Deduplication and Data Structure Setup [done]
+### Dependencies: None
+### Description: Create the core DomainClassifier class with methods to deduplicate domains and establish the data structures needed for classification and prioritization.
+### Details:
+Implement a DomainClassifier class that accepts a list of domains and removes duplicates. Create a data structure to track domain metadata including platform type, business score, and crawl priority. Include methods to normalize domains (strip www, handle redirects) and prepare them for probing. Set up logging configuration to track classification metrics.
+
+## 2. Platform Detection Probing System [done]
+### Dependencies: 65.1
+### Description: Implement lightweight HTTP probing to detect website platforms (WordPress, Shopify, etc.) using HEAD/GET requests and response analysis.
+### Details:
+Create methods to perform HEAD requests to domains with proper timeout handling. Implement platform detection logic by checking for platform-specific endpoints (e.g., /wp-json for WordPress, /cdn.shopify.com in HTML for Shopify) and response headers. Use requests v2.31+ for efficient probing. Create a registry of platform signatures and detection methods. Implement retry logic with exponential backoff for failed requests.
+
+## 3. Business Website Scoring Algorithm [done]
+### Dependencies: 65.2
+### Description: Develop a scoring system to identify and prioritize SMB/business websites based on platform hints and other signals.
+### Details:
+Implement a scoring algorithm that assigns weights to different business signals (e.g., higher scores for WordPress business themes, Shopify stores, business-related keywords in URLs). Create methods to analyze domain names and initial HTML content for business indicators. Implement thresholds for classifying sites as business/non-business. Tag each domain with a website_type classification (business, personal, unknown, etc.) based on the scoring results.
+
+## 4. Domain Prioritization and Crawl Budget Assignment [done]
+### Dependencies: 65.3
+### Description: Create a system to prioritize domains for crawling and assign appropriate per-domain crawl budgets based on classification results.
+### Details:
+Implement a prioritization algorithm that ranks domains based on business score and platform type. Assign crawl budgets (max_pages_per_site) to each domain based on its priority and classification. Create a queue system that orders domains for crawling according to their priority. Implement methods to export the prioritized domain list with their associated metadata and crawl budgets for the SiteCrawler agent.
+
+## 5. Metrics Collection and Reporting System [done]
+### Dependencies: 65.2, 65.3, 65.4
+### Description: Implement comprehensive logging and reporting of classification results, platform detection rates, and filtering decisions.
+### Details:
+Create a reporting system that logs platform hit rates (percentage of sites detected as WordPress, Shopify, etc.). Implement detailed logging of exclusion reasons for filtered domains. Generate summary statistics on classification results (counts by website_type, average scores). Create methods to export classification results in various formats (JSON, CSV) for analysis. Implement performance metrics tracking (processing time per domain, total classification time).
+

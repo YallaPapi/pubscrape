@@ -1,0 +1,47 @@
+# Task ID: 66
+# Title: Website Visit & Page Discovery
+# Status: done
+# Dependencies: 65
+# Priority: high
+# Description: Implement SiteCrawler agent to visit prioritized pages on business sites using Botasaurus, respecting robots.txt and error policies.
+# Details:
+- Fetch home page, discover links to contact/about/footer/privacy/legal/sitemap.
+- Crawl up to max_pages_per_site per config, with polite delays and robots.txt checks.
+- On block/challenge, retry once with longer wait, then skip and log.
+- Integrate with AntiDetectionSupervisor for session policies.
+- Log per-domain latencies, retries, and challenge signals.
+
+# Test Strategy:
+Integration test crawling prioritized pages for sample domains; simulate blocks/challenges and verify skip/retry logic; logs should show crawl budgets and error handling.
+
+# Subtasks:
+## 1. Implement Home Page Fetching & Link Discovery [done]
+### Dependencies: None
+### Description: Create functionality to fetch a website's home page and discover important links like contact, about, footer, privacy, legal, and sitemap pages.
+### Details:
+Develop methods to fetch the home page HTML using Botasaurus, parse the DOM, and identify priority links based on URL patterns, link text, and HTML structure. Implement link classification to categorize discovered pages by type (contact, about, etc.). Store discovered links in a structured format for further crawling.
+
+## 2. Implement Robots.txt Compliance & Crawl Policies [done]
+### Dependencies: 66.1
+### Description: Build functionality to respect robots.txt directives and implement configurable crawl policies including page limits and polite delays.
+### Details:
+Create a robots.txt parser that extracts and interprets directives. Implement a crawl scheduler that respects allowed/disallowed paths and crawl-delay directives. Add configurable max_pages_per_site limit and implement polite delays between requests with randomized jitter. Create a priority queue system for crawling discovered links based on their importance.
+
+## 3. Develop Error Handling & Retry Logic [done]
+### Dependencies: 66.2
+### Description: Implement robust error handling for various HTTP errors, blocks, and challenge pages with appropriate retry policies.
+### Details:
+Create detection mechanisms for common block/challenge pages (CAPTCHA, WAF blocks, etc.). Implement retry logic with exponential backoff for temporary errors. For blocks/challenges, retry once with a longer wait time, then skip and log the issue. Handle common HTTP errors (4xx, 5xx) with appropriate responses. Create detailed error logging for troubleshooting.
+
+## 4. Integrate with AntiDetectionSupervisor [done]
+### Dependencies: 66.3
+### Description: Connect SiteCrawler with the AntiDetectionSupervisor to manage browser sessions, proxies, and anti-detection measures.
+### Details:
+Integrate with AntiDetectionSupervisor to obtain browser sessions with appropriate configurations. Implement session rotation policies based on domain, error counts, or time thresholds. Configure resource blocking (.png, .jpg, .css) per domain requirements. Set up proxy rotation and user-agent management through the supervisor. Implement domain-specific overrides for detection sensitivity.
+
+## 5. Implement Comprehensive Logging & Metrics [done]
+### Dependencies: 66.4
+### Description: Create detailed logging system to track per-domain latencies, retries, challenge signals, and crawl statistics.
+### Details:
+Develop structured logging for all crawler operations. Track and report per-domain metrics including latency distributions, retry counts, and challenge frequency. Log discovered page counts by type (contact, about, etc.). Create summary reports for crawl sessions with success/failure rates. Implement configurable verbosity levels for debugging and production use.
+

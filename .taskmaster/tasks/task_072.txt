@@ -1,0 +1,94 @@
+# Task ID: 72
+# Title: Fix Broken Logger in src/utils/logger.py
+# Status: pending
+# Dependencies: 60, 63
+# Priority: high
+# Description: Repair the broken logger module in src/utils/logger.py to ensure proper CLI functionality and enable consistent logging across the application.
+# Details:
+1. **Analyze Current Logger Issues**:
+   - Examine the existing logger implementation in src/utils/logger.py
+   - Identify specific failure points causing CLI breakage
+   - Document current logging patterns and expected behavior
+
+2. **Implement Fixes**:
+   - Correct import statements and dependency issues
+   - Fix configuration loading if applicable
+   - Ensure proper log level handling (DEBUG, INFO, WARNING, ERROR)
+   - Implement proper file and console handlers
+   - Add rotation policy for log files to prevent excessive growth
+   - Ensure thread-safety for concurrent operations
+
+3. **Standardize Logger Interface**:
+   - Create consistent logging methods (log_info, log_error, log_debug, etc.)
+   - Add context parameters for component/module identification
+   - Implement structured logging with JSON format option
+   - Add timestamp and severity level standardization
+
+4. **Integration with Botasaurus**:
+   - Ensure compatibility with Botasaurus logging mechanisms
+   - Implement proper log capture from Botasaurus operations
+   - Create appropriate log filtering for Botasaurus verbose output
+
+5. **Error Handling**:
+   - Add graceful fallbacks if logging initialization fails
+   - Implement log buffering for high-volume operations
+   - Add error reporting for logging failures
+
+6. **Documentation**:
+   - Add docstrings explaining logger usage
+   - Include examples for different logging scenarios
+   - Document configuration options
+
+# Test Strategy:
+1. **Unit Testing**:
+   - Create unit tests for each logger method
+   - Verify correct log level filtering
+   - Test file and console output formatting
+   - Validate rotation policies work correctly
+   - Test thread-safety with concurrent logging
+
+2. **Integration Testing**:
+   - Run CLI commands that use the logger and verify output
+   - Test integration with Botasaurus operations
+   - Verify logs are properly captured during scraping operations
+   - Check error scenarios are properly logged
+
+3. **Manual Verification**:
+   - Execute the CLI with various commands and confirm logs appear correctly
+   - Verify log files are created in the expected location
+   - Check log format is consistent and readable
+   - Confirm timestamps and severity levels are accurate
+
+4. **Regression Testing**:
+   - Run existing automated tests to ensure logging changes don't break functionality
+   - Verify all components that depend on the logger still function correctly
+
+5. **Performance Testing**:
+   - Measure logging overhead to ensure it doesn't significantly impact performance
+   - Test with high-volume logging to verify system stability
+
+# Subtasks:
+## 1. Quarantine fake generators [pending]
+### Dependencies: None
+### Description: Move clearly fake/synthetic generators to cleanup/deleted_fake_generators/ (keep history)
+### Details:
+Move files present: real_business_scraper.py, generate_100_doctor_leads.py.
+
+## 2. Fix logger syntax in src/utils/logger.py [pending]
+### Dependencies: None
+### Description: Repair corrupted newline block causing SyntaxError and restore handlers/structlog section
+### Details:
+
+
+## 3. Add real Google Maps scraper [pending]
+### Dependencies: None
+### Description: Create src/scrapers/google_maps_scraper.py per cleanup plan with @browser decorator and extraction
+### Details:
+
+
+## 4. Add real website email extractor [pending]
+### Dependencies: None
+### Description: Create src/scrapers/email_extractor.py per cleanup plan with @browser decorator and regex extraction
+### Details:
+
+

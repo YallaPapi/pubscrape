@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "recoveryTimes": {
+      "average": 2532.6133302207786,
+      "max": 3612.56081944113,
+      "min": 1452.665841000427,
+      "count": 2
+    },
+    "scalingEfficiency": {
+      "average": 0.6374620469292933,
+      "max": 0.6374620469292933,
+      "min": 0.6374620469292933
+    },
+    "resilienceScores": {
+      "average": 0.6971955775609947,
+      "max": 0.6971955775609947,
+      "min": 0.6971955775609947
+    },
+    "throughputAnalysis": {
+      "average": 105.62442559238568,
+      "peak": 105.62442559238568,
+      "minimum": 105.62442559238568
+    }
+  },
+  "benchmarks": {
+    "recoveryTimeBenchmark": "< 5 seconds",
+    "resilienceScoreBenchmark": "> 0.7",
+    "scalingEfficiencyBenchmark": "> 0.6",
+    "throughputRetentionBenchmark": "> 80%"
+  },
+  "trends": "Trending analysis requires historical data",
+  "bottlenecks": [
+    "Recovery time optimization",
+    "Scaling efficiency"
+  ],
+  "optimizationOpportunities": [
+    "Worker pool management",
+    "Health check frequency"
+  ]
+}

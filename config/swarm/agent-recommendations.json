@@ -1,0 +1,169 @@
+{
+  "agent_spawn_recommendations": {
+    "priority_order": [
+      {
+        "phase": "initialization",
+        "agents": [
+          {
+            "type": "hierarchical-coordinator",
+            "role": "queen",
+            "priority": 1,
+            "spawn_command": "hierarchical-coordinator --role=queen --authority=absolute --span=8",
+            "resources": {
+              "cpu_allocation": "high",
+              "memory_mb": 512,
+              "priority": "realtime"
+            }
+          }
+        ]
+      },
+      {
+        "phase": "lieutenant_deployment", 
+        "agents": [
+          {
+            "type": "adaptive-coordinator",
+            "role": "lieutenant-alpha",
+            "priority": 2,
+            "spawn_command": "adaptive-coordinator --role=lieutenant --team=alpha --span=4",
+            "resources": {
+              "cpu_allocation": "medium",
+              "memory_mb": 256,
+              "priority": "high"
+            }
+          },
+          {
+            "type": "adaptive-coordinator", 
+            "role": "lieutenant-beta",
+            "priority": 2,
+            "spawn_command": "adaptive-coordinator --role=lieutenant --team=beta --span=4",
+            "resources": {
+              "cpu_allocation": "medium", 
+              "memory_mb": 256,
+              "priority": "high"
+            }
+          }
+        ]
+      },
+      {
+        "phase": "worker_specialization",
+        "agents": [
+          {
+            "type": "coder",
+            "role": "implementation-specialist-1",
+            "priority": 3,
+            "spawn_command": "coder --specialization=implementation --team=alpha",
+            "resources": {
+              "cpu_allocation": "medium",
+              "memory_mb": 128,
+              "priority": "normal"
+            }
+          },
+          {
+            "type": "coder",
+            "role": "implementation-specialist-2", 
+            "priority": 3,
+            "spawn_command": "coder --specialization=implementation --team=beta",
+            "resources": {
+              "cpu_allocation": "medium",
+              "memory_mb": 128,
+              "priority": "normal"
+            }
+          },
+          {
+            "type": "tester",
+            "role": "validation-specialist-1",
+            "priority": 4,
+            "spawn_command": "tester --specialization=validation --team=alpha",
+            "resources": {
+              "cpu_allocation": "low",
+              "memory_mb": 96,
+              "priority": "normal"
+            }
+          },
+          {
+            "type": "tester",
+            "role": "validation-specialist-2",
+            "priority": 4, 
+            "spawn_command": "tester --specialization=validation --team=beta",
+            "resources": {
+              "cpu_allocation": "low",
+              "memory_mb": 96,
+              "priority": "normal"
+            }
+          },
+          {
+            "type": "researcher",
+            "role": "analysis-specialist",
+            "priority": 5,
+            "spawn_command": "researcher --specialization=analysis --team=shared",
+            "resources": {
+              "cpu_allocation": "low",
+              "memory_mb": 64,
+              "priority": "low"
+            }
+          },
+          {
+            "type": "reviewer",
+            "role": "quality-specialist", 
+            "priority": 5,
+            "spawn_command": "reviewer --specialization=quality --team=shared",
+            "resources": {
+              "cpu_allocation": "low",
+              "memory_mb": 64,
+              "priority": "low"
+            }
+          }
+        ]
+      },
+      {
+        "phase": "fault_tolerance",
+        "agents": [
+          {
+            "type": "byzantine-coordinator",
+            "role": "queen-backup",
+            "priority": 6,
+            "spawn_command": "byzantine-coordinator --role=backup-queen --standby=hot",
+            "resources": {
+              "cpu_allocation": "low",
+              "memory_mb": 256,
+              "priority": "low"
+            },
+            "activation_triggers": [
+              "queen_failure",
+              "queen_overload",
+              "manual_failover"
+            ]
+          }
+        ]
+      }
+    ],
+    "scaling_recommendations": {
+      "light_workload": {
+        "total_agents": 6,
+        "composition": "1 queen + 1 lieutenant + 2 coders + 1 tester + 1 researcher"
+      },
+      "medium_workload": {
+        "total_agents": 8,
+        "composition": "1 queen + 2 lieutenants + 2 coders + 2 testers + 1 reviewer"
+      },
+      "heavy_workload": {
+        "total_agents": 10,
+        "composition": "1 queen + 2 lieutenants + 3 coders + 2 testers + 1 researcher + 1 reviewer"
+      },
+      "critical_workload": {
+        "total_agents": 12,
+        "composition": "1 queen + 1 backup + 2 lieutenants + 4 coders + 2 testers + 1 researcher + 1 reviewer"
+      }
+    },
+    "resource_allocation": {
+      "total_cpu_cores": 4,
+      "total_memory_mb": 2048,
+      "allocation_strategy": "priority_weighted",
+      "resource_limits": {
+        "max_cpu_per_agent": 50,
+        "max_memory_per_agent": 512,
+        "emergency_reserve": 20
+      }
+    }
+  }
+}

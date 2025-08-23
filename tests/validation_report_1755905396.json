@@ -1,0 +1,121 @@
+{
+  "file_structure": {
+    "status": "PASSED",
+    "existing_files": [
+      "test_suite.py",
+      "conftest.py",
+      "run_test_suite.py",
+      "fixtures/google_maps_samples.html",
+      "fixtures/bing_maps_samples.html",
+      "fixtures/business_websites/medical_practice.html",
+      "fixtures/business_websites/law_firm.html",
+      "fixtures/business_websites/restaurant.html"
+    ],
+    "missing_files": [],
+    "total_files": 8,
+    "files_found": 8
+  },
+  "test_structure": {
+    "status": "PASSED",
+    "classes_found": [
+      "TestDataFactory",
+      "AntiDetectionTestSuite",
+      "PerformanceTestSuite",
+      "IntegrationTestSuite",
+      "DataQualityTestSuite",
+      "MockDataTestSuite",
+      "TestSuiteRunner"
+    ],
+    "missing_classes": [],
+    "methods_found": [
+      "test_bypass_cloudflare_functionality",
+      "test_load_testing_1000_leads",
+      "test_complete_lead_generation_workflow",
+      "test_email_extraction_accuracy",
+      "create_business_lead"
+    ],
+    "missing_methods": [],
+    "file_size_kb": 79
+  },
+  "fixtures": {
+    "fixtures/google_maps_samples.html": {
+      "status": "PASSED",
+      "size_kb": 8,
+      "found_content": [
+        "Northwestern Medicine",
+        "business-name",
+        "contact-info"
+      ],
+      "missing_content": []
+    },
+    "fixtures/bing_maps_samples.html": {
+      "status": "PASSED",
+      "size_kb": 10,
+      "found_content": [
+        "Baker Botts",
+        "businessListing",
+        "contactInfo"
+      ],
+      "missing_content": []
+    },
+    "fixtures/business_websites/medical_practice.html": {
+      "status": "PASSED",
+      "size_kb": 9,
+      "found_content": [
+        "Chicago Premier Medical",
+        "info@chicagopremiermedicine.com"
+      ],
+      "missing_content": []
+    },
+    "fixtures/business_websites/law_firm.html": {
+      "status": "PASSED",
+      "size_kb": 11,
+      "found_content": [
+        "Smith & Associates",
+        "contact@smithlawchicago.com"
+      ],
+      "missing_content": []
+    },
+    "fixtures/business_websites/restaurant.html": {
+      "status": "PASSED",
+      "size_kb": 14,
+      "found_content": [
+        "Bella Vista",
+        "info@bellavistachicago.com"
+      ],
+      "missing_content": []
+    }
+  },
+  "coverage": {
+    "Anti-Detection": {
+      "total_tests": 5,
+      "found_tests": 5,
+      "coverage_percentage": 100.0,
+      "status": "PASSED"
+    },
+    "Performance": {
+      "total_tests": 4,
+      "found_tests": 4,
+      "coverage_percentage": 100.0,
+      "status": "PASSED"
+    },
+    "Integration": {
+      "total_tests": 4,
+      "found_tests": 4,
+      "coverage_percentage": 100.0,
+      "status": "PASSED"
+    },
+    "Data Quality": {
+      "total_tests": 4,
+      "found_tests": 3,
+      "coverage_percentage": 75.0,
+      "status": "WARNING"
+    },
+    "Mock Data": {
+      "total_tests": 3,
+      "found_tests": 3,
+      "coverage_percentage": 100.0,
+      "status": "PASSED"
+    }
+  }
+}

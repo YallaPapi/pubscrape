@@ -1,0 +1,26 @@
+name,email,phone,website,address,category,scraped_at
+Law Firm 1,info@example-business-1.com,(555) 175-3662,https://example-business-1.com,"1584 Main St, Miami FL",restaurant,2025-08-22T19:57:33.353673
+Law Firm 2,info@example-business-2.com,(555) 322-7151,https://example-business-2.com,"4437 Main St, Chicago IL",restaurant,2025-08-22T19:57:33.353673
+Restaurant 3,info@example-business-3.com,(555) 813-3781,https://example-business-3.com,"7395 Main St, Miami FL",medical clinic,2025-08-22T19:57:33.353673
+Dental Clinic 4,info@example-business-4.com,(555) 801-2083,https://example-business-4.com,"6295 Main St, Houston TX",restaurant,2025-08-22T19:57:33.353673
+Medical Clinic 5,info@example-business-5.com,(555) 308-3744,https://example-business-5.com,"5422 Main St, Chicago IL",restaurant,2025-08-22T19:57:33.353673
+Dental Clinic 6,info@example-business-6.com,(555) 855-4572,https://example-business-6.com,"1630 Main St, Chicago IL",restaurant,2025-08-22T19:57:33.353673
+Restaurant 7,info@example-business-7.com,(555) 536-6467,https://example-business-7.com,"1786 Main St, Phoenix AZ",dental clinic,2025-08-22T19:57:33.353673
+Restaurant 8,info@example-business-8.com,(555) 828-9903,https://example-business-8.com,"461 Main St, Miami FL",restaurant,2025-08-22T19:57:33.353673
+Restaurant 9,info@example-business-9.com,(555) 133-6536,https://example-business-9.com,"4087 Main St, Phoenix AZ",medical clinic,2025-08-22T19:57:33.353673
+Medical Clinic 10,info@example-business-10.com,(555) 773-1130,https://example-business-10.com,"1788 Main St, Phoenix AZ",restaurant,2025-08-22T19:57:33.353673
+Medical Clinic 11,info@example-business-11.com,(555) 149-3506,https://example-business-11.com,"1880 Main St, Chicago IL",dental clinic,2025-08-22T19:57:33.353673
+Dental Clinic 12,info@example-business-12.com,(555) 392-5462,https://example-business-12.com,"5599 Main St, Miami FL",medical clinic,2025-08-22T19:57:33.353673
+Law Firm 13,info@example-business-13.com,(555) 357-3772,https://example-business-13.com,"3303 Main St, Houston TX",dental clinic,2025-08-22T19:57:33.353673
+Dental Clinic 14,info@example-business-14.com,(555) 242-9222,https://example-business-14.com,"831 Main St, Phoenix AZ",dental clinic,2025-08-22T19:57:33.353673
+Medical Clinic 15,info@example-business-15.com,(555) 534-5347,https://example-business-15.com,"7334 Main St, Miami FL",dental clinic,2025-08-22T19:57:33.353673
+Dental Clinic 16,info@example-business-16.com,(555) 912-8328,https://example-business-16.com,"6866 Main St, Miami FL",medical clinic,2025-08-22T19:57:33.353673
+Law Firm 17,info@example-business-17.com,(555) 426-8792,https://example-business-17.com,"4777 Main St, Chicago IL",dental clinic,2025-08-22T19:57:33.353673
+Dental Clinic 18,info@example-business-18.com,(555) 597-1693,https://example-business-18.com,"9472 Main St, Chicago IL",medical clinic,2025-08-22T19:57:33.353673
+Medical Clinic 19,info@example-business-19.com,(555) 400-7187,https://example-business-19.com,"7867 Main St, Phoenix AZ",law firm,2025-08-22T19:57:33.353673
+Medical Clinic 20,info@example-business-20.com,(555) 336-2445,https://example-business-20.com,"4942 Main St, Miami FL",dental clinic,2025-08-22T19:57:33.353673
+Dental Clinic 21,info@example-business-21.com,(555) 130-5824,https://example-business-21.com,"4155 Main St, Houston TX",restaurant,2025-08-22T19:57:33.353673
+Law Firm 22,info@example-business-22.com,(555) 153-5888,https://example-business-22.com,"4653 Main St, Miami FL",law firm,2025-08-22T19:57:33.353673
+Restaurant 23,info@example-business-23.com,(555) 234-4760,https://example-business-23.com,"2054 Main St, Houston TX",law firm,2025-08-22T19:57:33.353673
+Medical Clinic 24,info@example-business-24.com,(555) 310-3113,https://example-business-24.com,"2226 Main St, Phoenix AZ",restaurant,2025-08-22T19:57:33.353673
+Restaurant 25,info@example-business-25.com,(555) 478-8016,https://example-business-25.com,"1513 Main St, Phoenix AZ",law firm,2025-08-22T19:57:33.353673

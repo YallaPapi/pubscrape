@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps - Healthcare Providers in Chicago, IL</title>
+    <style>
+        .search-result { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .business-name { font-size: 18px; font-weight: bold; color: #1a73e8; }
+        .business-info { margin: 5px 0; color: #666; }
+        .rating { color: #fbbc04; font-weight: bold; }
+        .contact-info { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="searchResults" role="main">
+        <div class="search-result" data-result-index="0">
+            <div class="business-name">Northwestern Medicine - Chicago Downtown</div>
+            <div class="business-info">
+                <div class="address">251 E Huron St, Chicago, IL 60611, United States</div>
+                <div class="phone">(312) 926-2000</div>
+                <div class="website">https://www.nm.org</div>
+                <div class="rating">4.2 ★★★★☆ (847 reviews)</div>
+                <div class="category">Medical center · Hospital</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Open 24 hours</div>
+                <div class="email">info@nm.org</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="1">
+            <div class="business-name">Rush University Medical Center</div>
+            <div class="business-info">
+                <div class="address">1611 W Harrison St, Chicago, IL 60612, United States</div>
+                <div class="phone">(312) 942-5000</div>
+                <div class="website">https://www.rush.edu</div>
+                <div class="rating">4.1 ★★★★☆ (1,234 reviews)</div>
+                <div class="category">Medical center · Teaching hospital</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Open 24 hours</div>
+                <div class="email">patientservices@rush.edu</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="2">
+            <div class="business-name">University of Chicago Medical Center</div>
+            <div class="business-info">
+                <div class="address">5841 S Maryland Ave, Chicago, IL 60637, United States</div>
+                <div class="phone">(773) 702-1000</div>
+                <div class="website">https://www.uchicagomedicine.org</div>
+                <div class="rating">4.0 ★★★★☆ (956 reviews)</div>
+                <div class="category">Medical center · University hospital</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Open 24 hours</div>
+                <div class="email">info@uchicagomedicine.org</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="3">
+            <div class="business-name">Advocate Illinois Masonic Medical Center</div>
+            <div class="business-info">
+                <div class="address">836 W Wellington Ave, Chicago, IL 60657, United States</div>
+                <div class="phone">(773) 975-1600</div>
+                <div class="website">https://www.advocatehealth.com</div>
+                <div class="rating">3.9 ★★★☆☆ (672 reviews)</div>
+                <div class="category">Medical center · General hospital</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Open 24 hours</div>
+                <div class="email">contact@advocatehealth.com</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="4">
+            <div class="business-name">Chicago Premier Medical Associates</div>
+            <div class="business-info">
+                <div class="address">120 N LaSalle St, Suite 1200, Chicago, IL 60602, United States</div>
+                <div class="phone">(312) 555-0123</div>
+                <div class="website">https://www.chicagopremiermedicine.com</div>
+                <div class="rating">4.7 ★★★★★ (289 reviews)</div>
+                <div class="category">Medical clinic · Internal medicine physician</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Mon-Fri: 8:00 AM - 6:00 PM</div>
+                <div class="email">info@chicagopremiermedicine.com</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="5">
+            <div class="business-name">Millennium Park Medical Associates</div>
+            <div class="business-info">
+                <div class="address">55 E Washington St, Suite 2700, Chicago, IL 60602, United States</div>
+                <div class="phone">(312) 555-0456</div>
+                <div class="website">https://www.millenniumparkmedical.com</div>
+                <div class="rating">4.5 ★★★★☆ (156 reviews)</div>
+                <div class="category">Medical clinic · Family practice physician</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Mon-Fri: 7:30 AM - 5:30 PM</div>
+                <div class="email">appointments@millenniumparkmedical.com</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="6">
+            <div class="business-name">Gold Coast Internal Medicine</div>
+            <div class="business-info">
+                <div class="address">25 E Washington St, Suite 1015, Chicago, IL 60602, United States</div>
+                <div class="phone">(312) 555-0789</div>
+                <div class="website">https://www.goldcoastinternalmedicine.com</div>
+                <div class="rating">4.3 ★★★★☆ (234 reviews)</div>
+                <div class="category">Internal medicine physician</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Mon-Fri: 8:00 AM - 5:00 PM</div>
+                <div class="email">contact@goldcoastinternalmedicine.com</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="7">
+            <div class="business-name">Loop Family Medicine</div>
+            <div class="business-info">
+                <div class="address">180 N Michigan Ave, Suite 1400, Chicago, IL 60601, United States</div>
+                <div class="phone">(312) 555-0321</div>
+                <div class="website">https://www.loopfamilymedicine.com</div>
+                <div class="rating">4.6 ★★★★★ (98 reviews)</div>
+                <div class="category">Family practice physician · Medical clinic</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Mon-Fri: 8:00 AM - 6:00 PM, Sat: 9:00 AM - 2:00 PM</div>
+                <div class="email">scheduling@loopfamilymedicine.com</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="8">
+            <div class="business-name">Chicago Cardiology Institute</div>
+            <div class="business-info">
+                <div class="address">737 N Michigan Ave, Suite 1330, Chicago, IL 60611, United States</div>
+                <div class="phone">(312) 555-0654</div>
+                <div class="website">https://www.chicagocardiology.org</div>
+                <div class="rating">4.4 ★★★★☆ (187 reviews)</div>
+                <div class="category">Cardiologist · Medical clinic</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Mon-Thu: 8:00 AM - 5:00 PM, Fri: 8:00 AM - 4:00 PM</div>
+                <div class="email">referrals@chicagocardiology.org</div>
+            </div>
+        </div>
+
+        <div class="search-result" data-result-index="9">
+            <div class="business-name">River North Medical Group</div>
+            <div class="business-info">
+                <div class="address">676 N LaSalle St, Suite 4200, Chicago, IL 60654, United States</div>
+                <div class="phone">(312) 555-0987</div>
+                <div class="website">https://www.rivernorthmedical.com</div>
+                <div class="rating">4.2 ★★★★☆ (145 reviews)</div>
+                <div class="category">Medical group · Primary care physician</div>
+            </div>
+            <div class="contact-info">
+                <div class="hours">Mon-Fri: 7:00 AM - 7:00 PM</div>
+                <div class="email">patientcare@rivernorthmedical.com</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

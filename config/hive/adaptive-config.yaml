@@ -1,0 +1,231 @@
+# Adaptive Hive Coordination Configuration
+# Advanced swarm intelligence with dynamic topology switching and real-time optimization
+
+adaptive_coordination:
+  enabled: true
+  coordination_mode: "adaptive"
+  adaptation_threshold: 0.2
+  max_agents: 20
+  
+  # Emergency thresholds
+  emergency_thresholds:
+    error_rate: 0.3
+    response_time: 8000
+    agent_failure_rate: 0.4
+  
+  # Topology configuration
+  topology:
+    options: ["hierarchical", "mesh", "ring", "hybrid"]
+    default: "hierarchical"
+    switch_conditions:
+      high_complexity: "hierarchical"
+      high_parallelism: "mesh"
+      sequential_tasks: "ring"
+      mixed_workload: "hybrid"
+    
+    transition:
+      gradual_migration: true
+      validation_period: 5000
+      rollback_enabled: true
+  
+  # Performance monitoring
+  performance_monitoring:
+    metrics_interval: 5000
+    retention_period: 86400000  # 24 hours
+    trend_analysis_window: 300000  # 5 minutes
+    
+    alert_thresholds:
+      cpu_usage: 0.8
+      memory_usage: 0.85
+      error_rate: 0.1
+      response_time: 5000
+      throughput: 10
+    
+    pattern_detection:
+      enabled: true
+      min_data_points: 10
+      confidence_threshold: 0.7
+    
+    anomaly_detection:
+      enabled: true
+      sensitivity: 0.1
+      algorithms: ["statistical", "ml_based"]
+
+  # Workload analysis
+  workload_analysis:
+    enabled: true
+    analysis_window: 60000  # 1 minute
+    complexity_factors:
+      - "task_interdependencies"
+      - "resource_requirements"
+      - "time_constraints"
+    
+    pattern_recognition:
+      learning_rate: 0.01
+      memory_size: 1000
+      update_frequency: 30000
+
+  # Load balancing
+  load_balancing:
+    strategy: "adaptive"
+    rebalance_threshold: 0.3
+    strategies:
+      capability_based:
+        weight_cpu: 0.3
+        weight_memory: 0.2
+        weight_specialization: 0.5
+      
+      performance_based:
+        weight_success_rate: 0.4
+        weight_response_time: 0.3
+        weight_throughput: 0.3
+      
+      ml_optimized:
+        model_type: "reinforcement_learning"
+        learning_rate: 0.01
+        exploration_rate: 0.1
+
+  # Predictive scaling
+  predictive_scaling:
+    enabled: true
+    prediction_horizon: 14400000  # 4 hours
+    scale_up_threshold: 0.8
+    scale_down_threshold: 0.3
+    safety_buffer: 0.2
+    
+    ml_models:
+      trend_predictor:
+        type: "time_series"
+        window_size: 50
+        update_frequency: 60000
+      
+      workload_predictor:
+        type: "neural_network"
+        hidden_layers: [64, 32]
+        activation: "relu"
+        
+    auto_scaling:
+      min_agents: 2
+      max_agents: 20
+      scale_factor: 1.5
+      cooldown_period: 300000  # 5 minutes
+
+  # Pattern learning
+  pattern_learning:
+    enabled: true
+    learning_algorithms:
+      - "temporal_patterns"
+      - "workload_patterns"
+      - "performance_patterns"
+    
+    success_pattern_reinforcement: 1.2
+    failure_pattern_penalty: 0.8
+    pattern_decay_rate: 0.95
+    
+    neural_integration:
+      enabled: false  # Set to true when MCP neural services available
+      model_update_frequency: 3600000  # 1 hour
+      training_batch_size: 100
+
+  # Fault tolerance
+  fault_tolerance:
+    enabled: true
+    redundancy_level: 1
+    health_check_interval: 30000
+    failure_detection_threshold: 3
+    
+    recovery_strategies:
+      agent_failure:
+        action: "replace_and_redistribute"
+        timeout: 60000
+      
+      communication_failure:
+        action: "topology_adaptation"
+        fallback_topology: "mesh"
+      
+      coordinator_failure:
+        action: "elect_new_coordinator"
+        election_timeout: 10000
+    
+    rollback_mechanisms:
+      snapshot_frequency: 300000  # 5 minutes
+      max_snapshots: 10
+      rollback_timeout: 30000
+
+  # Hive-specific optimizations
+  hive_optimizations:
+    queen_coordination:
+      delegation_strategy: "specialization_based"
+      task_priority_weights:
+        urgency: 0.4
+        complexity: 0.3
+        resource_availability: 0.3
+    
+    worker_specialization:
+      dynamic_reassignment: true
+      specialization_threshold: 0.7
+      cross_training: true
+    
+    communication_optimization:
+      message_batching: true
+      batch_size: 10
+      batch_timeout: 1000
+      compression_enabled: true
+    
+    resource_optimization:
+      memory_pooling: true
+      cpu_affinity: true
+      network_optimization: true
+
+  # Machine learning integration
+  ml_integration:
+    enabled: true
+    
+    # Local ML models (always available)
+    local_models:
+      performance_predictor:
+        type: "linear_regression"
+        features: ["cpu_usage", "memory_usage", "task_count"]
+        
+      workload_classifier:
+        type: "decision_tree"
+        max_depth: 10
+        min_samples_split: 5
+        
+      anomaly_detector:
+        type: "isolation_forest"
+        contamination: 0.1
+        n_estimators: 100
+    
+    # MCP neural integration (when available)
+    mcp_integration:
+      enabled: false
+      endpoints:
+        pattern_analysis: "/api/neural/patterns"
+        performance_prediction: "/api/neural/predict"
+        model_training: "/api/neural/train"
+      
+      retry_config:
+        max_retries: 3
+        retry_delay: 1000
+        fallback_to_local: true
+
+  # Logging and diagnostics
+  logging:
+    level: "info"
+    components:
+      coordinator: true
+      topology_optimizer: true
+      performance_monitor: true
+      load_balancer: true
+      pattern_learning: true
+    
+    metrics_export:
+      enabled: true
+      format: "json"
+      interval: 60000
+      
+    diagnostic_mode:
+      enabled: false
+      detailed_tracing: false
+      performance_profiling: false

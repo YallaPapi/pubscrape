@@ -1,0 +1,14 @@
+lead_id,business_name,primary_email,primary_phone,contact_name,website,lead_score,extraction_date,source_query,is_actionable
+DOC_001,Baptist Health South Florida,,(833) 692-2784,,https://www.baptisthealth.net,0.35,2025-08-22 22:12:31,doctor Miami Florida,False
+DOC_002,University of Miami Health System,,(305) 243-4000,,https://www.umiamihealth.org,0.35,2025-08-22 22:12:34,doctor Miami Florida,False
+DOC_003,Cleveland Clinic Florida,,(877) 463-2010,,https://www.clevelandclinic.org/florida,0.35,2025-08-22 22:12:38,doctor Miami Florida,False
+DOC_004,Memorial Healthcare System,,(954) 987-2000,,https://www.mhs.net,0.35,2025-08-22 22:12:42,doctor Miami Florida,False
+DOC_005,AdventHealth,,(855) 303-3627,,https://www.adventhealth.com,0.35,2025-08-22 22:12:43,doctor Miami Florida,False
+DOC_006,DentistDirectory.com,support@obout.com,(567) 520-5162,,https://www.dentistdirectory.com,0.5700000000000001,2025-08-22 22:12:50,physician Miami FL,True
+DOC_007,Healthline: Medical information and health advice you can trust.,emcelroy@rvohealth.com,(391) 806-1184,,https://www.healthline.com,0.5700000000000001,2025-08-22 22:12:52,physician Miami FL,True
+DOC_008,Health and wellbeing for everyone,commsteam@rvohealth.com,(141) 477-4326,Vendor Travel,https://www.rvohealth.com,0.8,2025-08-22 22:12:53,physician Miami FL,True
+DOC_009,WebMD,,(173) 655-8481,,https://www.webmd.com,0.35,2025-08-22 22:12:56,physician Miami FL,False
+DOC_010,Mayoclinic,,(333) 333-3333,,https://www.mayoclinic.org,0.35,2025-08-22 22:12:59,physician Miami FL,False
+DOC_011,A Nonprofit Hospital in Los Angeles,,(310) 423-3277,,https://www.cedars-sinai.org,0.35,2025-08-22 22:13:02,physician Miami FL,False
+DOC_012,World-Class Community Care  In Owosso,,(989) 720-2273,Memorial Healthcare Names,https://www.memorialhealthcare.org,0.6,2025-08-22 22:13:04,physician Miami FL,True
+DOC_013,Caduceus,contact@thehelpinghands.org,,Raoult Bertrand,https://www.caduceus.info,0.6400000000000001,2025-08-22 22:13:10,physician Miami FL,True

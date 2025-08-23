@@ -1,0 +1,15 @@
+# Task ID: 62
+# Title: Search Query Builder (Templates & Expansion)
+# Status: done
+# Dependencies: 59
+# Priority: medium
+# Description: Create a system to expand vertical templates and regions into concrete Bing queries, deduplicating and persisting the plan.
+# Details:
+- Parse campaign YAML for templates, service terms, and cities.
+- Generate cartesian product of queries (e.g., '[service] [city]').
+- Deduplicate queries and write to 'out/planned_queries.txt'.
+- Implement as Agency Swarm agent (QueryBuilder) with BuildQueriesTool and GeoExpandTool.
+- Validate query count and structure.
+
+# Test Strategy:
+Unit test template expansion and deduplication; verify output file matches expected queries; spot check correctness of generated queries.

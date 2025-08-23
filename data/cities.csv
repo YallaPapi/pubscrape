@@ -1,0 +1,312 @@
+city,state,country,latitude,longitude,population,timezone
+New York,New York,US,40.7128,-74.0060,8175133,America/New_York
+Los Angeles,California,US,34.0522,-118.2437,3971883,America/Los_Angeles
+Chicago,Illinois,US,41.8781,-87.6298,2695598,America/Chicago
+Houston,Texas,US,29.7604,-95.3698,2320268,America/Chicago
+Phoenix,Arizona,US,33.4484,-112.0740,1680992,America/Phoenix
+Philadelphia,Pennsylvania,US,39.9526,-75.1652,1584064,America/New_York
+San Antonio,Texas,US,29.4241,-98.4936,1547253,America/Chicago
+San Diego,California,US,32.7157,-117.1611,1423851,America/Los_Angeles
+Dallas,Texas,US,32.7767,-96.7970,1343573,America/Chicago
+San Jose,California,US,37.3382,-121.8863,1021795,America/Los_Angeles
+Austin,Texas,US,30.2672,-97.7431,978908,America/Chicago
+Jacksonville,Florida,US,30.3322,-81.6557,911507,America/New_York
+Fort Worth,Texas,US,32.7555,-97.3308,909585,America/Chicago
+Columbus,Ohio,US,39.9612,-82.9988,898553,America/New_York
+San Francisco,California,US,37.7749,-122.4194,873965,America/Los_Angeles
+Charlotte,North Carolina,US,35.2271,-80.8431,885708,America/New_York
+Indianapolis,Indiana,US,39.7684,-86.1581,876384,America/New_York
+Seattle,Washington,US,47.6062,-122.3321,753675,America/Los_Angeles
+Denver,Colorado,US,39.7392,-104.9903,715522,America/Denver
+Boston,Massachusetts,US,42.3601,-71.0589,692600,America/New_York
+El Paso,Texas,US,31.7619,-106.4850,681728,America/Denver
+Detroit,Michigan,US,42.3314,-83.0458,670031,America/New_York
+Nashville,Tennessee,US,36.1627,-86.7816,689447,America/Chicago
+Portland,Oregon,US,45.5152,-122.6784,647805,America/Los_Angeles
+Oklahoma City,Oklahoma,US,35.4676,-97.5164,695755,America/Chicago
+Las Vegas,Nevada,US,36.1699,-115.1398,641903,America/Los_Angeles
+Louisville,Kentucky,US,38.2527,-85.7585,617638,America/New_York
+Baltimore,Maryland,US,39.2904,-76.6122,593490,America/New_York
+Milwaukee,Wisconsin,US,43.0389,-87.9065,594833,America/Chicago
+Albuquerque,New Mexico,US,35.0844,-106.6504,564559,America/Denver
+Tucson,Arizona,US,32.2226,-110.9747,548073,America/Phoenix
+Fresno,California,US,36.7468,-119.7725,542107,America/Los_Angeles
+Mesa,Arizona,US,33.4152,-111.8315,518012,America/Phoenix
+Sacramento,California,US,38.5816,-121.4944,513624,America/Los_Angeles
+Atlanta,Georgia,US,33.7490,-84.3880,498715,America/New_York
+Kansas City,Missouri,US,39.0997,-94.5786,495327,America/Chicago
+Colorado Springs,Colorado,US,38.8339,-104.8214,478221,America/Denver
+Miami,Florida,US,25.7617,-80.1918,470914,America/New_York
+Raleigh,North Carolina,US,35.7796,-78.6382,474069,America/New_York
+Omaha,Nebraska,US,41.2565,-95.9345,486051,America/Chicago
+Long Beach,California,US,33.7701,-118.1937,466742,America/Los_Angeles
+Virginia Beach,Virginia,US,36.8529,-75.9780,459890,America/New_York
+Oakland,California,US,37.8044,-122.2711,433031,America/Los_Angeles
+Minneapolis,Minnesota,US,44.9778,-93.2650,429954,America/Chicago
+Tulsa,Oklahoma,US,36.1540,-95.9928,413066,America/Chicago
+Arlington,Texas,US,32.7357,-97.1081,398854,America/Chicago
+Tampa,Florida,US,27.9506,-82.4572,399700,America/New_York
+New Orleans,Louisiana,US,29.9511,-90.0715,383997,America/Chicago
+Wichita,Kansas,US,37.6872,-97.3301,389054,America/Chicago
+Cleveland,Ohio,US,41.4993,-81.6944,383793,America/New_York
+Bakersfield,California,US,35.3733,-119.0187,383579,America/Los_Angeles
+Aurora,Colorado,US,39.7294,-104.8319,379289,America/Denver
+Anaheim,California,US,33.8366,-117.9143,352497,America/Los_Angeles
+Honolulu,Hawaii,US,21.3099,-157.8581,345064,Pacific/Honolulu
+Santa Ana,California,US,33.7455,-117.8677,334227,America/Los_Angeles
+Riverside,California,US,33.9533,-117.3962,331360,America/Los_Angeles
+Corpus Christi,Texas,US,27.8006,-97.3964,326586,America/Chicago
+Lexington,Kentucky,US,38.0406,-84.5037,323780,America/New_York
+Stockton,California,US,37.9577,-121.2908,310496,America/Los_Angeles
+Henderson,Nevada,US,36.0395,-114.9817,320189,America/Los_Angeles
+Saint Paul,Minnesota,US,44.9537,-93.0900,308096,America/Chicago
+St. Louis,Missouri,US,38.6270,-90.1994,301578,America/Chicago
+Cincinnati,Ohio,US,39.1031,-84.5120,309317,America/New_York
+Pittsburgh,Pennsylvania,US,40.4406,-79.9959,302971,America/New_York
+Greensboro,North Carolina,US,36.0726,-79.7920,296710,America/New_York
+Anchorage,Alaska,US,61.2181,-149.9003,291247,America/Anchorage
+Plano,Texas,US,33.0198,-96.6989,288061,America/Chicago
+Lincoln,Nebraska,US,40.8136,-96.7026,295178,America/Chicago
+Orlando,Florida,US,28.5383,-81.3792,307573,America/New_York
+Irvine,California,US,33.6846,-117.8265,287401,America/Los_Angeles
+Newark,New Jersey,US,40.7357,-74.1724,311549,America/New_York
+Toledo,Ohio,US,41.6528,-83.5379,287208,America/New_York
+Durham,North Carolina,US,35.9940,-78.8986,278993,America/New_York
+Chula Vista,California,US,32.6401,-117.0842,275487,America/Los_Angeles
+Fort Wayne,Indiana,US,41.0793,-85.1394,270402,America/New_York
+Jersey City,New Jersey,US,40.7178,-74.0431,292449,America/New_York
+St. Petersburg,Florida,US,27.7676,-82.6403,265351,America/New_York
+Laredo,Texas,US,27.5306,-99.4803,261639,America/Chicago
+Madison,Wisconsin,US,43.0731,-89.4012,269840,America/Chicago
+Chandler,Arizona,US,33.3062,-111.8413,261165,America/Phoenix
+Buffalo,New York,US,42.8864,-78.8784,256902,America/New_York
+Lubbock,Texas,US,33.5779,-101.8552,258862,America/Chicago
+Scottsdale,Arizona,US,33.4942,-111.9261,258069,America/Phoenix
+Reno,Nevada,US,39.5296,-119.8138,255601,America/Los_Angeles
+Glendale,Arizona,US,33.5387,-112.1860,254114,America/Phoenix
+Gilbert,Arizona,US,33.3528,-111.7890,254279,America/Phoenix
+Winston-Salem,North Carolina,US,36.0999,-80.2442,249545,America/New_York
+North Las Vegas,Nevada,US,36.1989,-115.1175,249180,America/Los_Angeles
+Norfolk,Virginia,US,36.8468,-76.2852,238005,America/New_York
+Chesapeake,Virginia,US,36.8190,-76.2750,249422,America/New_York
+Garland,Texas,US,32.9126,-96.6389,246018,America/Chicago
+Irving,Texas,US,32.8140,-96.9489,256684,America/Chicago
+Hialeah,Florida,US,25.8576,-80.2781,238942,America/New_York
+Fremont,California,US,37.5485,-121.9886,238537,America/Los_Angeles
+Boise,Idaho,US,43.6150,-116.2023,235684,America/Boise
+Richmond,Virginia,US,37.5407,-77.4360,230436,America/New_York
+Baton Rouge,Louisiana,US,30.4515,-91.1871,220236,America/Chicago
+Spokane,Washington,US,47.6588,-117.4260,222081,America/Los_Angeles
+Des Moines,Iowa,US,41.5868,-93.6250,214133,America/Chicago
+Modesto,California,US,37.6391,-120.9969,218464,America/Los_Angeles
+Fayetteville,North Carolina,US,35.0527,-78.8784,211657,America/New_York
+Tacoma,Washington,US,47.2529,-122.4443,219346,America/Los_Angeles
+Oxnard,California,US,34.1975,-119.1771,212906,America/Los_Angeles
+Fontana,California,US,34.0922,-117.4350,212704,America/Los_Angeles
+Columbus,Georgia,US,32.4609,-84.9877,206922,America/New_York
+Montgomery,Alabama,US,32.3792,-86.3077,200603,America/Chicago
+Moreno Valley,California,US,33.9425,-117.2297,208634,America/Los_Angeles
+Shreveport,Louisiana,US,32.5252,-93.7502,187593,America/Chicago
+Aurora,Illinois,US,41.7606,-88.3201,180542,America/Chicago
+Yonkers,New York,US,40.9312,-73.8988,211569,America/New_York
+Akron,Ohio,US,41.0814,-81.5190,190469,America/New_York
+Huntington Beach,California,US,33.6595,-117.9988,198711,America/Los_Angeles
+Little Rock,Arkansas,US,34.7465,-92.2896,197992,America/Chicago
+Augusta,Georgia,US,33.4735,-82.0105,202081,America/New_York
+Amarillo,Texas,US,35.2220,-101.8313,199371,America/Chicago
+Glendale,California,US,34.1425,-118.2551,201361,America/Los_Angeles
+Mobile,Alabama,US,30.6954,-88.0399,194899,America/Chicago
+Grand Rapids,Michigan,US,42.9634,-85.6681,198917,America/New_York
+Salt Lake City,Utah,US,40.7608,-111.8910,200567,America/Denver
+Tallahassee,Florida,US,30.4518,-84.2807,194500,America/New_York
+Huntsville,Alabama,US,34.7304,-86.5861,215006,America/Chicago
+Grand Prairie,Texas,US,32.7460,-96.9978,196100,America/Chicago
+Knoxville,Tennessee,US,35.9606,-83.9207,190740,America/New_York
+Worcester,Massachusetts,US,42.2626,-71.8023,185877,America/New_York
+Newport News,Virginia,US,36.9707,-76.4951,186247,America/New_York
+Brownsville,Texas,US,25.9018,-97.4975,186738,America/Chicago
+Overland Park,Kansas,US,38.9822,-94.6708,197106,America/Chicago
+Santa Clarita,California,US,34.3917,-118.5426,228673,America/Los_Angeles
+Providence,Rhode Island,US,41.8240,-71.4128,190934,America/New_York
+Garden Grove,California,US,33.7739,-117.9415,172800,America/Los_Angeles
+Chattanooga,Tennessee,US,35.0456,-85.3097,181099,America/New_York
+Oceanside,California,US,33.1959,-117.3795,174648,America/Los_Angeles
+Jackson,Mississippi,US,32.2988,-90.1848,153701,America/Chicago
+Fort Lauderdale,Florida,US,26.1224,-80.1373,182760,America/New_York
+Santa Rosa,California,US,38.4404,-122.7144,178127,America/Los_Angeles
+Rancho Cucamonga,California,US,34.1064,-117.5931,177751,America/Los_Angeles
+Port St. Lucie,Florida,US,27.2939,-80.3501,204851,America/New_York
+Tempe,Arizona,US,33.4255,-111.9400,195805,America/Phoenix
+Ontario,California,US,34.0633,-117.6509,175265,America/Los_Angeles
+Vancouver,Washington,US,45.6387,-122.6615,183741,America/Los_Angeles
+Cape Coral,Florida,US,26.5629,-81.9495,194016,America/New_York
+Sioux Falls,South Dakota,US,43.5446,-96.7311,192517,America/Chicago
+Springfield,Missouri,US,37.2153,-93.2982,169176,America/Chicago
+Peoria,Arizona,US,33.5806,-112.2374,190985,America/Phoenix
+Pembroke Pines,Florida,US,26.0070,-80.2962,171178,America/New_York
+Elk Grove,California,US,38.4088,-121.3716,176124,America/Los_Angeles
+Rochester,New York,US,43.1566,-77.6088,206284,America/New_York
+Salem,Oregon,US,44.9429,-123.0351,177723,America/Los_Angeles
+Lancaster,California,US,34.6868,-118.1542,173516,America/Los_Angeles
+Corona,California,US,33.8753,-117.5664,169868,America/Los_Angeles
+Eugene,Oregon,US,44.0521,-123.0868,177732,America/Los_Angeles
+Palmdale,California,US,34.5794,-118.1165,169450,America/Los_Angeles
+Salinas,California,US,36.6777,-121.6555,163542,America/Los_Angeles
+Springfield,Massachusetts,US,42.1015,-72.5898,155929,America/New_York
+Pasadena,California,US,34.1478,-118.1445,141371,America/Los_Angeles
+Fort Collins,Colorado,US,40.5853,-105.0844,169810,America/Denver
+Hayward,California,US,37.6688,-122.0808,162954,America/Los_Angeles
+Pomona,California,US,34.0552,-117.7500,153715,America/Los_Angeles
+Cary,North Carolina,US,35.7915,-78.7811,174721,America/New_York
+Rockford,Illinois,US,42.2711,-89.0940,145609,America/Chicago
+Alexandria,Virginia,US,38.8048,-77.0469,159467,America/New_York
+Escondido,California,US,33.1192,-117.0864,151613,America/Los_Angeles
+McKinney,Texas,US,33.1972,-96.6154,199177,America/Chicago
+Kansas City,Kansas,US,39.1142,-94.6275,156607,America/Chicago
+Joliet,Illinois,US,41.5250,-88.0817,150362,America/Chicago
+Sunnyvale,California,US,37.3688,-122.0363,155805,America/Los_Angeles
+Torrance,California,US,33.8358,-118.3406,147067,America/Los_Angeles
+Bridgeport,Connecticut,US,41.1865,-73.1952,148654,America/New_York
+Lakewood,Colorado,US,39.7047,-105.0814,155984,America/Denver
+Hollywood,Florida,US,26.0112,-80.1495,154817,America/New_York
+Paterson,New Jersey,US,40.9168,-74.1718,159732,America/New_York
+Naperville,Illinois,US,41.7508,-88.1535,149540,America/Chicago
+Syracuse,New York,US,43.0481,-76.1474,142749,America/New_York
+Mesquite,Texas,US,32.7668,-96.5991,150108,America/Chicago
+Dayton,Ohio,US,39.7589,-84.1916,140489,America/New_York
+Savannah,Georgia,US,32.0835,-81.0998,147780,America/New_York
+Clarksville,Tennessee,US,36.5298,-87.3595,166722,America/Chicago
+Orange,California,US,33.7879,-117.8531,139191,America/Los_Angeles
+Pasadena,Texas,US,29.6911,-95.2091,154726,America/Chicago
+Fullerton,California,US,33.8704,-117.9242,143617,America/Los_Angeles
+Killeen,Texas,US,31.1171,-97.7278,153095,America/Chicago
+Frisco,Texas,US,33.1507,-96.8236,200509,America/Chicago
+Hampton,Virginia,US,37.0299,-76.3452,137148,America/New_York
+McAllen,Texas,US,26.2034,-98.2300,143268,America/Chicago
+Warren,Michigan,US,42.5145,-83.0146,139387,America/New_York
+Bellevue,Washington,US,47.6101,-122.2015,151854,America/Los_Angeles
+West Valley City,Utah,US,40.6916,-112.0011,140230,America/Denver
+Columbia,Missouri,US,38.9517,-92.3341,126254,America/Chicago
+Olathe,Kansas,US,38.8814,-94.8191,140545,America/Chicago
+Sterling Heights,Michigan,US,42.5803,-83.0302,134346,America/New_York
+New Haven,Connecticut,US,41.3083,-72.9279,130322,America/New_York
+Miramar,Florida,US,25.9723,-80.3032,140823,America/New_York
+Waco,Texas,US,31.5494,-97.1467,139236,America/Chicago
+Thousand Oaks,California,US,34.1706,-118.8376,129339,America/Los_Angeles
+Cedar Rapids,Iowa,US,42.0080,-91.6440,137710,America/Chicago
+Charleston,South Carolina,US,32.7765,-79.9311,150227,America/New_York
+Visalia,California,US,36.3302,-119.2921,141384,America/Los_Angeles
+Topeka,Kansas,US,39.0473,-95.6890,125904,America/Chicago
+Elizabeth,New Jersey,US,40.6640,-74.2107,137298,America/New_York
+Gainesville,Florida,US,29.6516,-82.3248,141085,America/New_York
+Thornton,Colorado,US,39.8681,-104.9719,141464,America/Denver
+Roseville,California,US,38.7521,-121.2880,147773,America/Los_Angeles
+Carrollton,Texas,US,32.9537,-96.8903,139248,America/Chicago
+Coral Springs,Florida,US,26.2710,-80.2706,134394,America/New_York
+Stamford,Connecticut,US,41.0534,-73.5387,135470,America/New_York
+Simi Valley,California,US,34.2694,-118.7815,126181,America/Los_Angeles
+Concord,California,US,37.9780,-122.0311,129295,America/Los_Angeles
+Hartford,Connecticut,US,41.7658,-72.6734,121054,America/New_York
+Kent,Washington,US,47.3809,-122.2348,136588,America/Los_Angeles
+Lafayette,Louisiana,US,30.2241,-92.0198,121374,America/Chicago
+Midland,Texas,US,32.0126,-102.1037,146038,America/Chicago
+Surprise,Arizona,US,33.6292,-112.3679,143148,America/Phoenix
+Denton,Texas,US,33.2148,-97.1331,148910,America/Chicago
+Victorville,California,US,34.5362,-117.2911,134810,America/Los_Angeles
+Evansville,Indiana,US,37.9716,-87.5711,117298,America/Chicago
+Santa Clara,California,US,37.3541,-121.9552,127134,America/Los_Angeles
+Abilene,Texas,US,32.4487,-99.7331,125182,America/Chicago
+Athens,Georgia,US,33.9519,-83.3576,131224,America/New_York
+Vallejo,California,US,38.1041,-122.2566,123078,America/Los_Angeles
+Allentown,Pennsylvania,US,40.6023,-75.4714,125845,America/New_York
+Norman,Oklahoma,US,35.2226,-97.4395,128026,America/Chicago
+Beaumont,Texas,US,30.0802,-94.1266,115282,America/Chicago
+Independence,Missouri,US,39.0911,-94.4155,123011,America/Chicago
+Murfreesboro,Tennessee,US,35.8456,-86.3903,152769,America/Chicago
+Ann Arbor,Michigan,US,42.2808,-83.7430,123851,America/New_York
+Springfield,Illinois,US,39.7817,-89.6501,114394,America/Chicago
+Berkeley,California,US,37.8715,-122.2730,124321,America/Los_Angeles
+Peoria,Illinois,US,40.6936,-89.5890,112936,America/Chicago
+Provo,Utah,US,40.2338,-111.6585,116886,America/Denver
+El Monte,California,US,34.0686,-118.0275,115965,America/Los_Angeles
+Columbia,South Carolina,US,34.0007,-81.0348,137300,America/New_York
+Lansing,Michigan,US,42.3314,-84.5467,118427,America/New_York
+Fargo,North Dakota,US,46.8772,-96.7898,125990,America/Chicago
+Downey,California,US,33.9401,-118.1332,111772,America/Los_Angeles
+Costa Mesa,California,US,33.6411,-117.9187,113204,America/Los_Angeles
+Wilmington,North Carolina,US,34.2257,-77.9447,123744,America/New_York
+Arvada,Colorado,US,39.8028,-105.0875,124402,America/Denver
+Inglewood,California,US,33.9617,-118.3531,109398,America/Los_Angeles
+Miami Gardens,Florida,US,25.9420,-80.2456,113750,America/New_York
+Carlsbad,California,US,33.1581,-117.3506,115382,America/Los_Angeles
+Westminster,Colorado,US,39.8366,-105.0372,114832,America/Denver
+Rochester,Minnesota,US,44.0121,-92.4802,121395,America/Chicago
+Odessa,Texas,US,31.8457,-102.3676,123334,America/Chicago
+Manchester,New Hampshire,US,42.9956,-71.4548,115644,America/New_York
+Elgin,Illinois,US,42.0354,-88.2826,114797,America/Chicago
+West Jordan,Utah,US,40.6097,-111.9391,116961,America/Denver
+Round Rock,Texas,US,30.5083,-97.6789,133372,America/Chicago
+Clearwater,Florida,US,27.9659,-82.8001,117292,America/New_York
+Waterbury,Connecticut,US,41.5581,-73.0515,108143,America/New_York
+Gresham,Oregon,US,45.5001,-122.4302,114247,America/Los_Angeles
+Fairfield,California,US,38.2494,-122.0400,119881,America/Los_Angeles
+Billings,Montana,US,45.7833,-108.5007,117116,America/Denver
+Lowell,Massachusetts,US,42.6334,-71.3162,115554,America/New_York
+San Buenaventura,California,US,34.2746,-119.2290,110763,America/Los_Angeles
+Pueblo,Colorado,US,38.2544,-104.6091,112348,America/Denver
+High Point,North Carolina,US,35.9557,-80.0053,114059,America/New_York
+West Covina,California,US,34.0686,-117.9390,106098,America/Los_Angeles
+Richmond,California,US,37.9358,-122.3477,110567,America/Los_Angeles
+Murrieta,California,US,33.5539,-117.2139,114066,America/Los_Angeles
+Cambridge,Massachusetts,US,42.3736,-71.1097,118403,America/New_York
+Antioch,California,US,38.0049,-121.8058,115291,America/Los_Angeles
+Temecula,California,US,33.4936,-117.1484,114761,America/Los_Angeles
+Norwalk,California,US,33.9022,-118.0814,105549,America/Los_Angeles
+Centennial,Colorado,US,39.5807,-104.8756,108418,America/Denver
+Everett,Washington,US,47.9673,-122.2013,113817,America/Los_Angeles
+Palm Bay,Florida,US,28.0345,-80.5887,119760,America/New_York
+Wichita Falls,Texas,US,33.9137,-98.4934,102316,America/Chicago
+Green Bay,Wisconsin,US,44.5133,-88.0133,107395,America/Chicago
+Daly City,California,US,37.7057,-122.4594,109113,America/Los_Angeles
+Burbank,California,US,34.1808,-118.3090,105319,America/Los_Angeles
+Richardson,Texas,US,32.9483,-96.7299,121323,America/Chicago
+Pompano Beach,Florida,US,26.2379,-80.1248,112046,America/New_York
+North Charleston,South Carolina,US,32.8546,-79.9748,114852,America/New_York
+Broken Arrow,Oklahoma,US,36.0365,-95.7975,113540,America/Chicago
+Boulder,Colorado,US,40.0150,-105.2705,108777,America/Denver
+West Palm Beach,Florida,US,26.7153,-80.0534,117415,America/New_York
+Santa Maria,California,US,34.9530,-120.4357,109707,America/Los_Angeles
+El Cajon,California,US,32.7947,-116.9625,103249,America/Los_Angeles
+Davenport,Iowa,US,41.5236,-90.5776,102268,America/Chicago
+Rialto,California,US,34.1064,-117.3703,104026,America/Los_Angeles
+Las Cruces,New Mexico,US,32.3199,-106.7637,111385,America/Denver
+San Mateo,California,US,37.5630,-122.3255,104570,America/Los_Angeles
+Lewisville,Texas,US,33.0462,-96.9942,111822,America/Chicago
+South Bend,Indiana,US,41.6764,-86.2520,102026,America/New_York
+Lakeland,Florida,US,28.0395,-81.9498,112641,America/New_York
+Erie,Pennsylvania,US,42.1292,-80.0851,96471,America/New_York
+Tyler,Texas,US,32.3513,-95.3011,108804,America/Chicago
+Pearland,Texas,US,29.5638,-95.2861,125817,America/Chicago
+College Station,Texas,US,30.6280,-96.3344,120511,America/Chicago
+Kenosha,Wisconsin,US,42.5847,-87.8212,100150,America/Chicago
+Sandy Springs,Georgia,US,33.9304,-84.3733,108080,America/New_York
+Clovis,California,US,36.8252,-119.7029,112663,America/Los_Angeles
+Flint,Michigan,US,43.0125,-83.6875,95943,America/New_York
+Columbia,Maryland,US,39.2037,-76.8610,104681,America/New_York
+Orem,Utah,US,40.2969,-111.6946,97883,America/Denver
+League City,Texas,US,29.5074,-95.0949,109387,America/Chicago
+Glendale,Wisconsin,US,43.1225,-87.9289,13346,America/Chicago
+Redding,California,US,40.5865,-122.3917,93611,America/Los_Angeles
+Hialeah Gardens,Florida,US,25.8576,-80.3034,25067,America/New_York
+Edison,New Jersey,US,40.5187,-74.3401,107588,America/New_York
+Whittier,California,US,33.9792,-118.0328,87306,America/Los_Angeles
+Reading,Pennsylvania,US,40.3356,-75.9269,95112,America/New_York
+Woodbridge,New Jersey,US,40.5576,-74.2840,103639,America/New_York
+Racine,Wisconsin,US,42.7261,-87.7829,77816,America/Chicago
+Santa Monica,California,US,34.0194,-118.4912,93076,America/Los_Angeles
+Chico,California,US,39.7285,-121.8375,101475,America/Los_Angeles
+Renton,Washington,US,47.4829,-122.2171,106785,America/Los_Angeles
+Davie,Florida,US,26.0765,-80.2523,110320,America/New_York
+Sparks,Nevada,US,39.5349,-119.7527,105006,America/Los_Angeles
+Albany,New York,US,42.6526,-73.7562,96460,America/New_York
+Yakima,Washington,US,46.6021,-120.5059,96968,America/Los_Angeles

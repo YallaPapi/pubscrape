@@ -1,0 +1,85 @@
+campaign_id: "us-business-owners-2025"
+vertical: "business_services"
+region:
+  country: "US"
+  cities: 
+    - "New York, NY"
+    - "Los Angeles, CA"
+    - "Chicago, IL"
+    - "Houston, TX"
+    - "Phoenix, AZ"
+    - "Philadelphia, PA"
+    - "San Antonio, TX"
+    - "San Diego, CA"
+    - "Dallas, TX"
+    - "Miami, FL"
+search:
+  templates:
+    - "[business_type] near [city]"
+    - "[business_type] in [city]"
+    - "small business [business_type] [city]"
+  business_types:
+    - "restaurant"
+    - "dental clinic"
+    - "law firm"
+    - "accounting firm"
+    - "real estate agency"
+    - "auto repair shop"
+    - "plumbing service"
+    - "electrical contractor"
+    - "landscaping company"
+    - "marketing agency"
+  max_pages_per_query: 3
+  exclude_domains:
+    - "wikipedia.org"
+    - "facebook.com"
+    - "linkedin.com"
+    - "twitter.com"
+    - "instagram.com"
+    - "yelp.com"
+    - "yellowpages.com"
+anti_detection:
+  user_agent_rotation: true
+  block_resources: [".png", ".jpg", ".gif", ".css", ".woff", ".svg"]
+  profile_isolation: true
+  human_delays:
+    base_ms: 1500
+    jitter_ms: 800
+    per_action_range_ms: [200, 700]
+proxies:
+  enabled: false  # Start without proxies for testing
+  rotation: "per-session"
+rate_limits:
+  bing:
+    rpm_soft: 8
+    rpm_hard: 12
+    concurrency: 1
+  google:
+    rpm_soft: 6
+    rpm_hard: 10
+    concurrency: 1
+  website:
+    per_domain_rpm_soft: 3
+    per_domain_concurrency: 1
+    backoff:
+      base_ms: 2000
+      factor: 2.0
+      jitter_ms: 500
+email_extraction:
+  max_pages_per_site: 5
+  page_priorities: ["home", "contact", "about", "footer", "team", "staff"]
+  detect_obfuscation: true
+  score_threshold: 0.5
+compliance:
+  respect_robots_txt: false  # For testing - enable in production
+  honor_nofollow_external: false
+  retention_days: 30
+output:
+  csv_path: "output/us_business_owners.csv"
+  stats_path: "output/us_business_owners_stats.json"
+  errors_path: "output/us_business_errors.csv"
+monitoring:
+  metrics_push_interval_sec: 30
+  alerts:
+    block_rate_threshold: 0.15
+    proxy_error_threshold: 0.20

@@ -1,12 +1,8 @@
 """
-PubScrape - Search Query Builder System
+PubScrape - Web Scraping Framework
 
-Main package for the comprehensive search query building system including
-template management, regional expansion, validation, and Agency Swarm integration.
+A comprehensive web scraping framework with query generation,
+business data extraction, and result management capabilities.
 """
 
-from .query_builder import *
-from .agents import *
-
 __version__ = "1.0.0"
-__author__ = "Query Builder System"

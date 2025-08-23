@@ -1,0 +1,80 @@
+{
+  "coordination_protocol": {
+    "name": "Hive-Queen-Protocol",
+    "version": "1.0.0",
+    "patterns": {
+      "task_delegation": {
+        "flow": [
+          "queen_receives_task",
+          "analyze_task_complexity", 
+          "select_optimal_caste",
+          "assign_to_available_worker",
+          "monitor_progress",
+          "coordinate_dependencies",
+          "collect_results"
+        ],
+        "decision_matrix": {
+          "data_tasks": "foragers",
+          "implementation_tasks": "builders", 
+          "validation_tasks": "guardians",
+          "maintenance_tasks": "nurses"
+        }
+      },
+      "worker_specialization": {
+        "foragers": {
+          "primary": ["research", "data_analysis", "requirements_gathering"],
+          "secondary": ["api_exploration", "documentation_review"],
+          "tools": ["Grep", "WebSearch", "WebFetch", "github_swarm"]
+        },
+        "builders": {
+          "primary": ["code_implementation", "architecture_design", "feature_development"],
+          "secondary": ["refactoring", "optimization"],
+          "tools": ["Write", "Edit", "MultiEdit", "sparc_coord"]
+        },
+        "guardians": {
+          "primary": ["testing", "code_review", "security_analysis"],
+          "secondary": ["performance_validation", "compliance_check"],
+          "tools": ["tdd-london-swarm", "code-review-swarm", "benchmark_run"]
+        },
+        "nurses": {
+          "primary": ["deployment", "monitoring", "maintenance"],
+          "secondary": ["backup", "optimization", "cleanup"],
+          "tools": ["cicd-engineer", "swarm_monitor", "performance-benchmarker"]
+        }
+      },
+      "communication_flows": {
+        "queen_broadcast": {
+          "trigger": "new_project_initiative",
+          "recipients": "all_workers",
+          "format": "strategic_directive"
+        },
+        "worker_report": {
+          "frequency": "task_completion",
+          "format": "structured_status",
+          "includes": ["progress", "blockers", "resource_needs"]
+        },
+        "peer_coordination": {
+          "trigger": "dependency_resolution",
+          "protocol": "direct_worker_communication",
+          "escalation": "queen_mediation"
+        }
+      }
+    },
+    "performance_optimization": {
+      "load_balancing": {
+        "algorithm": "weighted_round_robin",
+        "factors": ["current_load", "specialization_match", "historical_performance"]
+      },
+      "caching": {
+        "shared_memory": "hive_knowledge_base",
+        "session_persistence": true,
+        "cross_worker_learning": true
+      },
+      "parallel_execution": {
+        "enabled": true,
+        "max_concurrent_tasks": 8,
+        "dependency_management": "dag_scheduler"
+      }
+    }
+  }
+}
