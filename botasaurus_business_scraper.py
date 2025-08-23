@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import List, Dict
 import random
 
-from botasaurus import browser, Driver
+from botasaurus.browser import browser
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
 from rich.table import Table
@@ -45,14 +45,42 @@ class BotasaurusBusinessScraper:
         self.last_business = {}
     
     @browser(
-        headless=False,  # Show browser for demo
+        headless=False,
         block_images=True,
-        add_stealth=True,  # Botasaurus stealth mode
+        window_size="1920,1080",
         user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        window_size=(1920, 1080),
     )
-    def scrape_google_maps_businesses(self, driver: Driver, search_data):
+    def scrape_google_maps_businesses(self, driver, search_data):
         """Scrape businesses from Google Maps using anti-detection"""
+        # --- shims for nonstandard helpers ---
+        if not hasattr(driver, "short_random_sleep"):
+            import time as _t, random as _r
+            def _srs():
+                _t.sleep(_r.uniform(0.5, 1.5))
+            driver.short_random_sleep = _srs
+        if not hasattr(driver, "get_element_or_none_by_selector"):
+            from selenium.webdriver.common.by import By as _By
+            def _get_one(sel):
+                try:
+                    return driver.find_element(_By.CSS_SELECTOR, sel)
+                except Exception:
+                    return None
+            driver.get_element_or_none_by_selector = _get_one
+        if not hasattr(driver, "get_elements_or_none_by_selector"):
+            from selenium.webdriver.common.by import By as _By
+            def _get_many(sel_or_list):
+                sels = sel_or_list if isinstance(sel_or_list, list) else [sel_or_list]
+                for s in sels:
+                    els = driver.find_elements(_By.CSS_SELECTOR, s)
+                    if els:
+                        return els
+                return []
+            driver.get_elements_or_none_by_selector = _get_many
+        if not hasattr(driver, "google_get"):
+            def _gg(url):
+                driver.get(url)
+            driver.google_get = _gg
+        # --- end shims ---
         query, location = search_data['query'], search_data['location']
         self.current_query = f"{query} in {location}"
         self.current_action = "🔍 Starting Google Maps search..."
@@ -99,7 +127,7 @@ class BotasaurusBusinessScraper:
             
         return businesses
     
-    def _extract_businesses_with_scroll(self, driver: Driver, max_businesses=50):
+    def _extract_businesses_with_scroll(self, driver, max_businesses=50):
         """Extract businesses with infinite scroll handling"""
         businesses = []
         last_count = 0
@@ -153,7 +181,7 @@ class BotasaurusBusinessScraper:
         
         return businesses
     
-    def _extract_business_from_card(self, driver: Driver, card):
+    def _extract_business_from_card(self, driver, card):
         """Extract business information from a single card"""
         business = {}
         
@@ -226,10 +254,10 @@ class BotasaurusBusinessScraper:
     @browser(
         headless=True,
         block_images=True,
-        add_stealth=True,
+        window_size="1280,800",
         user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     )
-    def extract_email_from_website(self, driver: Driver, url_data):
+    def extract_email_from_website(self, driver, url_data):
         """Extract email from business website using anti-detection"""
         url = url_data['url']
         

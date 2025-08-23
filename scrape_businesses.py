@@ -47,13 +47,34 @@ class BusinessScraper:
         self.output_dir.mkdir(exist_ok=True)
         
     @browser(
-        headless=False,  # Set to True for production
-        block_resources=True,
+        headless=False,
         block_images=True,
         add_arguments=["--disable-blink-features=AutomationControlled"],
     )
-    def scrape_bing_maps(self, driver: Driver, query: str):
+    def scrape_bing_maps(self, driver, query: str):
         """Scrape business listings from Bing Maps"""
+        # --- selection shims ---
+        if not hasattr(driver, "select"):
+            from selenium.webdriver.common.by import By as _By
+            def _select(sel):
+                try:
+                    return driver.find_element(_By.CSS_SELECTOR, sel)
+                except Exception:
+                    return None
+            driver.select = _select
+        if not hasattr(driver, "select_all"):
+            from selenium.webdriver.common.by import By as _By
+            def _select_all(sel):
+                return driver.find_elements(_By.CSS_SELECTOR, sel)
+            driver.select_all = _select_all
+        if not hasattr(driver, "wait_for_element"):
+            from selenium.webdriver.common.by import By as _By
+            from selenium.webdriver.support.ui import WebDriverWait as _Wait
+            from selenium.webdriver.support import expected_conditions as _EC
+            def _wait(css, timeout=10):
+                _Wait(driver, timeout).until(_EC.presence_of_element_located((_By.CSS_SELECTOR, css)))
+            driver.wait_for_element = _wait
+        # --- end shims ---
         try:
             logger.info(f"Searching Bing Maps for: {query}")
             
