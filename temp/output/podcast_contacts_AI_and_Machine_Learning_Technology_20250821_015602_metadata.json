@@ -1,0 +1,15 @@
+{
+  "export_timestamp": "2025-08-21T01:56:02.168598",
+  "total_rows": 3,
+  "write_duration_ms": 2.0046234130859375,
+  "file_size_bytes": 3448,
+  "validation_errors": 0,
+  "quality_distribution": {
+    "high_quality": 1,
+    "medium_quality": 1,
+    "low_quality": 1,
+    "unknown_quality": 0
+  },
+  "output_path": "output\\podcast_contacts_AI_and_Machine_Learning_Technology_20250821_015602.csv",
+  "schema_validation_enabled": true
+}

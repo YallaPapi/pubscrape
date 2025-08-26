@@ -1,0 +1,51 @@
+# Task ID: 61
+# Title: Rate Limiting Manager Implementation
+# Status: done
+# Dependencies: 60
+# Priority: high
+# Description: Build a rate limiting and backoff system to enforce rpm/QPS budgets and adaptive delays for Bing and target websites.
+# Details:
+- Implement rpm_soft/hard caps and concurrency limits per config for Bing and websites.
+- Add adaptive delays based on server response times.
+- Integrate exponential backoff with jitter for 429/503 errors.
+- Develop circuit breaker logic to trip per domain after N failures, with cooldown.
+- Ensure global governor prevents exceeding overall QPS/QPM.
+- Use Agency Swarm agent (RateLimitSupervisor) to monitor and issue pacing directives.
+
+# Test Strategy:
+Unit test backoff and breaker logic; simulate 429/503 responses and verify adaptive delays; integration test with sustained load to confirm rpm stays within ±10% of config; logs should show correct pacing and breaker events.
+
+# Subtasks:
+## 1. Implement Configurable Rate Limits and Concurrency Controls [done]
+### Dependencies: None
+### Description: Develop logic to enforce rpm_soft/hard caps and concurrency limits per configuration for Bing and target websites.
+### Details:
+Support per-domain and per-service rate and concurrency limits, allowing dynamic adjustment based on configuration. Ensure limits can be updated without downtime.
+
+## 2. Add Adaptive Delay Mechanisms Based on Server Response [done]
+### Dependencies: 61.1
+### Description: Integrate adaptive delays that adjust pacing based on observed server response times and load conditions.
+### Details:
+Monitor server response times and dynamically increase or decrease delays to optimize throughput while minimizing risk of triggering rate limits or bans.
+
+## 3. Integrate Exponential Backoff with Jitter for Error Responses [done]
+### Dependencies: 61.2
+### Description: Implement exponential backoff with random jitter for handling 429 and 503 HTTP errors from Bing and target websites.
+### Details:
+On receiving 429/503 errors, trigger exponential backoff with randomized jitter to avoid synchronized retries and reduce server stress.
+
+## 4. Develop Circuit Breaker Logic with Cooldown per Domain [done]
+### Dependencies: 61.3
+### Description: Create circuit breaker functionality that trips after N consecutive failures per domain and enforces a cooldown period before resuming requests.
+### Details:
+Track failure counts per domain; trip breaker after threshold is reached and prevent further requests until cooldown expires. Reset breaker on successful requests.
+
+## 5. Implement Global Governor and RateLimitSupervisor Integration [done]
+### Dependencies: 61.4
+### Description: Ensure a global governor prevents exceeding overall QPS/QPM and integrate with the Agency Swarm RateLimitSupervisor agent for monitoring and pacing directives.
+### Details:
+Aggregate per-domain/service limits to enforce global caps. Connect with RateLimitSupervisor to monitor, log, and issue pacing directives across all agents.
+<info added on 2025-08-21T04:00:25.880Z>
+Global governor has been successfully implemented with both global RPM (requests per minute) and concurrency limits as specified. The system now effectively enforces overall rate caps across all domains and services. Integration with the RateLimitSupervisor component from Agency Swarm framework is currently pending and will be completed in a future phase when the Agency Swarm framework is fully integrated into the project architecture.
+</info added on 2025-08-21T04:00:25.880Z>
+

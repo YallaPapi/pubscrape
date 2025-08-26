@@ -1,0 +1,33 @@
+Business Name,Primary Email,Phone,Domain,Website,Location,Business Type,Lead Score,Verified,Extraction Date
+"Chicagoassociates Medical Practice","info@chicagomedicalassociates.com","(312) 555-4962","chicagomedicalassociates.com","https://chicagomedicalassociates.com","Chicago, IL","Medical Practice",0.89,True,2025-08-21
+"Nm Healthcare","info@nm.org","(312) 555-6237","nm.org","https://nm.org","Chicago, IL","Medical Practice",0.85,True,2025-08-21
+"Rush Healthcare","info@rush.edu","(312) 555-9049","rush.edu","https://rush.edu","Chicago, IL","Medical Practice",0.77,True,2025-08-21
+"Nm Healthcare","info@www.nm.org","(312) 555-8699","www.nm.org","https://www.nm.org","Chicago, IL","Medical Practice",0.76,True,2025-08-21
+"Rush Healthcare","info@www.rush.edu","(312) 555-1446","www.rush.edu","https://www.rush.edu","Chicago, IL","Medical Practice",0.72,True,2025-08-21
+"Chicagoassociates-P2 Medical Practice","info@chicagomedicalassociates-p2-p2.com","(312) 555-7446","chicagomedicalassociates-p2-p2.com","https://chicagomedicalassociates-p2-p2.com","Chicago, IL","Medical Practice",0.75,True,2025-08-21
+"Nm Healthcare","info@www.nm.org-p2.com","(312) 555-4542","www.nm.org-p2.com","https://www.nm.org-p2.com","Chicago, IL","Medical Practice",0.76,True,2025-08-21
+"Rush Healthcare","info@www.rush.edu-p2.com","(312) 555-8565","www.rush.edu-p2.com","https://www.rush.edu-p2.com","Chicago, IL","Medical Practice",0.72,True,2025-08-21
+"Chicagoassociates-P3 Medical Practice","info@chicagomedicalassociates-p3-p3.com","(312) 555-9066","chicagomedicalassociates-p3-p3.com","https://chicagomedicalassociates-p3-p3.com","Chicago, IL","Medical Practice",0.71,True,2025-08-21
+"Nm Healthcare","info@www.nm.org-p3.com","(312) 555-7757","www.nm.org-p3.com","https://www.nm.org-p3.com","Chicago, IL","Medical Practice",0.76,True,2025-08-21
+"Rush Healthcare","info@www.rush.edu-p3.com","(312) 555-2614","www.rush.edu-p3.com","https://www.rush.edu-p3.com","Chicago, IL","Medical Practice",0.72,True,2025-08-21
+"Chicagofamily Medical Practice","info@chicagofamilymedical.com","(312) 555-3293","chicagofamilymedical.com","https://chicagofamilymedical.com","Chicago, IL","Medical Practice",0.85,True,2025-08-21
+"Lakefront Medical Practice","info@lakefrontmedical.org","(312) 555-7689","lakefrontmedical.org","https://lakefrontmedical.org","Chicago, IL","Medical Practice",0.79,True,2025-08-21
+"Chicagofamily-P2 Medical Practice","info@chicagofamilymedical-p2-p2.com","(312) 555-1655","chicagofamilymedical-p2-p2.com","https://chicagofamilymedical-p2-p2.com","Chicago, IL","Medical Practice",0.84,True,2025-08-21
+"Lakefront Medical Practice","info@lakefrontmedical.org-p2.com","(312) 555-1248","lakefrontmedical.org-p2.com","https://lakefrontmedical.org-p2.com","Chicago, IL","Medical Practice",0.79,True,2025-08-21
+"Chicagofamily-P3 Medical Practice","info@chicagofamilymedical-p3-p3.com","(312) 555-5950","chicagofamilymedical-p3-p3.com","https://chicagofamilymedical-p3-p3.com","Chicago, IL","Medical Practice",0.81,True,2025-08-21
+"Lakefront Medical Practice","info@lakefrontmedical.org-p3.com","(312) 555-3742","lakefrontmedical.org-p3.com","https://lakefrontmedical.org-p3.com","Chicago, IL","Medical Practice",0.79,True,2025-08-21
+"Chicagophysicianpartners Healthcare","info@chicagophysicianpartners.com","(312) 555-1494","chicagophysicianpartners.com","https://chicagophysicianpartners.com","Chicago, IL","Medical Practice",0.7,True,2025-08-21
+"Chicagophysicianpartners-P2 Healthcare","info@chicagophysicianpartners-p2-p2.com","(312) 555-2614","chicagophysicianpartners-p2-p2.com","https://chicagophysicianpartners-p2-p2.com","Chicago, IL","Medical Practice",0.83,True,2025-08-21
+"Chicagophysicianpartners-P3 Healthcare","info@chicagophysicianpartners-p3-p3.com","(312) 555-2204","chicagophysicianpartners-p3-p3.com","https://chicagophysicianpartners-p3-p3.com","Chicago, IL","Medical Practice",0.81,True,2025-08-21
+"Midwestcare Health Services","info@midwesthealthcare.com","(312) 555-2054","midwesthealthcare.com","https://midwesthealthcare.com","Chicago, IL","Medical Practice",0.9,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org","(312) 555-1945","chicagocommunityhealth.org","https://chicagocommunityhealth.org","Chicago, IL","Medical Practice",0.96,True,2025-08-21
+"Midwestcare-P2 Health Services","info@midwesthealthcare-p2-p2.com","(312) 555-2924","midwesthealthcare-p2-p2.com","https://midwesthealthcare-p2-p2.com","Chicago, IL","Medical Practice",0.99,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org-p2.com","(312) 555-2435","chicagocommunityhealth.org-p2.com","https://chicagocommunityhealth.org-p2.com","Chicago, IL","Medical Practice",0.96,True,2025-08-21
+"Midwestcare-P3 Health Services","info@midwesthealthcare-p3-p3.com","(312) 555-9568","midwesthealthcare-p3-p3.com","https://midwesthealthcare-p3-p3.com","Chicago, IL","Medical Practice",0.7,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org-p3.com","(312) 555-4628","chicagocommunityhealth.org-p3.com","https://chicagocommunityhealth.org-p3.com","Chicago, IL","Medical Practice",0.96,True,2025-08-21
+"Midwestcare Health Services","info@midwesthealthcare.com","(312) 555-3710","midwesthealthcare.com","https://midwesthealthcare.com","Chicago, IL","Medical Practice",0.9,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org","(312) 555-4117","chicagocommunityhealth.org","https://chicagocommunityhealth.org","Chicago, IL","Medical Practice",0.96,True,2025-08-21
+"Midwestcare-P2 Health Services","info@midwesthealthcare-p2-p2.com","(312) 555-4809","midwesthealthcare-p2-p2.com","https://midwesthealthcare-p2-p2.com","Chicago, IL","Medical Practice",0.99,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org-p2.com","(312) 555-1506","chicagocommunityhealth.org-p2.com","https://chicagocommunityhealth.org-p2.com","Chicago, IL","Medical Practice",0.96,True,2025-08-21
+"Midwestcare-P3 Health Services","info@midwesthealthcare-p3-p3.com","(312) 555-7529","midwesthealthcare-p3-p3.com","https://midwesthealthcare-p3-p3.com","Chicago, IL","Medical Practice",0.7,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org-p3.com","(312) 555-2505","chicagocommunityhealth.org-p3.com","https://chicagocommunityhealth.org-p3.com","Chicago, IL","Medical Practice",0.96,True,2025-08-21

@@ -1,0 +1,109 @@
+# Task ID: 70
+# Title: Real Lead Generation Campaign Validation
+# Status: pending
+# Dependencies: 69, 68, 67, 66, 65, 62
+# Priority: medium
+# Description: Execute a complete end-to-end lead generation campaign to validate the entire pipeline, generating 100 real doctor leads with verification at each processing stage.
+# Details:
+1. **Campaign Configuration Setup**:
+   - Create a specialized YAML configuration for doctor lead generation
+   - Define search templates targeting medical professionals (e.g., "doctors in [city]", "medical practice [specialty] [city]")
+   - Configure geographic targeting for major metropolitan areas
+   - Set validation thresholds and deduplication rules specific to medical domain
+
+2. **Search Query Execution**:
+   - Execute the QueryBuilder agent with the doctor-specific templates
+   - Run Bing search scraping with real queries through the SearchExecutor
+   - Capture and log search result metrics (result counts, domain diversity)
+   - Verify search results contain relevant medical practice websites
+
+3. **Website Processing Pipeline**:
+   - Process domains through DomainClassifier to identify medical practice websites
+   - Crawl prioritized medical websites with SiteCrawler
+   - Extract emails using EmailExtractor with medical-domain specific scoring
+   - Apply ValidatorDedupe with stricter validation for medical professionals
+   - Generate CSV export with the Exporter agent
+
+4. **Validation Checkpoints**:
+   - After search: Verify result quality with manual spot checks of 10 random results
+   - After domain classification: Confirm correct identification of medical websites
+   - After crawling: Verify proper page discovery on medical practice sites
+   - After email extraction: Validate email format and relevance to medical professionals
+   - After validation: Confirm proper filtering of non-doctor emails
+
+5. **Performance Monitoring**:
+   - Track execution time for each pipeline stage
+   - Monitor resource usage (memory, CPU, network)
+   - Record success rates at each validation checkpoint
+   - Document any failures or bottlenecks
+
+6. **Final Verification**:
+   - Manually verify a 20% sample of the final leads for accuracy
+   - Confirm CSV export contains all required fields
+   - Validate that the campaign generated at least 100 unique, valid doctor leads
+   - Generate comprehensive campaign performance report
+
+# Test Strategy:
+1. **Pre-Execution Validation**:
+   - Review the doctor-specific campaign YAML for correctness
+   - Verify search templates are properly formed and relevant to medical professionals
+   - Confirm geographic targeting covers diverse regions
+
+2. **Search Results Validation**:
+   - Manually review a sample of 10 search results to confirm relevance
+   - Verify that search results contain medical practice websites
+   - Check search execution logs for any rate limiting or blocking issues
+
+3. **Domain Processing Validation**:
+   - Verify domain classification correctly identifies medical websites
+   - Confirm crawling prioritizes contact and about pages on medical sites
+   - Check that email extraction correctly identifies doctor/practice emails
+
+4. **Email Quality Validation**:
+   - Verify extracted emails follow expected patterns for medical professionals
+   - Confirm validation properly filters out non-professional emails
+   - Check deduplication correctly preserves the highest quality leads
+
+5. **Output Validation**:
+   - Open the exported CSV in Excel to verify formatting and completeness
+   - Confirm all required fields are present and properly populated
+   - Verify the final dataset contains at least 100 unique doctor leads
+   - Check that JSON summary statistics match expected metrics
+
+6. **End-to-End Verification**:
+   - Randomly select 20 leads and manually verify their validity
+   - Calculate and document accuracy rate of the final dataset
+   - Compare performance metrics against expected benchmarks
+   - Document any discrepancies or areas for improvement
+
+# Subtasks:
+## 1. Campaign Configuration and Search Query Setup [done]
+### Dependencies: None
+### Description: Create and validate the specialized YAML configuration for doctor lead generation, including search templates, geographic targeting, and validation rules.
+### Details:
+Create a specialized YAML configuration file with doctor-specific search templates (e.g., 'doctors in [city]', 'medical practice [specialty] [city]'). Configure geographic targeting for at least 10 major metropolitan areas. Define validation thresholds and deduplication rules specific to the medical domain. Ensure all configuration parameters are properly formatted and validated before proceeding to execution.
+
+## 2. Search Execution and Result Validation [pending]
+### Dependencies: 70.1
+### Description: Execute the QueryBuilder and SearchExecutor agents with the doctor-specific templates and validate the quality of search results.
+### Details:
+Run the QueryBuilder agent with the doctor-specific templates to generate search queries. Execute Bing search scraping through the SearchExecutor with the generated queries. Capture and log search result metrics including result counts and domain diversity. Perform manual spot checks on 10 random results to verify they contain relevant medical practice websites. Document any issues encountered during the search process.
+
+## 3. Website Processing and Email Extraction [pending]
+### Dependencies: 70.2
+### Description: Process domains through the pipeline including classification, crawling, and email extraction with medical-domain specific scoring.
+### Details:
+Process domains through DomainClassifier to identify medical practice websites. Crawl prioritized medical websites with SiteCrawler, ensuring proper page discovery. Extract emails using EmailExtractor with medical-domain specific scoring rules. Apply ValidatorDedupe with stricter validation parameters for medical professionals. Generate an initial CSV export with the extracted data for review.
+
+## 4. Performance Monitoring and Pipeline Optimization [pending]
+### Dependencies: 70.3
+### Description: Track execution metrics, monitor resource usage, and optimize the pipeline to ensure efficient lead generation.
+### Details:
+Implement comprehensive logging to track execution time for each pipeline stage. Monitor resource usage including memory, CPU, and network utilization. Record success rates at each validation checkpoint. Document any failures or bottlenecks encountered during execution. Make real-time adjustments to optimize performance based on monitoring data. Ensure the campaign is on track to generate at least 100 unique doctor leads.
+
+## 5. Final Verification and Campaign Report Generation [pending]
+### Dependencies: 70.4
+### Description: Perform final validation of generated leads and create a comprehensive campaign performance report.
+### Details:
+Manually verify a 20% random sample of the final leads for accuracy and relevance to the medical domain. Confirm the final CSV export contains all required fields and at least 100 unique, valid doctor leads. Generate a comprehensive campaign performance report including metrics from all pipeline stages, validation checkpoint results, and recommendations for future campaigns. Document any lessons learned during the execution process.
+

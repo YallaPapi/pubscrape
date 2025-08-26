@@ -1,0 +1,94 @@
+# Task ID: 76
+# Title: Implement Google Maps Scraper and Email Extractor
+# Status: pending
+# Dependencies: 60, 67, 73, 75
+# Priority: high
+# Description: Develop specialized scrapers for Google Maps and email extraction, create a minimal runner for testing, and document selector strategies and fallback behaviors.
+# Details:
+1. **Google Maps Scraper Implementation**:
+   - Create a new `google_maps_scraper.py` module using Botasaurus decorators
+   - Implement functions to:
+     - Search for businesses by query and location
+     - Extract business details (name, address, phone, website, hours, reviews)
+     - Handle pagination and "Show more results" interactions
+     - Normalize output data structure
+   - Add robust selector strategy with primary/fallback selectors for each data point
+   - Implement anti-detection measures specific to Google Maps (scroll delays, random clicks)
+   - Document rate limiting considerations specific to Google Maps
+
+2. **Email Extractor Enhancements**:
+   - Create a standalone `email_extractor.py` module that builds on Task 67
+   - Add specialized extraction for common obfuscation patterns:
+     - Image-based emails (OCR integration option)
+     - JavaScript-rendered emails
+     - Contact forms with hidden email fields
+   - Implement scoring system for email quality/relevance
+   - Add context-aware extraction based on surrounding text
+
+3. **Minimal Runner Implementation**:
+   - Create `scripts/run_maps_scrape.py` for testing Google Maps scraper
+   - Create `scripts/run_email_extract.py` for testing email extraction
+   - Ensure proper configuration loading and command-line arguments
+   - Add sample queries and test cases
+
+4. **Selector Documentation**:
+   - Create a `docs/selectors/` directory with markdown files:
+     - `google_maps_selectors.md`: Document all selectors with screenshots
+     - `email_extraction_patterns.md`: Document regex patterns and heuristics
+   - Include version history of selector changes for maintenance
+   - Document known selector fragility and update frequency
+
+5. **Fallback Behavior Documentation**:
+   - Define clear fallback strategies when primary selectors fail
+   - Implement graceful degradation for partial data extraction
+   - Document recovery procedures for different failure scenarios
+   - Add logging for selector hits/misses to identify drift
+
+# Test Strategy:
+1. **Unit Testing**:
+   - Create unit tests for each scraper component with mock HTML responses
+   - Test selector robustness with intentionally modified HTML structures
+   - Verify email pattern matching against a test corpus of various formats
+   - Test fallback behavior by injecting selector failures
+
+2. **Integration Testing**:
+   - Run Google Maps scraper against 5-10 diverse business categories and locations
+   - Verify extraction of all expected data fields with >90% success rate
+   - Test email extractor against 20+ websites with known email formats
+   - Measure and document extraction success rates by pattern type
+
+3. **Performance Testing**:
+   - Benchmark scraping speed and resource usage
+   - Test with various concurrency settings to find optimal throughput
+   - Verify rate limiting compliance under sustained operation
+
+4. **Validation Testing**:
+   - Manually verify a sample of extracted data for accuracy
+   - Compare extraction results with known ground truth for test sites
+   - Document precision and recall metrics for email extraction
+   - Verify correct handling of edge cases (international characters, unusual formats)
+
+5. **Documentation Verification**:
+   - Review selector documentation for completeness and accuracy
+   - Verify all fallback behaviors are properly documented
+   - Test documentation examples for correctness
+
+# Subtasks:
+## 1. Add google_maps_scraper [done]
+### Dependencies: None
+### Description: Create src/scrapers/google_maps_scraper.py with real extraction; compile verified
+### Details:
+
+
+## 2. Add email_extractor [done]
+### Dependencies: None
+### Description: Create src/scrapers/email_extractor.py with real extraction; compile verified
+### Details:
+
+
+## 3. Add smoke runner [done]
+### Dependencies: None
+### Description: Create scripts/run_smoke_scrape.py to exercise new scrapers
+### Details:
+
+

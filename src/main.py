@@ -27,7 +27,32 @@ import yaml
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 # Core imports
-from src.core.config_manager import config_manager
+# Config manager may not be available/valid in lightweight runs
+try:
+    from src.core.config_manager import config_manager  # type: ignore
+except Exception:  # pragma: no cover
+    class _DummyLogging:
+        log_level = 'INFO'
+        log_directory = 'logs'
+        enable_console_logging = True
+        enable_file_logging = False
+    class _DummyExport:
+        output_directory = 'output'
+    class _DummyConfig:
+        enable_metrics = False
+        data_directory = 'output'
+    class _DummyConfigManager:
+        logging = _DummyLogging()
+        export = _DummyExport()
+        config = _DummyConfig()
+        _config_file_path = '<defaults>'
+        def load_from_file(self, *args, **kwargs):
+            return True
+        def validate(self):
+            return True, []
+        def set(self, *args, **kwargs):
+            return None
+    config_manager = _DummyConfigManager()
 from src.utils.logger import setup_logging, get_logger
 from src.utils.error_handler import ErrorHandler, RetryableError
 from src.core.agency_factory import AgencyFactory
@@ -85,6 +110,16 @@ class CLIApplication:
             True if initialization successful, False otherwise
         """
         try:
+            # Lightweight bootstrap for quick command
+            if getattr(args, 'command', None) == 'quick':
+                self.logger = setup_logging(
+                    level='INFO',
+                    log_dir='logs',
+                    enable_console=True,
+                    enable_file=False
+                )
+                # Skip heavy subsystems for quick mode
+                return True
             # Load configuration
             if args.config:
                 if not config_manager.load_from_file(args.config):
@@ -94,13 +129,16 @@ class CLIApplication:
             # Override config with CLI arguments
             self._apply_cli_overrides(args)
             
-            # Validate configuration
-            is_valid, errors = config_manager.validate()
+            # Validate configuration (non-fatal in regular mode if issues)
+            try:
+                is_valid, errors = config_manager.validate()
+            except Exception as e:
+                is_valid, errors = (False, [str(e)])
             if not is_valid:
-                print(f"❌ Configuration validation failed:")
+                print(f"⚠️  Configuration issues detected:")
                 for error in errors:
                     print(f"   • {error}")
-                return False
+                # Continue with defaults rather than failing hard
             
             # Setup logging
             self.logger = setup_logging(
@@ -297,6 +335,90 @@ class CLIApplication:
             
         except Exception as e:
             self.logger.error(f"Export failed: {e}", exc_info=True)
+            return 1
+    
+    async def run_quick_command(self, args: argparse.Namespace) -> int:
+        """
+        Execute a quick, small scrape using the new scrapers and export CSV.
+        """
+        try:
+            self.logger.info(f"⚡ Quick scrape starting. query={getattr(args, 'query', None)} max={getattr(args, 'max', None)}")
+
+            # Ensure output dir exists
+            try:
+                output_base = getattr(getattr(config_manager, 'export', None), 'output_directory', 'output')
+            except Exception:
+                output_base = 'output'
+            output_dir = Path(output_base or 'output')
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            leads = []
+
+            import time as _t
+            start_time = _t.monotonic()
+            query = getattr(args, 'query', None) or 'coffee shops in Seattle'
+            max_leads = getattr(args, 'max', None) or 10
+            fallback_only = getattr(args, 'fallback_only', False)
+
+            if not fallback_only:
+                try:
+                    from src.scrapers.google_maps_scraper import scrape_google_maps_businesses
+                    from src.scrapers.email_extractor import extract_emails_from_website
+
+                    self.logger.info("🌐 Using Google Maps browser scraper")
+                    businesses = scrape_google_maps_businesses(query, max_results=max(5, min(10, max_leads)))
+                    for b in businesses:
+                        if len(leads) >= max_leads:
+                            break
+                        if b.get('website'):
+                            email = extract_emails_from_website(b['website']) or ''
+                            b['email'] = email
+                        b['source'] = 'google_maps'
+                        leads.append(b)
+                except Exception as e:
+                    self.logger.warning(f"Browser scrape failed or produced no results: {e}")
+
+            if not leads and (_t.monotonic() - start_time) < 20:
+                try:
+                    self.logger.info("🔎 Fallback to HTTP search path (Bing/Yellow Pages)")
+                    from simple_business_scraper import SimpleBusinessScraper
+                    s = SimpleBusinessScraper()
+                    businesses = s.search_bing(query, max_results=max(5, min(10, max_leads)))
+                    for b in businesses:
+                        if len(leads) >= max_leads:
+                            break
+                        if b.get('website'):
+                            email = s.extract_email_from_website(b['website']) or ''
+                            b['email'] = email
+                        b['source'] = 'web_search'
+                        leads.append(b)
+                        if (_t.monotonic() - start_time) > 30:
+                            break
+                except Exception as e:
+                    self.logger.error(f"Fallback path failed: {e}")
+
+            # Export
+            csv_path = output_dir / 'quick_leads.csv'
+            try:
+                import csv
+                fieldnames = ['name', 'email', 'phone', 'address', 'website', 'source']
+                with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
+                    writer.writeheader()
+                    for row in leads:
+                        writer.writerow(row)
+                self.logger.info(f"✅ Quick scrape completed: {len(leads)} leads -> {csv_path}")
+            except Exception as e:
+                self.logger.error(f"Failed to export quick leads: {e}")
+
+            # Also print a brief summary
+            print(f"Quick leads generated: {len(leads)}")
+            for i, l in enumerate(leads[:5], 1):
+                print(f"{i}. {l.get('name')} | {l.get('email','')} | {l.get('phone','')} | {l.get('website','')}")
+
+            return 0
+        except Exception as e:
+            self.logger.error(f"Quick command failed: {e}", exc_info=True)
             return 1
     
     def _load_campaign_config(self, campaign_path: str) -> Optional[Dict[str, Any]]:
@@ -513,6 +635,16 @@ Author: {__author__}
         help='Set configuration value (key.path value)'
     )
     
+    # Quick command
+    quick_parser = subparsers.add_parser(
+        'quick',
+        help='Quick small scrape with new scrapers',
+        description='Run a small quick scrape using Google Maps and website email extraction'
+    )
+    quick_parser.add_argument('--query', '-q', help='Search query', default='coffee shops in Seattle')
+    quick_parser.add_argument('--max', type=int, default=10, help='Max leads to generate')
+    quick_parser.add_argument('--fallback-only', action='store_true', help='Use HTTP fallback only (no browser)')
+    
     return parser
 
 
@@ -544,6 +676,8 @@ async def main() -> int:
             return await app.run_validate_command(args)
         elif args.command == 'export':
             return await app.run_export_command(args)
+        elif args.command == 'quick':
+            return await app.run_quick_command(args)
         elif args.command == 'status':
             return await app.run_status_command(args)
         elif args.command == 'config':

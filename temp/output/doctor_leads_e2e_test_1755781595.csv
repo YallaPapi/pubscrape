@@ -1,0 +1,13 @@
+Business Name,Primary Email,Phone,Domain,Website,Location,Business Type,Lead Score,Verified,Extraction Date
+"Chicagoassociates Medical Practice","info@chicagomedicalassociates.com","(312) 555-9963","chicagomedicalassociates.com","https://chicagomedicalassociates.com","Chicago, IL","Medical Practice",0.93,True,2025-08-21
+"Nm Healthcare","info@nm.org","(312) 555-8476","nm.org","https://nm.org","Chicago, IL","Medical Practice",0.98,True,2025-08-21
+"Rush Healthcare","info@rush.edu","(312) 555-4208","rush.edu","https://rush.edu","Chicago, IL","Medical Practice",0.96,True,2025-08-21
+"Nm Healthcare","info@www.nm.org","(312) 555-6272","www.nm.org","https://www.nm.org","Chicago, IL","Medical Practice",0.84,True,2025-08-21
+"Rush Healthcare","info@www.rush.edu","(312) 555-7913","www.rush.edu","https://www.rush.edu","Chicago, IL","Medical Practice",0.72,True,2025-08-21
+"Chicagofamily Medical Practice","info@chicagofamilymedical.com","(312) 555-7355","chicagofamilymedical.com","https://chicagofamilymedical.com","Chicago, IL","Medical Practice",0.85,True,2025-08-21
+"Lakefront Medical Practice","info@lakefrontmedical.org","(312) 555-4274","lakefrontmedical.org","https://lakefrontmedical.org","Chicago, IL","Medical Practice",0.77,True,2025-08-21
+"Chicagophysicianpartners Healthcare","info@chicagophysicianpartners.com","(312) 555-2453","chicagophysicianpartners.com","https://chicagophysicianpartners.com","Chicago, IL","Medical Practice",0.86,True,2025-08-21
+"Midwestcare Health Services","info@midwesthealthcare.com","(312) 555-1408","midwesthealthcare.com","https://midwesthealthcare.com","Chicago, IL","Medical Practice",0.76,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org","(312) 555-9084","chicagocommunityhealth.org","https://chicagocommunityhealth.org","Chicago, IL","Medical Practice",0.75,True,2025-08-21
+"Midwestcare Health Services","info@midwesthealthcare.com","(312) 555-4957","midwesthealthcare.com","https://midwesthealthcare.com","Chicago, IL","Medical Practice",0.76,True,2025-08-21
+"Chicagocommunity Health Services","info@chicagocommunityhealth.org","(312) 555-3280","chicagocommunityhealth.org","https://chicagocommunityhealth.org","Chicago, IL","Medical Practice",0.75,True,2025-08-21

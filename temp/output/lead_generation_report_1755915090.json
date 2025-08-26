@@ -1,0 +1,37 @@
+{
+  "generation_summary": {
+    "total_leads": 1,
+    "actionable_leads": 1,
+    "actionable_rate": 100.0,
+    "avg_lead_score": 0.9200000000000002,
+    "avg_data_completeness": 0.8800000000000001
+  },
+  "quality_distribution": {
+    "high_quality": 1,
+    "medium_quality": 0,
+    "low_quality": 0
+  },
+  "email_validation": {
+    "valid_emails": 1,
+    "invalid_emails": 0,
+    "unvalidated": 0
+  },
+  "processing_stats": {
+    "urls_processed": 3,
+    "contacts_extracted": 1,
+    "emails_found": 0,
+    "emails_validated": 1,
+    "leads_generated": 1,
+    "actionable_leads": 1,
+    "duplicates_removed": 0,
+    "processing_time": 0.8037722110748291
+  },
+  "top_leads": [
+    {
+      "business_name": "Atlanta Eye Care Center",
+      "primary_email": "manager@atlantaeyecare.com",
+      "lead_score": 0.9200000000000002,
+      "data_completeness": 0.8800000000000001
+    }
+  ]
+}

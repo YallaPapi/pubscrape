@@ -1,0 +1,49 @@
+# Task ID: 59
+# Title: Project Scaffolding & Environment Setup
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Initialize the repository, directory structure, and Python environment for the Bing Search Engine Scraper using Botasaurus and Agency Swarm.
+# Details:
+- Create project folders as per PRD (src/core, infra, pipeline, cli, configs, out, tests).
+- Set up Python 3.10+ virtual environment.
+- Add requirements.txt with Botasaurus (latest), agency-swarm (latest), pydantic, requests, beautifulsoup4, pytest, and other dependencies.
+- Scaffold Dockerfile and docker-compose.yml for containerization.
+- Initialize git repository and .gitignore.
+- Install Agency Swarm via pip and verify CLI tools are available.
+- Add README.md with setup instructions.
+
+# Test Strategy:
+Run 'pytest -q' on skeleton tests; verify 'python -m src.cli.dry_run --config configs/campaign.example.yaml' prints planned actions; confirm CLI and Agency Swarm commands work.
+
+# Subtasks:
+## 1. Create Project Directory Structure [done]
+### Dependencies: None
+### Description: Establish the required folders as specified in the PRD, including src/core, infra, pipeline, cli, configs, out, and tests.
+### Details:
+Ensure all directories are created and organized according to the project requirements document. Verify that the structure supports modular development and testing.
+
+## 2. Initialize Python Virtual Environment [done]
+### Dependencies: 59.1
+### Description: Set up a Python 3.10+ virtual environment in the project root to isolate dependencies.
+### Details:
+Use venv, virtualenv, or pyenv to create and activate a virtual environment. Ensure the environment uses Python 3.10 or newer and is not shared with other projects.
+
+## 3. Configure Dependencies and Requirements [done]
+### Dependencies: 59.2
+### Description: Add a requirements.txt file listing Botasaurus, agency-swarm, pydantic, requests, beautifulsoup4, pytest, and other dependencies.
+### Details:
+Populate requirements.txt with the latest versions of required packages. Install all dependencies using pip within the virtual environment.
+
+## 4. Scaffold Containerization and Version Control [done]
+### Dependencies: 59.3
+### Description: Create Dockerfile and docker-compose.yml for containerization, initialize git repository, and add .gitignore.
+### Details:
+Write Dockerfile and docker-compose.yml to support local development and deployment. Initialize git, add .gitignore for Python and environment files.
+
+## 5. Install and Verify Agency Swarm CLI & Documentation [done]
+### Dependencies: 59.4
+### Description: Install Agency Swarm via pip, verify CLI tools are available, and add README.md with setup instructions.
+### Details:
+Ensure Agency Swarm CLI is installed and functional. Write a README.md detailing environment setup, dependency installation, and usage instructions.
+

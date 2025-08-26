@@ -1,0 +1,100 @@
+# Task ID: 74
+# Title: Smoke Test & Validation for End-to-End Functionality
+# Status: pending
+# Dependencies: 73, 69, 68, 72
+# Priority: high
+# Description: Execute a minimal smoke test using scripts/run_smoke_scrape.py to verify compiled state for entry points and scrapers, produce real leads, capture outputs, and document findings or blockers.
+# Details:
+1. **Preparation**:
+   - Verify the compiled state of all entry points and scrapers
+   - Ensure scripts/run_smoke_scrape.py is properly configured with minimal test parameters
+   - Set up a controlled test environment with appropriate logging levels
+
+2. **Execution**:
+   - Run the smoke test script with a limited scope (1-2 search queries, 1-2 geographic areas)
+   - Monitor the execution through each pipeline stage:
+     - Query building and search execution
+     - Scraper activation and data extraction
+     - Validation and deduplication
+     - Export and reporting
+   - Capture all outputs including:
+     - Generated CSV files
+     - JSON statistics
+     - Log files
+     - Error reports
+
+3. **Analysis**:
+   - Examine the produced leads for quality and completeness
+   - Verify that data flows correctly through all pipeline stages
+   - Check that validation rules are properly applied
+   - Confirm deduplication works as expected
+   - Validate export formats match required schemas
+
+4. **Documentation**:
+   - Create a detailed report documenting:
+     - Test configuration used
+     - Number of leads generated
+     - Success/failure metrics at each stage
+     - Any errors or warnings encountered
+     - Performance metrics (time taken per stage)
+   - Clearly identify any blockers with:
+     - Specific error messages and stack traces
+     - Component where failure occurred
+     - Potential root causes
+     - Suggested fixes or workarounds
+
+5. **Follow-up**:
+   - Create TODOs for any identified issues
+   - Prioritize blockers based on severity
+   - Document any configuration changes needed for full-scale operation
+
+# Test Strategy:
+1. **Pre-Execution Verification**:
+   - Run a static code analysis to verify all imports and dependencies are resolved
+   - Check that scripts/run_smoke_scrape.py exists and has executable permissions
+   - Verify configuration files are properly formatted and contain valid settings
+
+2. **Execution Monitoring**:
+   - Capture stdout and stderr during execution
+   - Monitor system resource usage (memory, CPU, network)
+   - Record execution time for each pipeline stage
+   - Verify each component activates in the expected sequence
+
+3. **Output Validation**:
+   - Verify CSV files are created with the correct schema
+   - Confirm JSON statistics files contain all required metrics
+   - Check log files for expected progress messages and any errors
+   - Validate that at least some real leads were successfully generated
+   - Ensure all files can be opened with standard tools (Excel, text editors)
+
+4. **End-to-End Verification**:
+   - Manually trace several leads from initial query to final export
+   - Verify attribution data is maintained throughout the pipeline
+   - Confirm validation rules were correctly applied to test data
+   - Check that duplicates were properly identified and handled
+
+5. **Documentation Review**:
+   - Have another team member review the findings report
+   - Verify all blockers are documented with sufficient detail for resolution
+   - Ensure TODOs are specific and actionable
+   - Confirm the report accurately reflects the test results
+
+# Subtasks:
+## 1. Compile verification [done]
+### Dependencies: None
+### Description: Compile key scripts to ensure no immediate import or syntax errors
+### Details:
+Run: python -m py_compile main.py src/utils/logger.py src/scrapers/google_maps_scraper.py src/scrapers/email_extractor.py botasaurus_business_scraper.py scrape_businesses.py
+
+## 2. Run smoke test [pending]
+### Dependencies: None
+### Description: Run scripts/run_smoke_scrape.py to perform a minimal real scrape of ~10 results and print a summary
+### Details:
+
+
+## 3. Archive outputs [pending]
+### Dependencies: None
+### Description: Save smoke run outputs into output/smoke/ with timestamped filenames
+### Details:
+
+

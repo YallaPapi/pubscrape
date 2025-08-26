@@ -1,0 +1,37 @@
+{
+  "generation_summary": {
+    "total_leads": 1,
+    "actionable_leads": 1,
+    "actionable_rate": 100.0,
+    "avg_lead_score": 0.8,
+    "avg_data_completeness": 0.8
+  },
+  "quality_distribution": {
+    "high_quality": 1,
+    "medium_quality": 0,
+    "low_quality": 0
+  },
+  "email_validation": {
+    "valid_emails": 1,
+    "invalid_emails": 0,
+    "unvalidated": 0
+  },
+  "processing_stats": {
+    "urls_processed": 19,
+    "contacts_extracted": 1,
+    "emails_found": 0,
+    "emails_validated": 1,
+    "leads_generated": 1,
+    "actionable_leads": 1,
+    "duplicates_removed": 0,
+    "processing_time": 54.38774609565735
+  },
+  "top_leads": [
+    {
+      "business_name": "Health and wellbeing for everyone",
+      "primary_email": "commsteam@rvohealth.com",
+      "lead_score": 0.8,
+      "data_completeness": 0.8
+    }
+  ]
+}

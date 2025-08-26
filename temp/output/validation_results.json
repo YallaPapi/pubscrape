@@ -1,0 +1,156 @@
+{
+  "timestamp": 1755860813.3497386,
+  "validation_date": "2025-08-22 07:06:53",
+  "email_extractor": {
+    "https://www.mayoclinic.org/about-mayo-clinic/contact": {
+      "success": true,
+      "url": "https://www.mayoclinic.org/about-mayo-clinic/contact",
+      "processing_time": 1.2184994220733643,
+      "business_name": "Mayoclinic",
+      "emails_found": 0,
+      "phones_found": 5,
+      "names_found": 0,
+      "addresses_found": 0,
+      "is_real_extraction": true,
+      "sample_emails": [],
+      "sample_phones": [
+        "(844) 217-9591",
+        "(507) 284-0161"
+      ]
+    },
+    "https://www.clevelandclinic.org/about/contact": {
+      "success": true,
+      "url": "https://www.clevelandclinic.org/about/contact",
+      "processing_time": 0.554326057434082,
+      "business_name": "",
+      "emails_found": 0,
+      "phones_found": 0,
+      "names_found": 0,
+      "addresses_found": 0,
+      "is_real_extraction": false,
+      "sample_emails": [],
+      "sample_phones": []
+    },
+    "https://httpbin.org/html": {
+      "success": true,
+      "url": "https://httpbin.org/html",
+      "processing_time": 0.5119655132293701,
+      "business_name": "Herman Melville - Moby-Dick",
+      "emails_found": 0,
+      "phones_found": 0,
+      "names_found": 0,
+      "addresses_found": 0,
+      "is_real_extraction": false,
+      "sample_emails": [],
+      "sample_phones": []
+    }
+  },
+  "lead_generator": {
+    "success": false,
+    "leads_generated": 0,
+    "processing_time": 17.080148696899414,
+    "real_data_indicators": 0,
+    "fake_data_indicators": 0,
+    "is_generating_real_data": false,
+    "stats": {
+      "urls_processed": 2,
+      "contacts_extracted": 0,
+      "emails_found": 0,
+      "emails_validated": 0,
+      "leads_generated": 0,
+      "actionable_leads": 0,
+      "duplicates_removed": 0,
+      "processing_time": 17.080148696899414
+    }
+  },
+  "components": {
+    "BingNavigator": "available",
+    "SerpParser": "available",
+    "Botasaurus": "available",
+    "html_content": "real_bing_data"
+  },
+  "existing_files": {
+    "doctor_leads_e2e_test_1755781773.csv": {
+      "file": "doctor_leads_e2e_test_1755781773.csv",
+      "total_records": 32,
+      "file_size_kb": 6.275390625,
+      "contains_real_domains": true,
+      "contains_fake_domains": true,
+      "sample_data": [
+        {
+          "business": "Chicagoassociates Medical Practice",
+          "email": "info@chicagomedicalassociates.com",
+          "phone": "(312) 555-7460"
+        },
+        {
+          "business": "Nm Healthcare",
+          "email": "info@nm.org",
+          "phone": "(312) 555-5966"
+        },
+        {
+          "business": "Rush Healthcare",
+          "email": "info@rush.edu",
+          "phone": "(312) 555-7923"
+        },
+        {
+          "business": "Nm Healthcare",
+          "email": "info@www.nm.org",
+          "phone": "(312) 555-4191"
+        },
+        {
+          "business": "Rush Healthcare",
+          "email": "info@www.rush.edu",
+          "phone": "(312) 555-4769"
+        }
+      ]
+    },
+    "podcast_contacts_AI_and_Machine_Learning_Technology_20250821_015602.csv": {
+      "file": "podcast_contacts_AI_and_Machine_Learning_Technology_20250821_015602.csv",
+      "total_records": 3,
+      "file_size_kb": 3.3671875,
+      "contains_real_domains": true,
+      "contains_fake_domains": false,
+      "sample_data": [
+        {
+          "business": "Tech Innovators Weekly",
+          "email": "Sarah Johnson",
+          "phone": "Weekly interviews with leading technology innovators and entrepreneurs."
+        },
+        {
+          "business": "Business Growth Stories",
+          "email": "Mike Chen",
+          "phone": "Stories of business growth and entrepreneurship."
+        },
+        {
+          "business": "Random Thoughts Podcast",
+          "email": "Alex Smith",
+          "phone": "Random thoughts and discussions."
+        }
+      ]
+    },
+    "test_export.csv": {
+      "file": "test_export.csv",
+      "total_records": 3,
+      "file_size_kb": 3.3671875,
+      "contains_real_domains": true,
+      "contains_fake_domains": false,
+      "sample_data": [
+        {
+          "business": "Tech Innovators Weekly",
+          "email": "Sarah Johnson",
+          "phone": "Weekly interviews with leading technology innovators and entrepreneurs."
+        },
+        {
+          "business": "Business Growth Stories",
+          "email": "Mike Chen",
+          "phone": "Stories of business growth and entrepreneurship."
+        },
+        {
+          "business": "Random Thoughts Podcast",
+          "email": "Alex Smith",
+          "phone": "Random thoughts and discussions."
+        }
+      ]
+    }
+  }
+}

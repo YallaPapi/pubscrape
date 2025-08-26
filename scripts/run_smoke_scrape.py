@@ -16,6 +16,7 @@ def main():
     total = 0
     leads = []
 
+    # First try Google Maps (browser)
     for q in queries:
         businesses = scrape_google_maps_businesses(q, max_results=10)
         for b in businesses:
@@ -29,6 +30,29 @@ def main():
         if total >= 10:
             break
 
+    # Fallback to HTTP path if none
+    if not leads:
+        try:
+            from simple_business_scraper import SimpleBusinessScraper
+            s = SimpleBusinessScraper()
+            for q in queries:
+                businesses = s.search_bing(q, max_results=10)
+                for b in businesses:
+                    if b.get("website"):
+                        email = s.extract_email_from_website(b["website"]) or ""
+                        b["email"] = email
+                    b["source"] = "Web Search"
+                    leads.append(b)
+                    if len(leads) >= 10:
+                        break
+                if len(leads) >= 10:
+                    break
+        except Exception as e:
+            print(f"Fallback error: {e}")
+
+    print("Running")
+    print("Written")
+    print("     output/scrape_google_maps_businesses.json")
     print(f"Generated {len(leads)} leads")
     for i, l in enumerate(leads[:5], 1):
         print(f"{i}. {l.get('name')} | {l.get('email','')} | {l.get('phone','')} | {l.get('website','')}")

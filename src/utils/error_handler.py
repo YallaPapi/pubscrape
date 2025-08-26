@@ -172,7 +172,6 @@ class ErrorHandler:
             
             # Authentication
             'AuthenticationError': (ErrorCategory.AUTHENTICATION, ErrorSeverity.HIGH, False),
-            'PermissionError': (ErrorCategory.AUTHENTICATION, ErrorSeverity.HIGH, False),
             'Unauthorized': (ErrorCategory.AUTHENTICATION, ErrorSeverity.HIGH, False),
             
             # Validation
@@ -184,4 +183,358 @@ class ErrorHandler:
             'ParseError': (ErrorCategory.PARSING, ErrorSeverity.MEDIUM, True),
             'JSONDecodeError': (ErrorCategory.PARSING, ErrorSeverity.MEDIUM, True),
             
-            # System errors\n            'FileNotFoundError': (ErrorCategory.SYSTEM, ErrorSeverity.MEDIUM, False),\n            'PermissionError': (ErrorCategory.SYSTEM, ErrorSeverity.HIGH, False),\n            'OSError': (ErrorCategory.SYSTEM, ErrorSeverity.HIGH, False),\n            'MemoryError': (ErrorCategory.SYSTEM, ErrorSeverity.CRITICAL, False),\n        }\n    \n    def classify_error(self, error: Exception) -> ErrorInfo:\n        \"\"\"\n        Classify an error and create ErrorInfo object\n        \n        Args:\n            error: Exception to classify\n            \n        Returns:\n            ErrorInfo object with classification details\n        \"\"\"\n        error_type = type(error).__name__\n        \n        # Get classification from rules\n        if error_type in self.error_rules:\n            category, severity, recoverable = self.error_rules[error_type]\n        else:\n            category = ErrorCategory.UNKNOWN\n            severity = ErrorSeverity.MEDIUM\n            recoverable = True\n        \n        # Check for specific error patterns\n        message = str(error).lower()\n        if 'rate limit' in message or 'too many requests' in message:\n            category = ErrorCategory.RATE_LIMIT\n            recoverable = True\n        elif 'timeout' in message:\n            category = ErrorCategory.NETWORK\n            recoverable = True\n        elif 'unauthorized' in message or 'forbidden' in message:\n            category = ErrorCategory.AUTHENTICATION\n            recoverable = False\n        \n        # Get suggested action\n        suggested_action = self._get_suggested_action(category, error_type)\n        \n        return ErrorInfo(\n            error_type=error_type,\n            message=str(error),\n            category=category,\n            severity=severity,\n            timestamp=datetime.now(),\n            traceback=traceback.format_exc(),\n            recoverable=recoverable,\n            suggested_action=suggested_action\n        )\n    \n    def _get_suggested_action(self, category: ErrorCategory, error_type: str) -> str:\n        \"\"\"Get suggested action for error recovery\"\"\"\n        suggestions = {\n            ErrorCategory.NETWORK: \"Check network connection and retry\",\n            ErrorCategory.RATE_LIMIT: \"Wait and retry with exponential backoff\",\n            ErrorCategory.AUTHENTICATION: \"Check API keys and credentials\",\n            ErrorCategory.VALIDATION: \"Validate input data and parameters\",\n            ErrorCategory.PARSING: \"Check data format and parsing logic\",\n            ErrorCategory.SYSTEM: \"Check system resources and permissions\",\n            ErrorCategory.CONFIGURATION: \"Review configuration settings\",\n            ErrorCategory.EXTERNAL_API: \"Check external API status and documentation\"\n        }\n        \n        return suggestions.get(category, \"Review error details and logs\")\n    \n    async def execute_with_retry(\n        self, \n        func: Callable,\n        *args,\n        max_retries: Optional[int] = None,\n        retry_delay: Optional[float] = None,\n        backoff_multiplier: Optional[float] = None,\n        operation_name: str = \"operation\",\n        circuit_breaker_key: Optional[str] = None,\n        **kwargs\n    ) -> Any:\n        \"\"\"\n        Execute function with retry logic and error handling\n        \n        Args:\n            func: Function to execute\n            *args: Function arguments\n            max_retries: Maximum retry attempts\n            retry_delay: Initial retry delay\n            backoff_multiplier: Backoff multiplier for delays\n            operation_name: Name for logging\n            circuit_breaker_key: Key for circuit breaker\n            **kwargs: Function keyword arguments\n            \n        Returns:\n            Function result\n            \n        Raises:\n            Exception: If all retries exhausted or non-retryable error\n        \"\"\"\n        max_retries = max_retries or self.max_retries\n        retry_delay = retry_delay or self.retry_delay\n        backoff_multiplier = backoff_multiplier or self.backoff_multiplier\n        \n        # Get or create circuit breaker\n        circuit_breaker = None\n        if circuit_breaker_key:\n            if circuit_breaker_key not in self.circuit_breakers:\n                self.circuit_breakers[circuit_breaker_key] = CircuitBreaker()\n            circuit_breaker = self.circuit_breakers[circuit_breaker_key]\n        \n        last_error = None\n        current_delay = retry_delay\n        \n        for attempt in range(max_retries + 1):\n            try:\n                # Execute with circuit breaker if available\n                if circuit_breaker:\n                    result = circuit_breaker.call(func, *args, **kwargs)\n                else:\n                    # Handle async functions\n                    if asyncio.iscoroutinefunction(func):\n                        result = await func(*args, **kwargs)\n                    else:\n                        result = func(*args, **kwargs)\n                \n                # Success - log and return\n                if attempt > 0:\n                    self.logger.info(f\"{operation_name} succeeded after {attempt} retries\")\n                \n                return result\n                \n            except Exception as e:\n                last_error = e\n                error_info = self.classify_error(e)\n                error_info.retry_count = attempt\n                error_info.max_retries = max_retries\n                \n                # Log error\n                self._log_error(error_info, operation_name, attempt, max_retries)\n                \n                # Update statistics\n                self._update_error_stats(error_info)\n                \n                # Check if error is retryable\n                if not error_info.recoverable or isinstance(e, NonRetryableError):\n                    self.logger.error(f\"{operation_name} failed with non-retryable error: {e}\")\n                    raise e\n                \n                # Check if we've exhausted retries\n                if attempt >= max_retries:\n                    self.logger.error(f\"{operation_name} failed after {max_retries} retries\")\n                    break\n                \n                # Wait before retry\n                if current_delay > 0:\n                    self.logger.info(f\"Retrying {operation_name} in {current_delay:.1f} seconds...\")\n                    await asyncio.sleep(current_delay)\n                \n                # Increase delay for next attempt\n                current_delay = min(current_delay * backoff_multiplier, self.max_delay)\n        \n        # All retries exhausted\n        if last_error:\n            raise last_error\n    \n    def _log_error(self, error_info: ErrorInfo, operation_name: str, \n                   attempt: int, max_retries: int):\n        \"\"\"Log error with appropriate level\"\"\"\n        log_data = {\n            'operation': operation_name,\n            'attempt': attempt + 1,\n            'max_retries': max_retries + 1,\n            'error_type': error_info.error_type,\n            'error_category': error_info.category.value,\n            'error_severity': error_info.severity.value,\n            'recoverable': error_info.recoverable,\n            'suggested_action': error_info.suggested_action\n        }\n        \n        if error_info.severity == ErrorSeverity.CRITICAL:\n            self.logger.critical(f\"{operation_name} critical error: {error_info.message}\", \n                               extra=log_data, exc_info=True)\n        elif error_info.severity == ErrorSeverity.HIGH:\n            self.logger.error(f\"{operation_name} error: {error_info.message}\", \n                            extra=log_data, exc_info=True)\n        elif attempt < max_retries and error_info.recoverable:\n            self.logger.warning(f\"{operation_name} attempt {attempt + 1} failed: {error_info.message}\", \n                              extra=log_data)\n        else:\n            self.logger.error(f\"{operation_name} failed: {error_info.message}\", \n                            extra=log_data, exc_info=True)\n        \n        # Save to error log file if specified\n        if self.error_log_file:\n            self._save_error_to_file(error_info, operation_name)\n    \n    def _save_error_to_file(self, error_info: ErrorInfo, operation_name: str):\n        \"\"\"Save error to log file\"\"\"\n        try:\n            error_data = {\n                'timestamp': error_info.timestamp.isoformat(),\n                'operation': operation_name,\n                'error_type': error_info.error_type,\n                'message': error_info.message,\n                'category': error_info.category.value,\n                'severity': error_info.severity.value,\n                'recoverable': error_info.recoverable,\n                'retry_count': error_info.retry_count,\n                'traceback': error_info.traceback,\n                'context': error_info.context,\n                'suggested_action': error_info.suggested_action\n            }\n            \n            # Ensure log directory exists\n            log_path = Path(self.error_log_file)\n            log_path.parent.mkdir(parents=True, exist_ok=True)\n            \n            # Append to error log file\n            with open(log_path, 'a', encoding='utf-8') as f:\n                f.write(json.dumps(error_data) + '\\n')\n                \n        except Exception as e:\n            self.logger.error(f\"Failed to save error to file: {e}\")\n    \n    def _update_error_stats(self, error_info: ErrorInfo):\n        \"\"\"Update error statistics\"\"\"\n        # Update counters\n        self.error_stats[error_info.error_type] = self.error_stats.get(error_info.error_type, 0) + 1\n        \n        # Add to history (keep last 1000 errors)\n        self.error_history.append(error_info)\n        if len(self.error_history) > 1000:\n            self.error_history = self.error_history[-1000:]\n    \n    def get_error_summary(self) -> Dict[str, Any]:\n        \"\"\"Get summary of error statistics\"\"\"\n        total_errors = sum(self.error_stats.values())\n        \n        if not self.error_history:\n            return {'total_errors': 0, 'error_types': {}}\n        \n        # Calculate error rates by category\n        category_stats = {}\n        severity_stats = {}\n        \n        for error in self.error_history:\n            category = error.category.value\n            severity = error.severity.value\n            \n            category_stats[category] = category_stats.get(category, 0) + 1\n            severity_stats[severity] = severity_stats.get(severity, 0) + 1\n        \n        # Recent errors (last hour)\n        recent_cutoff = datetime.now() - timedelta(hours=1)\n        recent_errors = [e for e in self.error_history if e.timestamp > recent_cutoff]\n        \n        return {\n            'total_errors': total_errors,\n            'error_types': self.error_stats,\n            'category_distribution': category_stats,\n            'severity_distribution': severity_stats,\n            'recent_errors_count': len(recent_errors),\n            'error_rate_last_hour': len(recent_errors),\n            'most_common_errors': sorted(self.error_stats.items(), \n                                       key=lambda x: x[1], reverse=True)[:5]\n        }\n    \n    def reset_stats(self):\n        \"\"\"Reset error statistics\"\"\"\n        self.error_stats.clear()\n        self.error_history.clear()\n        self.circuit_breakers.clear()\n        self.logger.info(\"Error statistics reset\")\n\n\ndef retry_on_failure(\n    max_retries: int = 3,\n    retry_delay: float = 1.0,\n    backoff_multiplier: float = 2.0,\n    exceptions: tuple = (Exception,),\n    operation_name: Optional[str] = None\n):\n    \"\"\"\n    Decorator for automatic retry on function failure\n    \n    Args:\n        max_retries: Maximum retry attempts\n        retry_delay: Initial retry delay\n        backoff_multiplier: Backoff multiplier\n        exceptions: Tuple of exceptions to retry on\n        operation_name: Name for logging\n        \n    Returns:\n        Decorated function\n    \"\"\"\n    def decorator(func):\n        @wraps(func)\n        async def async_wrapper(*args, **kwargs):\n            error_handler = ErrorHandler(\n                max_retries=max_retries,\n                retry_delay=retry_delay,\n                backoff_multiplier=backoff_multiplier\n            )\n            \n            return await error_handler.execute_with_retry(\n                func, *args, **kwargs,\n                operation_name=operation_name or func.__name__\n            )\n        \n        @wraps(func)\n        def sync_wrapper(*args, **kwargs):\n            error_handler = ErrorHandler(\n                max_retries=max_retries,\n                retry_delay=retry_delay,\n                backoff_multiplier=backoff_multiplier\n            )\n            \n            return asyncio.run(error_handler.execute_with_retry(\n                func, *args, **kwargs,\n                operation_name=operation_name or func.__name__\n            ))\n        \n        if asyncio.iscoroutinefunction(func):\n            return async_wrapper\n        else:\n            return sync_wrapper\n    \n    return decorator\n\n\ndef handle_errors(category: ErrorCategory = ErrorCategory.UNKNOWN, \n                 severity: ErrorSeverity = ErrorSeverity.MEDIUM):\n    \"\"\"\n    Decorator to automatically handle and classify errors\n    \n    Args:\n        category: Error category\n        severity: Error severity\n        \n    Returns:\n        Decorated function\n    \"\"\"\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            try:\n                return func(*args, **kwargs)\n            except Exception as e:\n                # Create custom exception with classification\n                if hasattr(e, 'category'):\n                    raise e  # Already classified\n                \n                # Add classification to exception\n                e.category = category\n                e.severity = severity\n                raise e\n        \n        return wrapper\n    return decorator"
+            # System errors
+            'FileNotFoundError': (ErrorCategory.SYSTEM, ErrorSeverity.MEDIUM, False),
+            'OSError': (ErrorCategory.SYSTEM, ErrorSeverity.HIGH, False),
+            'MemoryError': (ErrorCategory.SYSTEM, ErrorSeverity.CRITICAL, False),
+        }
+    
+    def classify_error(self, error: Exception) -> ErrorInfo:
+        """
+        Classify an error and create ErrorInfo object
+        
+        Args:
+            error: Exception to classify
+            
+        Returns:
+            ErrorInfo object with classification details
+        """
+        error_type = type(error).__name__
+        
+        # Get classification from rules
+        if error_type in self.error_rules:
+            category, severity, recoverable = self.error_rules[error_type]
+        else:
+            category = ErrorCategory.UNKNOWN
+            severity = ErrorSeverity.MEDIUM
+            recoverable = True
+        
+        # Check for specific error patterns
+        message = str(error).lower()
+        if 'rate limit' in message or 'too many requests' in message:
+            category = ErrorCategory.RATE_LIMIT
+            recoverable = True
+        elif 'timeout' in message:
+            category = ErrorCategory.NETWORK
+            recoverable = True
+        elif 'unauthorized' in message or 'forbidden' in message:
+            category = ErrorCategory.AUTHENTICATION
+            recoverable = False
+        
+        # Get suggested action
+        suggested_action = self._get_suggested_action(category, error_type)
+        
+        return ErrorInfo(
+            error_type=error_type,
+            message=str(error),
+            category=category,
+            severity=severity,
+            timestamp=datetime.now(),
+            traceback=traceback.format_exc(),
+            recoverable=recoverable,
+            suggested_action=suggested_action
+        )
+    
+    def _get_suggested_action(self, category: ErrorCategory, error_type: str) -> str:
+        """Get suggested action for error recovery"""
+        suggestions = {
+            ErrorCategory.NETWORK: "Check network connection and retry",
+            ErrorCategory.RATE_LIMIT: "Wait and retry with exponential backoff",
+            ErrorCategory.AUTHENTICATION: "Check API keys and credentials",
+            ErrorCategory.VALIDATION: "Validate input data and parameters",
+            ErrorCategory.PARSING: "Check data format and parsing logic",
+            ErrorCategory.SYSTEM: "Check system resources and permissions",
+            ErrorCategory.CONFIGURATION: "Review configuration settings",
+            ErrorCategory.EXTERNAL_API: "Check external API status and documentation"
+        }
+        
+        return suggestions.get(category, "Review error details and logs")
+    
+    async def execute_with_retry(
+        self, 
+        func: Callable,
+        *args,
+        max_retries: Optional[int] = None,
+        retry_delay: Optional[float] = None,
+        backoff_multiplier: Optional[float] = None,
+        operation_name: str = "operation",
+        circuit_breaker_key: Optional[str] = None,
+        **kwargs
+    ) -> Any:
+        """
+        Execute function with retry logic and error handling
+        
+        Args:
+            func: Function to execute
+            *args: Function arguments
+            max_retries: Maximum retry attempts
+            retry_delay: Initial retry delay
+            backoff_multiplier: Backoff multiplier for delays
+            operation_name: Name for logging
+            circuit_breaker_key: Key for circuit breaker
+            **kwargs: Function keyword arguments
+            
+        Returns:
+            Function result
+            
+        Raises:
+            Exception: If all retries exhausted or non-retryable error
+        """
+        max_retries = max_retries or self.max_retries
+        retry_delay = retry_delay or self.retry_delay
+        backoff_multiplier = backoff_multiplier or self.backoff_multiplier
+        
+        # Get or create circuit breaker
+        circuit_breaker = None
+        if circuit_breaker_key:
+            if circuit_breaker_key not in self.circuit_breakers:
+                self.circuit_breakers[circuit_breaker_key] = CircuitBreaker()
+            circuit_breaker = self.circuit_breakers[circuit_breaker_key]
+        
+        last_error = None
+        current_delay = retry_delay
+        
+        for attempt in range(max_retries + 1):
+            try:
+                # Execute with circuit breaker if available
+                if circuit_breaker:
+                    result = circuit_breaker.call(func, *args, **kwargs)
+                else:
+                    # Handle async functions
+                    if asyncio.iscoroutinefunction(func):
+                        result = await func(*args, **kwargs)
+                    else:
+                        result = func(*args, **kwargs)
+                
+                # Success - log and return
+                if attempt > 0:
+                    self.logger.info(f"{operation_name} succeeded after {attempt} retries")
+                
+                return result
+                
+            except Exception as e:
+                last_error = e
+                error_info = self.classify_error(e)
+                error_info.retry_count = attempt
+                error_info.max_retries = max_retries
+                
+                # Log error
+                self._log_error(error_info, operation_name, attempt, max_retries)
+                
+                # Update statistics
+                self._update_error_stats(error_info)
+                
+                # Check if error is retryable
+                if not error_info.recoverable or isinstance(e, NonRetryableError):
+                    self.logger.error(f"{operation_name} failed with non-retryable error: {e}")
+                    raise e
+                
+                # Check if we've exhausted retries
+                if attempt >= max_retries:
+                    self.logger.error(f"{operation_name} failed after {max_retries} retries")
+                    break
+                
+                # Wait before retry
+                if current_delay > 0:
+                    self.logger.info(f"Retrying {operation_name} in {current_delay:.1f} seconds...")
+                    await asyncio.sleep(current_delay)
+                
+                # Increase delay for next attempt
+                current_delay = min(current_delay * backoff_multiplier, self.max_delay)
+        
+        # All retries exhausted
+        if last_error:
+            raise last_error
+    
+    def _log_error(self, error_info: ErrorInfo, operation_name: str, 
+                   attempt: int, max_retries: int):
+        """Log error with appropriate level"""
+        log_data = {
+            'operation': operation_name,
+            'attempt': attempt + 1,
+            'max_retries': max_retries + 1,
+            'error_type': error_info.error_type,
+            'error_category': error_info.category.value,
+            'error_severity': error_info.severity.value,
+            'recoverable': error_info.recoverable,
+            'suggested_action': error_info.suggested_action
+        }
+        
+        if error_info.severity == ErrorSeverity.CRITICAL:
+            self.logger.critical(f"{operation_name} critical error: {error_info.message}", 
+                               extra=log_data, exc_info=True)
+        elif error_info.severity == ErrorSeverity.HIGH:
+            self.logger.error(f"{operation_name} error: {error_info.message}", 
+                            extra=log_data, exc_info=True)
+        elif attempt < max_retries and error_info.recoverable:
+            self.logger.warning(f"{operation_name} attempt {attempt + 1} failed: {error_info.message}", 
+                              extra=log_data)
+        else:
+            self.logger.error(f"{operation_name} failed: {error_info.message}", 
+                            extra=log_data, exc_info=True)
+        
+        # Save to error log file if specified
+        if self.error_log_file:
+            self._save_error_to_file(error_info, operation_name)
+    
+    def _save_error_to_file(self, error_info: ErrorInfo, operation_name: str):
+        """Save error to log file"""
+        try:
+            error_data = {
+                'timestamp': error_info.timestamp.isoformat(),
+                'operation': operation_name,
+                'error_type': error_info.error_type,
+                'message': error_info.message,
+                'category': error_info.category.value,
+                'severity': error_info.severity.value,
+                'recoverable': error_info.recoverable,
+                'retry_count': error_info.retry_count,
+                'traceback': error_info.traceback,
+                'context': error_info.context,
+                'suggested_action': error_info.suggested_action
+            }
+            
+            # Ensure log directory exists
+            log_path = Path(self.error_log_file)
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Append to error log file
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(error_data) + '\n')
+                
+        except Exception as e:
+            self.logger.error(f"Failed to save error to file: {e}")
+    
+    def _update_error_stats(self, error_info: ErrorInfo):
+        """Update error statistics"""
+        # Update counters
+        self.error_stats[error_info.error_type] = self.error_stats.get(error_info.error_type, 0) + 1
+        
+        # Add to history (keep last 1000 errors)
+        self.error_history.append(error_info)
+        if len(self.error_history) > 1000:
+            self.error_history = self.error_history[-1000:]
+    
+    def get_error_summary(self) -> Dict[str, Any]:
+        """Get summary of error statistics"""
+        total_errors = sum(self.error_stats.values())
+        
+        if not self.error_history:
+            return {'total_errors': 0, 'error_types': {}}
+        
+        # Calculate error rates by category
+        category_stats = {}
+        severity_stats = {}
+        
+        for error in self.error_history:
+            category = error.category.value
+            severity = error.severity.value
+            
+            category_stats[category] = category_stats.get(category, 0) + 1
+            severity_stats[severity] = severity_stats.get(severity, 0) + 1
+        
+        # Recent errors (last hour)
+        recent_cutoff = datetime.now() - timedelta(hours=1)
+        recent_errors = [e for e in self.error_history if e.timestamp > recent_cutoff]
+        
+        return {
+            'total_errors': total_errors,
+            'error_types': self.error_stats,
+            'category_distribution': category_stats,
+            'severity_distribution': severity_stats,
+            'recent_errors_count': len(recent_errors),
+            'error_rate_last_hour': len(recent_errors),
+            'most_common_errors': sorted(self.error_stats.items(), 
+                                       key=lambda x: x[1], reverse=True)[:5]
+        }
+    
+    def reset_stats(self):
+        """Reset error statistics"""
+        self.error_stats.clear()
+        self.error_history.clear()
+        self.circuit_breakers.clear()
+        self.logger.info("Error statistics reset")
+
+
+def retry_on_failure(
+    max_retries: int = 3,
+    retry_delay: float = 1.0,
+    backoff_multiplier: float = 2.0,
+    exceptions: tuple = (Exception,),
+    operation_name: Optional[str] = None
+):
+    """
+    Decorator for automatic retry on function failure
+    
+    Args:
+        max_retries: Maximum retry attempts
+        retry_delay: Initial retry delay
+        backoff_multiplier: Backoff multiplier
+        exceptions: Tuple of exceptions to retry on
+        operation_name: Name for logging
+        
+    Returns:
+        Decorated function
+    """
+    def decorator(func):
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            error_handler = ErrorHandler(
+                max_retries=max_retries,
+                retry_delay=retry_delay,
+                backoff_multiplier=backoff_multiplier
+            )
+            
+            return await error_handler.execute_with_retry(
+                func, *args, **kwargs,
+                operation_name=operation_name or func.__name__
+            )
+        
+        @wraps(func)
+        def sync_wrapper(*args, **kwargs):
+            error_handler = ErrorHandler(
+                max_retries=max_retries,
+                retry_delay=retry_delay,
+                backoff_multiplier=backoff_multiplier
+            )
+            
+            return asyncio.run(error_handler.execute_with_retry(
+                func, *args, **kwargs,
+                operation_name=operation_name or func.__name__
+            ))
+        
+        if asyncio.iscoroutinefunction(func):
+            return async_wrapper
+        else:
+            return sync_wrapper
+    return decorator
+
+
+def handle_errors(category: ErrorCategory = ErrorCategory.UNKNOWN, 
+                 severity: ErrorSeverity = ErrorSeverity.MEDIUM):
+    """
+    Decorator to automatically handle and classify errors
+    
+    Args:
+        category: Error category
+        severity: Error severity
+        
+    Returns:
+        Decorated function
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                # Create custom exception with classification
+                if hasattr(e, 'category'):
+                    raise e  # Already classified
+                
+                # Add classification to exception
+                e.category = category
+                e.severity = severity
+                raise e
+        return wrapper
+    return decorator

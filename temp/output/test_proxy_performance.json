@@ -1,0 +1,19 @@
+{
+  "proxy_provider": "test_proxy_provider",
+  "total_requests": 1250,
+  "successful_requests": 1185,
+  "failed_requests": 65,
+  "success_rate": 0.948,
+  "avg_response_time_ms": 850.5,
+  "blocked_count": 23,
+  "rotation_count": 15,
+  "bandwidth_used_mb": 125.8,
+  "cost_estimate": 12.45,
+  "errors_by_type": {
+    "timeout": 32,
+    "connection_error": 18,
+    "blocked": 23,
+    "rate_limit": 12
+  },
+  "timestamp": "2025-08-21T01:56:02.135779"
+}

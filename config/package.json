@@ -1,0 +1,38 @@
+{
+  "name": "pubscrape",
+  "version": "1.0.0",
+  "description": "A production-ready, AI-powered contact discovery system that uses Bing search to find business emails at scale while maintaining compliance and minimizing detection.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dashboard": "node src/monitoring/dashboard-server.js",
+    "scrape-with-dashboard": "node scrape_with_dashboard.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YallaPapi/pubscrape.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YallaPapi/pubscrape/issues"
+  },
+  "homepage": "https://github.com/YallaPapi/pubscrape#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "node-cron": "^3.0.3",
+    "prom-client": "^15.1.0",
+    "winston": "^3.11.0",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "claude-flow": "^2.0.0-alpha.91"
+  }
+}

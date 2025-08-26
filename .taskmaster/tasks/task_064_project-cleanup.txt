@@ -1,0 +1,15 @@
+# Task ID: 64
+# Title: SERP Parsing & URL Normalization
+# Status: done
+# Dependencies: 63
+# Priority: high
+# Description: Implement SerpParser agent to extract and normalize business URLs from Bing SERP HTML, with robust selector strategy and filtering.
+# Details:
+- Use primary and fallback CSS/XPath selectors (maintain selector map for hot-patching).
+- Unwrap redirect links, normalize URLs (http→https, strip tracking params).
+- Filter out exclude_domains and non-business targets.
+- Emit deduped, normalized URLs with debug info.
+- Use BeautifulSoup4 v4.12+ for parsing and url-normalize for normalization.
+
+# Test Strategy:
+Unit test extraction on HTML fixtures with selector drift; verify ≥10 URLs per page; check normalization and filtering; logs should show selector hit ratios and filter reasons.

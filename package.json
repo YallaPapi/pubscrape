@@ -1,7 +1,7 @@
 {
   "name": "pubscrape",
-  "version": "1.0.0",
-  "description": "A production-ready, AI-powered contact discovery system that uses Bing search to find business emails at scale while maintaining compliance and minimizing detection.",
+  "version": "1.1.0",
+  "description": "A production-ready, AI-powered contact discovery system that uses advanced scraping to find business contacts at scale while maintaining compliance and minimizing detection.",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -10,14 +10,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dashboard": "node src/monitoring/dashboard-server.js",
-    "scrape-with-dashboard": "node scrape_with_dashboard.js"
+    "scrape-with-dashboard": "node scrape_with_dashboard.js",
+    "build": "npm run lint && npm run typecheck",
+    "lint": "eslint src/",
+    "typecheck": "echo \"TypeScript checking not configured\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/YallaPapi/pubscrape.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["scraping", "ai", "business", "contacts", "leads", "automation"],
+  "author": "VRSEN Agency",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/YallaPapi/pubscrape/issues"
@@ -25,14 +28,18 @@
   "homepage": "https://github.com/YallaPapi/pubscrape#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "helmet": "^7.1.0",
-    "node-cron": "^3.0.3",
-    "prom-client": "^15.1.0",
-    "winston": "^3.11.0",
-    "ws": "^8.14.2"
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "node-cron": "^4.2.1",
+    "prom-client": "^15.1.3",
+    "winston": "^3.17.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
-    "claude-flow": "^2.0.0-alpha.91"
+    "claude-flow": "^2.0.0-alpha.91",
+    "eslint": "^9.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

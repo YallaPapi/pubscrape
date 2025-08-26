@@ -1,0 +1,75 @@
+# Task ID: 75
+# Title: Standardize Botasaurus Usage Across Codebase
+# Status: pending
+# Dependencies: 73, 72, 60, 63
+# Priority: high
+# Description: Standardize the implementation of Botasaurus across the codebase by establishing consistent patterns for decorators, configuration, and helper methods to ensure maintainable and reliable scraping functionality.
+# Details:
+1. **Audit Current Botasaurus Implementation**:
+   - Review all files using Botasaurus to identify inconsistencies in usage patterns
+   - Document variations in decorator arguments, configuration approaches, and helper methods
+   - Identify best practices from existing implementations (particularly from Task 73)
+   - Create an inventory of required standardization changes
+
+2. **Create Standardization Guidelines**:
+   - Define standard decorator usage patterns with proper typing
+   - Establish consistent configuration structure for browser settings, proxies, and timeouts
+   - Document required error handling patterns and retry logic
+   - Create templates for common scraping patterns (pagination, element extraction, etc.)
+   - Define logging standards specific to Botasaurus operations
+
+3. **Implement Standardization**:
+   - Update all Botasaurus decorator usages to follow the standard pattern
+   - Refactor configuration loading to use a consistent approach
+   - Normalize helper methods across scrapers
+   - Implement shared utility functions for common Botasaurus operations
+   - Ensure consistent error handling and retry mechanisms
+   - Add appropriate type hints to all Botasaurus-related functions
+
+4. **Documentation**:
+   - Create developer documentation for Botasaurus usage in the project
+   - Add inline comments explaining the standardized patterns
+   - Update README or wiki with examples of correct Botasaurus implementation
+   - Document any custom extensions or utilities built on top of Botasaurus
+
+# Test Strategy:
+1. **Static Analysis**:
+   - Run mypy with strict mode on all Botasaurus-related code to verify type consistency
+   - Use pylint or flake8 to check adherence to coding standards
+   - Verify import consistency across modules
+
+2. **Unit Testing**:
+   - Create unit tests for standardized helper functions
+   - Test configuration loading with various inputs
+   - Verify error handling behaves consistently across implementations
+
+3. **Integration Testing**:
+   - Execute each scraper with the standardized Botasaurus implementation
+   - Verify that all scrapers still function correctly after standardization
+   - Test with different configuration settings to ensure flexibility is maintained
+   - Measure performance metrics to ensure standardization hasn't introduced overhead
+
+4. **Documentation Verification**:
+   - Review documentation for clarity and completeness
+   - Have another developer attempt to implement a new scraper using only the documentation
+   - Verify that all standardized patterns are properly documented
+
+# Subtasks:
+## 1. Quarantine fake generators [done]
+### Dependencies: None
+### Description: Move fake/synthetic generators to cleanup/deleted_fake_generators/
+### Details:
+
+
+## 2. Fix logger syntax [done]
+### Dependencies: None
+### Description: Repair src/utils/logger.py broken block; verify with py_compile
+### Details:
+
+
+## 3. Standardize Botasaurus usage [done]
+### Dependencies: None
+### Description: Correct imports/decorators; add driver selection shims; compile check
+### Details:
+
+

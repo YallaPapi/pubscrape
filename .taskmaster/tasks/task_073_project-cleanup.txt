@@ -1,0 +1,93 @@
+# Task ID: 73
+# Title: Botasaurus Integration and Smoke Test
+# Status: done
+# Dependencies: 63, 67, 68, 69, 72
+# Priority: high
+# Description: Integrate existing scrapers with Botasaurus by correcting decorator arguments, providing driver method shims for nonstandard helpers, and create a minimal runner to verify end-to-end lead extraction functionality.
+# Details:
+1. **Analyze Existing Scrapers**:
+   - Audit all scraper modules to identify Botasaurus decorator usage patterns
+   - Document nonstandard helper methods that need compatibility shims
+   - Create inventory of required fixes for each scraper
+
+2. **Fix Botasaurus Decorator Arguments**:
+   - Update all `@browser` and related decorators with correct argument syntax
+   - Ensure proper configuration of headless mode, proxy settings, and timeout parameters
+   - Standardize error handling and retry logic across scrapers
+   - Example fix:
+     ```python
+     # Before
+     @browser(...)
+     def scrape_business(query):
+         # implementation
+     
+     # After
+     @browser(
+         headless=True, 
+         proxy=ProxyConfig.from_env(),
+         timeout=30,
+         retry_count=2
+     )
+     def scrape_business(query):
+         # implementation
+     ```
+
+3. **Implement Driver Method Shims**:
+   - Create compatibility layer for nonstandard helper methods
+   - Implement shims for common operations like:
+     ```python
+     def wait_for_element(driver, selector, timeout=10):
+         """Compatibility shim for older wait_for_element implementations"""
+         return WebDriverWait(driver, timeout).until(
+             EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+         )
+     ```
+   - Add logging to shim methods to identify usage patterns for future refactoring
+
+4. **Create Minimal Runner**:
+   - Develop a simple CLI runner that executes the full pipeline:
+     ```python
+     def run_smoke_test(query_count=3, max_results=5):
+         """Execute minimal end-to-end test with real scrapers"""
+         # Initialize components
+         # Execute search queries
+         # Process results through extraction pipeline
+         # Return statistics
+     ```
+   - Ensure runner uses real scrapers but with limited scope (few queries/results)
+   - Add detailed logging at each pipeline stage
+
+5. **Type Checking and Compilation Verification**:
+   - Run mypy static type checking across the codebase
+   - Fix any TypeErrors identified during compilation
+   - Add type annotations where missing to prevent future errors
+   - Verify imports and module dependencies are correctly resolved
+
+# Test Strategy:
+1. **Unit Testing**:
+   - Create unit tests for each fixed scraper to verify decorator arguments work correctly
+   - Test each compatibility shim method with various inputs
+   - Verify type annotations with mypy in strict mode
+
+2. **Integration Testing**:
+   - Run the minimal runner with a set of predefined test queries
+   - Verify each stage of the pipeline executes without errors
+   - Confirm data flows correctly between components
+   - Check that extracted leads match expected format and contain valid data
+
+3. **Smoke Testing**:
+   - Execute end-to-end test with 3-5 real queries
+   - Verify leads are extracted and processed through all pipeline stages
+   - Confirm final output contains valid business data and emails
+   - Check logs for any warnings or errors
+
+4. **Compilation Verification**:
+   - Run `mypy --strict` on the entire codebase
+   - Verify no TypeErrors are reported
+   - Check import resolution works correctly
+   - Confirm no runtime type errors occur during execution
+
+5. **Documentation Testing**:
+   - Review updated docstrings for accuracy
+   - Verify example code in documentation compiles and runs
+   - Ensure compatibility notes are included for any breaking changes

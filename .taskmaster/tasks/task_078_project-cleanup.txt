@@ -1,0 +1,96 @@
+# Task ID: 78
+# Title: Implement CLI Command for Google Maps and Email Extraction with CSV Export
+# Status: pending
+# Dependencies: 76, 73, 69, 67
+# Priority: high
+# Description: Create a CLI command that combines Google Maps scraping with website email extraction functionality and exports the results to CSV format, providing a streamlined interface for lead generation.
+# Details:
+1. **CLI Command Structure**:
+   - Create a new module `cli/commands/scrape_maps_emails.py` that implements a command for the existing CLI framework
+   - Define command structure: `leadfinder scrape-maps --query "search term" --location "city, state" --limit 50 --output results.csv`
+   - Implement optional flags for customization:
+     - `--headless/--no-headless`: Control browser visibility
+     - `--proxy`: Specify proxy settings
+     - `--email-threshold`: Minimum confidence score for email extraction
+     - `--max-pages-per-site`: Limit of pages to crawl per business website
+
+2. **Integration with Existing Scrapers**:
+   - Import and utilize the Google Maps scraper from Task 76
+   - Connect the output of the Maps scraper to the email extraction pipeline
+   - Implement a processing pipeline that:
+     1. Searches Google Maps for businesses matching query/location
+     2. Extracts business details (name, address, phone, website)
+     3. For each business website, runs the email extractor
+     4. Combines all data into a unified result set
+
+3. **CSV Export Implementation**:
+   - Utilize the Exporter agent from Task 69 for CSV generation
+   - Ensure proper field mapping from scraped data to CSV columns
+   - Include all relevant business fields:
+     - Business name, address, phone, website URL
+     - Extracted email(s) with confidence scores
+     - Google Maps rating and review count
+     - Business category/type
+   - Handle special characters and encoding properly for international results
+   - Implement progress indicators during scraping and export
+
+4. **Error Handling and Resilience**:
+   - Implement graceful error handling for network issues, blocks, or timeouts
+   - Add retry logic with exponential backoff for failed requests
+   - Provide clear error messages and suggestions for resolution
+   - Ensure partial results are saved if the process is interrupted
+
+5. **Performance Optimization**:
+   - Implement concurrent processing where appropriate
+   - Add caching to prevent redundant scraping of the same websites
+   - Optimize resource usage based on system capabilities
+   - Include a "dry run" option to estimate time required for full execution
+
+# Test Strategy:
+1. **Unit Testing**:
+   - Create unit tests for the CLI command parser and argument validation
+   - Test the integration points between Maps scraper and email extractor
+   - Verify CSV output format with various input data scenarios
+   - Test error handling with simulated failures
+
+2. **Integration Testing**:
+   - Execute the command with small test queries (2-3 businesses)
+   - Verify end-to-end functionality from search to CSV export
+   - Test with various combinations of command-line options
+   - Validate the structure and content of the exported CSV
+
+3. **Performance Testing**:
+   - Measure execution time with different batch sizes
+   - Test memory usage during extended runs
+   - Verify resource cleanup after command completion
+
+4. **Manual Verification**:
+   - Execute the command with real search queries
+   - Open the resulting CSV in Excel/Google Sheets to verify formatting
+   - Manually verify a sample of extracted emails against source websites
+   - Test the command's behavior when interrupted and resumed
+
+5. **Documentation Testing**:
+   - Verify help text and documentation accuracy
+   - Ensure examples in documentation match actual command behavior
+   - Test the command with the exact examples provided in documentation
+
+# Subtasks:
+## 1. Add quick CLI command [pending]
+### Dependencies: None
+### Description: Implement `quick` subcommand in main.py to run new scrapers for a small query list and export CSV
+### Details:
+
+
+## 2. Run quick CLI smoke [pending]
+### Dependencies: None
+### Description: Execute `python main.py quick --fallback-only --max 10 --query "coffee shops in Seattle"` with timeout and archive log
+### Details:
+
+
+## 3. Make logging deps optional [pending]
+### Dependencies: None
+### Description: Update src/utils/logger.py to gracefully handle missing structlog/coloredlogs and fall back to basic logging
+### Details:
+
+

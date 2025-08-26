@@ -1,0 +1,48 @@
+# Task ID: 67
+# Title: Email Extraction Engine
+# Status: done
+# Dependencies: 66
+# Priority: high
+# Description: Build EmailExtractor agent to extract and score emails from crawled HTML pages using multi-method detection and context scoring.
+# Details:
+- Scan for mailto links, regex patterns (RFC-5322 variants), and obfuscations ([at], [dot], etc.).
+- Normalize and validate email formats.
+- Apply context scoring (contact/footer boosts, blacklist penalties, platform-specific cues).
+- Emit candidates with scores; use score_threshold from config.
+- Use regex, context heuristics, and platform aids (WordPress/Shopify selectors).
+- Log counts by source page and scoring distribution.
+
+# Test Strategy:
+Unit test extraction and normalization on HTML/text fixtures; verify scoring logic; integration test with real site samples; logs should show candidate counts and score distribution.
+
+# Subtasks:
+## 1. HTML Page Scanning and Email Candidate Extraction [done]
+### Dependencies: None
+### Description: Develop logic to scan crawled HTML pages for email candidates using multiple detection methods, including mailto links, RFC-5322 regex patterns, and common obfuscations such as [at] and [dot].
+### Details:
+Implement HTML parsing and text extraction to identify potential email addresses using regex and pattern matching. Ensure support for both visible and obfuscated email formats.
+
+## 2. Email Normalization and Validation [done]
+### Dependencies: 67.1
+### Description: Normalize extracted email candidates to standard formats and validate them against email syntax rules.
+### Details:
+Convert obfuscated emails to standard form, remove extraneous characters, and validate using RFC-5322-compliant regex. Flag invalid or malformed candidates for exclusion.
+
+## 3. Contextual Scoring of Email Candidates [done]
+### Dependencies: 67.2
+### Description: Apply context-based scoring to each normalized email candidate, boosting or penalizing scores based on location (e.g., contact/footer), blacklist patterns, and platform-specific cues.
+### Details:
+Design a scoring system that incorporates heuristics such as DOM location, blacklist/whitelist patterns, and platform selectors (e.g., WordPress, Shopify). Integrate configurable score thresholds.
+
+## 4. Candidate Emission and Threshold Filtering [done]
+### Dependencies: 67.3
+### Description: Emit scored email candidates that meet or exceed the configured score threshold, preparing them for downstream validation and deduplication.
+### Details:
+Filter candidates based on their computed scores and emit only those above the threshold. Structure output for downstream processing.
+
+## 5. Logging and Metrics Collection [done]
+### Dependencies: 67.4
+### Description: Log extraction counts, source page statistics, and scoring distributions for monitoring and debugging.
+### Details:
+Implement logging of candidate counts per source page, scoring distribution histograms, and error cases. Ensure logs are structured for analysis.
+

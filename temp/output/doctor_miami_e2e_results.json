@@ -1,0 +1,70 @@
+{
+  "test_name": "doctor_miami_e2e",
+  "timestamp": 1755860983.8121176,
+  "test_date": "2025-08-22 07:09:43",
+  "stages": {
+    "stage1_agency": {
+      "stage": "vrsen_agency",
+      "status": "available",
+      "processing_time": 0.0,
+      "note": "VRSEN Agency components are available for testing"
+    },
+    "stage2_search": {
+      "stage": "bing_search",
+      "status": "simulated_with_cache",
+      "html_file": "output\\html_cache\\bing_serp_c46778a6_1755827500.html",
+      "file_size": 871598,
+      "note": "Using cached Bing search results"
+    },
+    "stage3_crawling": {
+      "stage": "website_crawling",
+      "status": "tested",
+      "urls_tested": 3,
+      "successful_crawls": 3,
+      "real_data_extractions": 0,
+      "crawl_results": [
+        {
+          "url": "https://www.baptisthealth.net/contact",
+          "success": true,
+          "processing_time": 2.0177764892578125,
+          "business_name": "",
+          "emails_found": 0,
+          "phones_found": 0,
+          "real_data_extracted": false
+        },
+        {
+          "url": "https://www.miamichildrenshospital.org/contact-us",
+          "success": true,
+          "processing_time": 2.414999008178711,
+          "business_name": "",
+          "emails_found": 0,
+          "phones_found": 0,
+          "real_data_extracted": false
+        },
+        {
+          "url": "https://www.jacksonhealth.org/contact-us.aspx",
+          "success": true,
+          "processing_time": 0.430056095123291,
+          "business_name": "",
+          "emails_found": 0,
+          "phones_found": 0,
+          "real_data_extracted": false
+        }
+      ]
+    },
+    "stage4_generation": {
+      "stage": "lead_generation",
+      "status": "no_working_urls",
+      "note": "No URLs produced extractable data"
+    }
+  },
+  "final_results": {
+    "pipeline_verdict": "WORKING",
+    "data_verdict": "FAKE_DATA",
+    "success_rate": 75.0,
+    "successful_stages": 3,
+    "total_stages": 4,
+    "real_data_count": 0,
+    "total_data_points": 3
+  }
+}

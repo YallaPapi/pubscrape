@@ -21,12 +21,18 @@ venv.bak/
 
 # Environment variables and secrets
 .env
+.env.local
+.env.production
+.env.staging
+.env.development
 .env.*
 !.env.example
 config.json
 secrets.json
 credentials.json
 service-account.json
+*.env
+config/secrets.json
 .mcp.json
 
 # API Keys and sensitive files

@@ -12,8 +12,14 @@ import logging.handlers
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any, Union
-import structlog
-import coloredlogs
+try:
+    import structlog  # type: ignore
+except Exception:  # pragma: no cover
+    structlog = None  # fallback
+try:
+    import coloredlogs  # type: ignore
+except Exception:  # pragma: no cover
+    coloredlogs = None  # fallback
 import json
 from contextvars import ContextVar
 
@@ -175,23 +181,35 @@ def setup_logging(
     # Console handler with colored output
     if enable_console:
         console_handler = logging.StreamHandler(sys.stdout)
-        
         if enable_json:
             console_handler.setFormatter(JSONFormatter())
+            root_logger.addHandler(console_handler)
         else:
-            # Use coloredlogs for colored console output
-            coloredlogs.install(
-                level=level.upper(),
-                logger=root_logger,
-                fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                field_styles={
-                    'asctime': {'color': 'green'},
-                    'hostname': {'color': 'magenta'},
-                    'levelname': {'color': 'black', 'bold': True},
-                    'name': {'color': 'blue'},
-                    'programname': {'color': 'cyan'}
-                }
-            )
+            # Use coloredlogs if available; else basic formatter
+            if coloredlogs is not None:
+                try:
+                    coloredlogs.install(
+                        level=level.upper(),
+                        logger=root_logger,
+                        fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        field_styles={
+                            'asctime': {'color': 'green'},
+                            'hostname': {'color': 'magenta'},
+                            'levelname': {'color': 'black', 'bold': True},
+                            'name': {'color': 'blue'},
+                            'programname': {'color': 'cyan'}
+                        }
+                    )
+                except Exception:
+                    console_handler.setFormatter(logging.Formatter(
+                        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+                    ))
+                    root_logger.addHandler(console_handler)
+            else:
+                console_handler.setFormatter(logging.Formatter(
+                    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+                ))
+                root_logger.addHandler(console_handler)
     
     # File handlers
     if enable_file:
@@ -260,24 +278,28 @@ def setup_logging(
         root_logger.addHandler(perf_handler)
     
     # Configure structlog if enabled
-    if enable_structured:
-        structlog.configure(
-            processors=[
-                structlog.stdlib.filter_by_level,
-                structlog.stdlib.add_logger_name,
-                structlog.stdlib.add_log_level,
-                structlog.stdlib.PositionalArgumentsFormatter(),
-                structlog.processors.TimeStamper(fmt="iso"),
-                structlog.processors.StackInfoRenderer(),
-                structlog.processors.format_exc_info,
-                structlog.processors.UnicodeDecoder(),
-                structlog.processors.JSONRenderer() if enable_json else structlog.dev.ConsoleRenderer(),
-            ],
-            context_class=dict,
-            logger_factory=structlog.stdlib.LoggerFactory(),
-            wrapper_class=structlog.stdlib.BoundLogger,
-            cache_logger_on_first_use=True,
-        )
+    if enable_structured and structlog is not None:
+        try:
+            structlog.configure(
+                processors=[
+                    structlog.stdlib.filter_by_level,
+                    structlog.stdlib.add_logger_name,
+                    structlog.stdlib.add_log_level,
+                    structlog.stdlib.PositionalArgumentsFormatter(),
+                    structlog.processors.TimeStamper(fmt="iso"),
+                    structlog.processors.StackInfoRenderer(),
+                    structlog.processors.format_exc_info,
+                    structlog.processors.UnicodeDecoder(),
+                    structlog.processors.JSONRenderer() if enable_json else structlog.dev.ConsoleRenderer(),
+                ],
+                context_class=dict,
+                logger_factory=structlog.stdlib.LoggerFactory(),
+                wrapper_class=structlog.stdlib.BoundLogger,
+                cache_logger_on_first_use=True,
+            )
+        except Exception:
+            # Fallback to non-structured logging
+            pass
     
     # Create application logger
     app_logger = logging.getLogger(app_name)

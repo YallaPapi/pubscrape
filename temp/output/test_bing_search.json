@@ -1,0 +1,5 @@
+{
+    "success": false,
+    "error": "'Driver' object has no attribute 'find_element'",
+    "query": "test query"
+}

@@ -1,0 +1,6 @@
+{
+    "success": false,
+    "error": "'str' object is not callable",
+    "original_error": "Cannot navigate to invalid URL [code: -32000]",
+    "query": "restaurant chicago contact email"
+}

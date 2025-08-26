@@ -1,0 +1,58 @@
+{
+  "test_timestamp": 1755860915.2123976,
+  "test_date": "2025-08-22 07:08:35",
+  "components": {
+    "email_extractor": {
+      "success": true,
+      "business_name": "Mayoclinic",
+      "emails_found": 0,
+      "phones_found": 5,
+      "is_real": true
+    },
+    "bing_navigator": {
+      "available": true
+    }
+  },
+  "extraction": {
+    "validation_result": "REAL_DATA",
+    "leads_generated": 1,
+    "real_data_count": 2,
+    "fake_data_count": 0,
+    "processing_time": 15.588452816009521,
+    "urls_processed": 4,
+    "csv_file": "output\\real_doctor_miami_test.csv",
+    "leads": [
+      {
+        "business_name": "Customer Service",
+        "industry": "",
+        "website": "https://www.health.harvard.edu/contact",
+        "primary_email": "hhp_info@health.harvard.edu",
+        "primary_phone": "(877) 649-9457",
+        "contact_name": "Harvard Health",
+        "contact_title": "Contact",
+        "secondary_emails": "hhp_logo@2x.png",
+        "additional_phones": "(145) 741-0725; (714) 029-1714",
+        "additional_contacts": [],
+        "address": "",
+        "city": "",
+        "state": "",
+        "country": "",
+        "linkedin_url": "https://www.linkedin.com/company/harvard-health-publications/",
+        "facebook_url": "https://www.facebook.com/HarvardHealthPublications",
+        "twitter_url": "https://twitter.com/harvardhealth",
+        "other_social": "https://www.youtube.com/channel/UC-jj29vMMB1ulz_uEU5kUrA",
+        "lead_score": 0.9200000000000002,
+        "email_confidence": 0.65,
+        "data_completeness": 0.9,
+        "is_actionable": true,
+        "source_url": "https://www.health.harvard.edu/contact",
+        "source_query": "doctor Miami test",
+        "extraction_date": "2025-08-22",
+        "last_verified": "",
+        "extraction_time_ms": 9653.45311164856,
+        "validation_status": "valid",
+        "notes": ""
+      }
+    ]
+  }
+}

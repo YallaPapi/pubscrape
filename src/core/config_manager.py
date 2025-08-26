@@ -14,6 +14,53 @@ from dataclasses import dataclass, field, asdict
 from enum import Enum
 import logging
 from dotenv import load_dotenv
+import re
+from urllib.parse import urlparse
+
+
+def validate_api_key(key: str, key_name: str) -> bool:
+    """Validate API key format and security"""
+    if not key or len(key.strip()) == 0:
+        return False
+    
+    # Check for placeholder values
+    placeholder_patterns = [
+        r'your_.*_api_key_here',
+        r'insert.*key.*here',
+        r'add.*key.*here',
+        r'replace.*with.*key',
+        r'example.*key'
+    ]
+    
+    for pattern in placeholder_patterns:
+        if re.match(pattern, key.lower()):
+            raise ValueError(f"{key_name} appears to be a placeholder, not a real API key")
+    
+    # Basic format validation
+    if len(key) < 10:
+        raise ValueError(f"{key_name} appears to be too short to be valid")
+    
+    # Check for common test/dummy values
+    dummy_values = ['test', 'dummy', 'fake', 'sample', 'example']
+    if any(dummy in key.lower() for dummy in dummy_values):
+        raise ValueError(f"{key_name} appears to be a test/dummy value")
+    
+    return True
+
+
+def sanitize_config_value(value: Any) -> Any:
+    """Sanitize configuration values to prevent injection attacks"""
+    if isinstance(value, str):
+        # Remove potentially dangerous characters
+        dangerous_chars = ['$', '`', ';', '|', '&', '>', '<', '"', "'", '\\', '\n', '\r']
+        sanitized = value
+        for char in dangerous_chars:
+            if char in sanitized:
+                # Log security warning but don't fail
+                logging.getLogger(__name__).warning(f"Removed potentially dangerous character '{char}' from config value")
+                sanitized = sanitized.replace(char, '')
+        return sanitized
+    return value
 
 
 # Load environment variables
@@ -44,12 +91,28 @@ class APIConfig:
     perplexity_api_key: Optional[str] = None
     
     def __post_init__(self):
-        """Load API keys from environment if not provided"""
-        self.openai_api_key = self.openai_api_key or os.getenv("OPENAI_API_KEY")
-        self.bing_api_key = self.bing_api_key or os.getenv("BING_API_KEY")
-        self.google_api_key = self.google_api_key or os.getenv("GOOGLE_API_KEY")
+        """Load and validate API keys from environment if not provided"""
+        # Load from environment with validation
+        env_keys = {
+            'openai_api_key': 'OPENAI_API_KEY',
+            'bing_api_key': 'BING_API_KEY', 
+            'google_api_key': 'GOOGLE_API_KEY',
+            'perplexity_api_key': 'PERPLEXITY_API_KEY'
+        }
+        
+        for attr, env_var in env_keys.items():
+            current_value = getattr(self, attr)
+            env_value = os.getenv(env_var)
+            
+            if not current_value and env_value:
+                try:
+                    if validate_api_key(env_value, env_var):
+                        setattr(self, attr, env_value)
+                except ValueError as e:
+                    logging.getLogger(__name__).warning(f"API key validation failed for {env_var}: {e}")
+        
+        # Load non-sensitive environment variables
         self.google_cx = self.google_cx or os.getenv("GOOGLE_CX")
-        self.perplexity_api_key = self.perplexity_api_key or os.getenv("PERPLEXITY_API_KEY")
 
 
 @dataclass
@@ -402,9 +465,24 @@ class ConfigManager:
         """
         errors = []
         
-        # Check required API keys
-        if not self._config.api.openai_api_key:
-            errors.append("OpenAI API key is required")
+        # Validate API keys if present
+        api_keys = {
+            'OpenAI': self._config.api.openai_api_key,
+            'Bing': self._config.api.bing_api_key,
+            'Google': self._config.api.google_api_key,
+            'Perplexity': self._config.api.perplexity_api_key
+        }
+        
+        for service, key in api_keys.items():
+            if key:
+                try:
+                    validate_api_key(key, f"{service} API key")
+                except ValueError as e:
+                    errors.append(str(e))
+        
+        # Check if at least one API key is configured
+        if not any(api_keys.values()):
+            errors.append("At least one API key must be configured")
         
         # Validate numeric ranges
         if self._config.search.max_pages_per_query < 1:

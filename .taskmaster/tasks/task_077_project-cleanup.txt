@@ -1,0 +1,87 @@
+# Task ID: 77
+# Title: Execute Minimal Real Scrape and Archive Results
+# Status: pending
+# Dependencies: 73, 74, 69, 68
+# Priority: high
+# Description: Execute a minimal real scraping operation to validate the entire pipeline functionality in production conditions, and archive the results for future reference and analysis.
+# Details:
+1. **Preparation**:
+   - Create a new script `scripts/execute_real_scrape.py` that configures a minimal but realistic scraping operation
+   - Set up parameters for a limited scope (3-5 search queries across 2-3 geographic areas)
+   - Configure the script to use all production-ready components of the pipeline
+   - Ensure proper error handling and logging throughout the execution
+
+2. **Execution Configuration**:
+   - Define a dedicated YAML configuration file for this real scrape with:
+     - Limited but diverse search templates
+     - Geographic targeting for 2-3 different regions
+     - Realistic validation thresholds
+     - All necessary proxy and rate-limiting settings
+
+3. **Pipeline Execution**:
+   - Run the complete pipeline from query building through export
+   - Monitor and log performance metrics at each stage
+   - Capture timing information for each component
+   - Record resource utilization (memory, CPU, network)
+
+4. **Results Archiving**:
+   - Create a dedicated directory structure for archiving results: `archive/real_scrapes/YYYY-MM-DD/`
+   - Store all output files (CSVs, JSONs, logs) in this directory
+   - Generate a summary report with key metrics:
+     - Number of queries executed
+     - Number of pages scraped
+     - Number of raw leads found
+     - Number of validated leads after processing
+     - Processing time for each pipeline stage
+     - Overall success rate
+
+5. **Documentation**:
+   - Document any issues encountered during execution
+   - Note any performance bottlenecks or optimization opportunities
+   - Create recommendations for production deployment based on findings
+   - Update project documentation with real-world performance expectations
+
+# Test Strategy:
+1. **Pre-Execution Verification**:
+   - Review the execution script and configuration for correctness
+   - Verify all dependencies are properly installed and accessible
+   - Ensure the archive directory structure exists and has proper permissions
+   - Confirm logging is properly configured to capture all relevant information
+
+2. **Execution Monitoring**:
+   - Monitor the execution in real-time, watching for any errors or warnings
+   - Verify each stage of the pipeline completes successfully
+   - Check resource utilization to ensure the system remains stable
+   - Confirm rate limiting and proxy rotation are functioning correctly
+
+3. **Results Validation**:
+   - Manually review a sample of the generated leads to verify quality
+   - Verify all expected output files are created with correct formats
+   - Check that the summary report contains accurate metrics
+   - Compare results against expected benchmarks (if available)
+
+4. **Archive Verification**:
+   - Confirm all files are properly stored in the archive directory
+   - Verify the integrity of archived files (no corruption or truncation)
+   - Ensure the archive is properly documented for future reference
+   - Test retrieval of archived data to confirm accessibility
+
+5. **Documentation Review**:
+   - Review the generated documentation for clarity and completeness
+   - Verify that all encountered issues are properly documented
+   - Confirm that performance metrics are accurately recorded
+   - Ensure recommendations for production deployment are practical and actionable
+
+# Subtasks:
+## 1. Run smoke script [done]
+### Dependencies: None
+### Description: Execute scripts/run_smoke_scrape.py and capture stdout/stderr
+### Details:
+
+
+## 2. Archive outputs [done]
+### Dependencies: None
+### Description: Save results to output/smoke/<timestamp>.log and JSON/CSV if produced
+### Details:
+
+

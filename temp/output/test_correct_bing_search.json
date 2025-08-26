@@ -1,0 +1,5 @@
+{
+    "success": false,
+    "error": "'Element' object has no attribute 'strip'",
+    "query": "restaurant chicago owner email"
+}

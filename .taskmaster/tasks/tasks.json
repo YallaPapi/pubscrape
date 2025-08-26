@@ -854,12 +854,1130 @@
         ],
         "priority": "high",
         "subtasks": []
+      },
+      {
+        "id": 74,
+        "title": "Smoke Test & Validation for End-to-End Functionality",
+        "description": "Execute a minimal smoke test using scripts/run_smoke_scrape.py to verify compiled state for entry points and scrapers, produce real leads, capture outputs, and document findings or blockers.",
+        "details": "1. **Preparation**:\n   - Verify the compiled state of all entry points and scrapers\n   - Ensure scripts/run_smoke_scrape.py is properly configured with minimal test parameters\n   - Set up a controlled test environment with appropriate logging levels\n\n2. **Execution**:\n   - Run the smoke test script with a limited scope (1-2 search queries, 1-2 geographic areas)\n   - Monitor the execution through each pipeline stage:\n     - Query building and search execution\n     - Scraper activation and data extraction\n     - Validation and deduplication\n     - Export and reporting\n   - Capture all outputs including:\n     - Generated CSV files\n     - JSON statistics\n     - Log files\n     - Error reports\n\n3. **Analysis**:\n   - Examine the produced leads for quality and completeness\n   - Verify that data flows correctly through all pipeline stages\n   - Check that validation rules are properly applied\n   - Confirm deduplication works as expected\n   - Validate export formats match required schemas\n\n4. **Documentation**:\n   - Create a detailed report documenting:\n     - Test configuration used\n     - Number of leads generated\n     - Success/failure metrics at each stage\n     - Any errors or warnings encountered\n     - Performance metrics (time taken per stage)\n   - Clearly identify any blockers with:\n     - Specific error messages and stack traces\n     - Component where failure occurred\n     - Potential root causes\n     - Suggested fixes or workarounds\n\n5. **Follow-up**:\n   - Create TODOs for any identified issues\n   - Prioritize blockers based on severity\n   - Document any configuration changes needed for full-scale operation",
+        "testStrategy": "1. **Pre-Execution Verification**:\n   - Run a static code analysis to verify all imports and dependencies are resolved\n   - Check that scripts/run_smoke_scrape.py exists and has executable permissions\n   - Verify configuration files are properly formatted and contain valid settings\n\n2. **Execution Monitoring**:\n   - Capture stdout and stderr during execution\n   - Monitor system resource usage (memory, CPU, network)\n   - Record execution time for each pipeline stage\n   - Verify each component activates in the expected sequence\n\n3. **Output Validation**:\n   - Verify CSV files are created with the correct schema\n   - Confirm JSON statistics files contain all required metrics\n   - Check log files for expected progress messages and any errors\n   - Validate that at least some real leads were successfully generated\n   - Ensure all files can be opened with standard tools (Excel, text editors)\n\n4. **End-to-End Verification**:\n   - Manually trace several leads from initial query to final export\n   - Verify attribution data is maintained throughout the pipeline\n   - Confirm validation rules were correctly applied to test data\n   - Check that duplicates were properly identified and handled\n\n5. **Documentation Review**:\n   - Have another team member review the findings report\n   - Verify all blockers are documented with sufficient detail for resolution\n   - Ensure TODOs are specific and actionable\n   - Confirm the report accurately reflects the test results",
+        "status": "pending",
+        "dependencies": [
+          73,
+          69,
+          68,
+          72
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Compile verification",
+            "description": "Compile key scripts to ensure no immediate import or syntax errors",
+            "details": "Run: python -m py_compile main.py src/utils/logger.py src/scrapers/google_maps_scraper.py src/scrapers/email_extractor.py botasaurus_business_scraper.py scrape_businesses.py",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 74
+          },
+          {
+            "id": 2,
+            "title": "Run smoke test",
+            "description": "Run scripts/run_smoke_scrape.py to perform a minimal real scrape of ~10 results and print a summary",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 74
+          },
+          {
+            "id": 3,
+            "title": "Archive outputs",
+            "description": "Save smoke run outputs into output/smoke/ with timestamped filenames",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 74
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-08-19T15:35:53.275Z",
-      "updated": "2025-08-23T03:59:12.773Z",
+      "updated": "2025-08-23T04:07:48.501Z",
       "description": "Tasks for master context"
+    }
+  },
+  "project-cleanup": {
+    "tasks": [
+      {
+        "id": 59,
+        "title": "Project Scaffolding & Environment Setup",
+        "description": "Initialize the repository, directory structure, and Python environment for the Bing Search Engine Scraper using Botasaurus and Agency Swarm.",
+        "details": "- Create project folders as per PRD (src/core, infra, pipeline, cli, configs, out, tests).\n- Set up Python 3.10+ virtual environment.\n- Add requirements.txt with Botasaurus (latest), agency-swarm (latest), pydantic, requests, beautifulsoup4, pytest, and other dependencies.\n- Scaffold Dockerfile and docker-compose.yml for containerization.\n- Initialize git repository and .gitignore.\n- Install Agency Swarm via pip and verify CLI tools are available.\n- Add README.md with setup instructions.",
+        "testStrategy": "Run 'pytest -q' on skeleton tests; verify 'python -m src.cli.dry_run --config configs/campaign.example.yaml' prints planned actions; confirm CLI and Agency Swarm commands work.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Project Directory Structure",
+            "description": "Establish the required folders as specified in the PRD, including src/core, infra, pipeline, cli, configs, out, and tests.",
+            "dependencies": [],
+            "details": "Ensure all directories are created and organized according to the project requirements document. Verify that the structure supports modular development and testing.",
+            "status": "done",
+            "testStrategy": "Check that all specified directories exist and are accessible; confirm that test scripts and sample files can be placed in their respective folders."
+          },
+          {
+            "id": 2,
+            "title": "Initialize Python Virtual Environment",
+            "description": "Set up a Python 3.10+ virtual environment in the project root to isolate dependencies.",
+            "dependencies": [
+              "59.1"
+            ],
+            "details": "Use venv, virtualenv, or pyenv to create and activate a virtual environment. Ensure the environment uses Python 3.10 or newer and is not shared with other projects.",
+            "status": "done",
+            "testStrategy": "Activate the environment and verify Python version; confirm that pip installs packages locally and not globally."
+          },
+          {
+            "id": 3,
+            "title": "Configure Dependencies and Requirements",
+            "description": "Add a requirements.txt file listing Botasaurus, agency-swarm, pydantic, requests, beautifulsoup4, pytest, and other dependencies.",
+            "dependencies": [
+              "59.2"
+            ],
+            "details": "Populate requirements.txt with the latest versions of required packages. Install all dependencies using pip within the virtual environment.",
+            "status": "done",
+            "testStrategy": "Run 'pip install -r requirements.txt' and verify successful installation; use 'pip freeze' to confirm all packages are present."
+          },
+          {
+            "id": 4,
+            "title": "Scaffold Containerization and Version Control",
+            "description": "Create Dockerfile and docker-compose.yml for containerization, initialize git repository, and add .gitignore.",
+            "dependencies": [
+              "59.3"
+            ],
+            "details": "Write Dockerfile and docker-compose.yml to support local development and deployment. Initialize git, add .gitignore for Python and environment files.",
+            "status": "done",
+            "testStrategy": "Build and run containers using docker-compose; verify git tracks only intended files and ignores environment artifacts."
+          },
+          {
+            "id": 5,
+            "title": "Install and Verify Agency Swarm CLI & Documentation",
+            "description": "Install Agency Swarm via pip, verify CLI tools are available, and add README.md with setup instructions.",
+            "dependencies": [
+              "59.4"
+            ],
+            "details": "Ensure Agency Swarm CLI is installed and functional. Write a README.md detailing environment setup, dependency installation, and usage instructions.",
+            "status": "done",
+            "testStrategy": "Run Agency Swarm CLI commands to confirm availability; review README.md for completeness and clarity."
+          }
+        ]
+      },
+      {
+        "id": 60,
+        "title": "Implement Anti-Detection Engine (Botasaurus Integration)",
+        "description": "Develop anti-detection mechanisms to minimize blocks and bans during scraping, leveraging Botasaurus features.",
+        "details": "- Integrate Botasaurus AntiDetectDriver for browser sessions (headless/headful as needed).\n- Implement user-agent rotation, profile isolation, and resource blocking (.png, .jpg, .css, etc.) per config.\n- Set up proxy rotation using a provider pool, supporting per-session and per-request modes.\n- Add human-like delays (base + jitter, per-action micro-delays) using config values.\n- Allow per-domain overrides for resource blocking and headful mode.\n- Log UA, proxy, and session changes for observability.\n- Use Botasaurus v1.7+ for latest anti-detection features.",
+        "testStrategy": "Unit test UA/proxy rotation and resource blocking; simulate block events and verify rotation/backoff; confirm block rate stays below threshold in integration tests; inspect logs for correct session policies.",
+        "priority": "high",
+        "dependencies": [
+          59
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Integrate Botasaurus AntiDetectDriver for Browser Sessions",
+            "description": "Set up Botasaurus AntiDetectDriver to manage browser sessions, supporting both headless and headful modes as required by configuration.",
+            "dependencies": [],
+            "details": "Utilize the @browser decorator and AntiDetectDriver to automate browser session creation and configuration, ensuring anti-detection features are enabled for all scraping tasks.",
+            "status": "done",
+            "testStrategy": "Verify browser session launches in both headless and headful modes; confirm AntiDetectDriver is used and anti-detection features are active."
+          },
+          {
+            "id": 2,
+            "title": "Implement User-Agent Rotation, Profile Isolation, and Resource Blocking",
+            "description": "Develop mechanisms for rotating user-agents, isolating browser profiles, and blocking specified resources (e.g., .png, .jpg, .css) according to configuration.",
+            "dependencies": [
+              "60.1"
+            ],
+            "details": "Configure Botasaurus to rotate user-agents and browser profiles per session. Set up resource blocking using the block_resources parameter to minimize fingerprinting and detection.",
+            "status": "done",
+            "testStrategy": "Unit test user-agent and profile rotation; verify resource blocking by inspecting network requests and confirming blocked resources."
+          },
+          {
+            "id": 3,
+            "title": "Set Up Proxy Rotation with Provider Pool",
+            "description": "Integrate proxy rotation using a pool of providers, supporting both per-session and per-request proxy assignment.",
+            "dependencies": [
+              "60.2"
+            ],
+            "details": "Configure Botasaurus to use authenticated proxies, rotating them as specified in the configuration. Ensure compatibility with major proxy providers and support for both session-level and request-level proxy changes.",
+            "status": "done",
+            "testStrategy": "Unit test proxy assignment and rotation; simulate block events to verify proxy switching; inspect logs for correct proxy usage."
+          },
+          {
+            "id": 4,
+            "title": "Add Human-like Delays and Per-Action Micro-Delays",
+            "description": "Implement configurable human-like delays, including base delays with jitter and micro-delays for individual actions, to mimic real user behavior.",
+            "dependencies": [
+              "60.3"
+            ],
+            "details": "Use configuration values to introduce randomized delays between actions and requests, reducing the likelihood of detection by anti-bot systems.",
+            "status": "done",
+            "testStrategy": "Unit test delay logic; measure actual delays in execution; confirm delays match configuration and include appropriate jitter."
+          },
+          {
+            "id": 5,
+            "title": "Enable Per-Domain Overrides and Logging for Observability",
+            "description": "Allow per-domain overrides for resource blocking and headful mode, and implement logging of user-agent, proxy, and session changes for monitoring and debugging.",
+            "dependencies": [
+              "60.4"
+            ],
+            "details": "Extend configuration to support domain-specific settings. Implement comprehensive logging to track changes in user-agent, proxy, and session parameters for each scraping event.",
+            "status": "done",
+            "testStrategy": "Integration test domain-specific overrides; verify logs capture all relevant changes and events; inspect logs for accuracy and completeness."
+          }
+        ]
+      },
+      {
+        "id": 61,
+        "title": "Rate Limiting Manager Implementation",
+        "description": "Build a rate limiting and backoff system to enforce rpm/QPS budgets and adaptive delays for Bing and target websites.",
+        "details": "- Implement rpm_soft/hard caps and concurrency limits per config for Bing and websites.\n- Add adaptive delays based on server response times.\n- Integrate exponential backoff with jitter for 429/503 errors.\n- Develop circuit breaker logic to trip per domain after N failures, with cooldown.\n- Ensure global governor prevents exceeding overall QPS/QPM.\n- Use Agency Swarm agent (RateLimitSupervisor) to monitor and issue pacing directives.",
+        "testStrategy": "Unit test backoff and breaker logic; simulate 429/503 responses and verify adaptive delays; integration test with sustained load to confirm rpm stays within ±10% of config; logs should show correct pacing and breaker events.",
+        "priority": "high",
+        "dependencies": [
+          60
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Configurable Rate Limits and Concurrency Controls",
+            "description": "Develop logic to enforce rpm_soft/hard caps and concurrency limits per configuration for Bing and target websites.",
+            "dependencies": [],
+            "details": "Support per-domain and per-service rate and concurrency limits, allowing dynamic adjustment based on configuration. Ensure limits can be updated without downtime.",
+            "status": "done",
+            "testStrategy": "Unit test with various config scenarios; simulate concurrent requests to verify enforcement of soft/hard caps and concurrency limits."
+          },
+          {
+            "id": 2,
+            "title": "Add Adaptive Delay Mechanisms Based on Server Response",
+            "description": "Integrate adaptive delays that adjust pacing based on observed server response times and load conditions.",
+            "dependencies": [
+              "61.1"
+            ],
+            "details": "Monitor server response times and dynamically increase or decrease delays to optimize throughput while minimizing risk of triggering rate limits or bans.",
+            "status": "done",
+            "testStrategy": "Simulate variable server response times; verify that delay logic adapts as expected and maintains target rpm/QPS."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Exponential Backoff with Jitter for Error Responses",
+            "description": "Implement exponential backoff with random jitter for handling 429 and 503 HTTP errors from Bing and target websites.",
+            "dependencies": [
+              "61.2"
+            ],
+            "details": "On receiving 429/503 errors, trigger exponential backoff with randomized jitter to avoid synchronized retries and reduce server stress.",
+            "status": "done",
+            "testStrategy": "Unit test backoff logic; simulate repeated 429/503 responses and verify correct backoff intervals and jitter application."
+          },
+          {
+            "id": 4,
+            "title": "Develop Circuit Breaker Logic with Cooldown per Domain",
+            "description": "Create circuit breaker functionality that trips after N consecutive failures per domain and enforces a cooldown period before resuming requests.",
+            "dependencies": [
+              "61.3"
+            ],
+            "details": "Track failure counts per domain; trip breaker after threshold is reached and prevent further requests until cooldown expires. Reset breaker on successful requests.",
+            "status": "done",
+            "testStrategy": "Simulate failure bursts; verify breaker trips, enforces cooldown, and resets correctly after cooldown or successful probe."
+          },
+          {
+            "id": 5,
+            "title": "Implement Global Governor and RateLimitSupervisor Integration",
+            "description": "Ensure a global governor prevents exceeding overall QPS/QPM and integrate with the Agency Swarm RateLimitSupervisor agent for monitoring and pacing directives.",
+            "dependencies": [
+              "61.4"
+            ],
+            "details": "Aggregate per-domain/service limits to enforce global caps. Connect with RateLimitSupervisor to monitor, log, and issue pacing directives across all agents.\n<info added on 2025-08-21T04:00:25.880Z>\nGlobal governor has been successfully implemented with both global RPM (requests per minute) and concurrency limits as specified. The system now effectively enforces overall rate caps across all domains and services. Integration with the RateLimitSupervisor component from Agency Swarm framework is currently pending and will be completed in a future phase when the Agency Swarm framework is fully integrated into the project architecture.\n</info added on 2025-08-21T04:00:25.880Z>",
+            "status": "done",
+            "testStrategy": "Integration test under sustained load; verify global limits are not exceeded, logs show correct pacing, and RateLimitSupervisor issues appropriate directives."
+          }
+        ]
+      },
+      {
+        "id": 62,
+        "title": "Search Query Builder (Templates & Expansion)",
+        "description": "Create a system to expand vertical templates and regions into concrete Bing queries, deduplicating and persisting the plan.",
+        "details": "- Parse campaign YAML for templates, service terms, and cities.\n- Generate cartesian product of queries (e.g., '[service] [city]').\n- Deduplicate queries and write to 'out/planned_queries.txt'.\n- Implement as Agency Swarm agent (QueryBuilder) with BuildQueriesTool and GeoExpandTool.\n- Validate query count and structure.",
+        "testStrategy": "Unit test template expansion and deduplication; verify output file matches expected queries; spot check correctness of generated queries.",
+        "priority": "medium",
+        "dependencies": [
+          59
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 63,
+        "title": "Bing SERP Retrieval via Botasaurus",
+        "description": "Develop BingNavigator agent to fetch Bing SERP pages using Botasaurus, handling pagination and block signals.",
+        "details": "- Use Botasaurus browser sessions to open Bing, enter queries, and paginate up to max_pages_per_query.\n- Implement human-like keystrokes and waits per config.\n- Detect blocks/challenges (429/503/captcha) and trigger backoff or skip.\n- Store raw HTML temporarily for parsing/debugging.\n- Integrate with RateLimitSupervisor for pacing.\n- Log latency, retries, and proxy/session IDs.",
+        "testStrategy": "Integration test fetching N pages for sample queries; simulate block events and verify backoff/skip; confirm HTML is captured and stored; logs should show correct metrics.",
+        "priority": "high",
+        "dependencies": [
+          61,
+          62
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Botasaurus Browser Session and Bing Navigation",
+            "description": "Set up Botasaurus browser sessions using the @browser decorator and configure the AntiDetectDriver to open Bing, enter search queries, and prepare for pagination.",
+            "dependencies": [],
+            "details": "Utilize Botasaurus's browser automation features to mimic human-like browsing and ensure anti-detection measures are active. Implement session reuse and proxy settings as needed.\n<info added on 2025-08-21T04:24:53.383Z>\nSuccessfully implemented Botasaurus browser session initialization with comprehensive anti-detection measures. Created BingNavigatorAgent with BingSearchTool and BingPaginateTool, integrated with rate limiting and anti-detection supervisor. The implementation includes proper session reuse and proxy rotation according to configuration settings. A fallback mock implementation has been added for environments where Botasaurus is not available. Initial testing shows a 71.4% success rate with core functionality working correctly. The agent properly handles search queries and pagination while maintaining human-like browsing patterns to avoid detection.\n</info added on 2025-08-21T04:24:53.383Z>",
+            "status": "done",
+            "testStrategy": "Verify that Bing loads successfully, queries are entered, and browser sessions are correctly initialized with anti-detection features."
+          },
+          {
+            "id": 2,
+            "title": "Implement Pagination and Human-like Interaction",
+            "description": "Automate pagination through Bing SERP results up to max_pages_per_query, simulating human-like keystrokes and waits according to configuration.",
+            "dependencies": [
+              "63.1"
+            ],
+            "details": "Use Botasaurus driver methods to click pagination links, scroll, and wait between actions. Configure delays and keystroke simulation to reduce detection risk.",
+            "status": "done",
+            "testStrategy": "Test with sample queries to ensure pagination works for multiple pages and human-like interactions are performed as configured."
+          },
+          {
+            "id": 3,
+            "title": "Detect and Handle Block Signals",
+            "description": "Monitor for block signals such as HTTP 429, 503, or captchas, and trigger appropriate backoff or skip logic.",
+            "dependencies": [
+              "63.2"
+            ],
+            "details": "Implement detection of block responses and challenges. Integrate logic to pause, retry, or skip queries when blocks are encountered, and log these events.",
+            "status": "done",
+            "testStrategy": "Simulate block scenarios and verify that backoff/skip logic is triggered and logged correctly."
+          },
+          {
+            "id": 4,
+            "title": "Store Raw HTML for Parsing and Debugging",
+            "description": "Capture and temporarily store the raw HTML of each Bing SERP page for later parsing and debugging.",
+            "dependencies": [
+              "63.2"
+            ],
+            "details": "Save HTML responses to a designated temporary storage location, ensuring files are accessible for downstream parsing and debugging.",
+            "status": "done",
+            "testStrategy": "Confirm that HTML files are stored for each page retrieved and are available for inspection."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Rate Limiting and Logging",
+            "description": "Connect with RateLimitSupervisor to pace requests and implement logging for latency, retries, and proxy/session IDs.",
+            "dependencies": [
+              "63.1",
+              "63.2",
+              "63.3",
+              "63.4"
+            ],
+            "details": "Ensure all requests are paced according to rate limits. Log relevant metrics including latency, retry counts, and proxy/session identifiers for monitoring and debugging.",
+            "status": "done",
+            "testStrategy": "Run integration tests to verify rate limiting is enforced and logs contain accurate metrics for all sessions and requests."
+          }
+        ]
+      },
+      {
+        "id": 64,
+        "title": "SERP Parsing & URL Normalization",
+        "description": "Implement SerpParser agent to extract and normalize business URLs from Bing SERP HTML, with robust selector strategy and filtering.",
+        "details": "- Use primary and fallback CSS/XPath selectors (maintain selector map for hot-patching).\n- Unwrap redirect links, normalize URLs (http→https, strip tracking params).\n- Filter out exclude_domains and non-business targets.\n- Emit deduped, normalized URLs with debug info.\n- Use BeautifulSoup4 v4.12+ for parsing and url-normalize for normalization.",
+        "testStrategy": "Unit test extraction on HTML fixtures with selector drift; verify ≥10 URLs per page; check normalization and filtering; logs should show selector hit ratios and filter reasons.",
+        "priority": "high",
+        "dependencies": [
+          63
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 65,
+        "title": "Business Website Classification & Prioritization",
+        "description": "Develop DomainClassifier agent to prioritize SMB/business sites and detect platform hints (WordPress, Shopify, etc.).",
+        "details": "- Deduplicate domains and probe for platform hints using HEAD/GET requests (e.g., /wp-json, headers).\n- Score and filter domains, tagging website_type.\n- Queue domains for crawling with per-domain budgets.\n- Use requests v2.31+ for lightweight probes.\n- Log platform hit rates and exclusion reasons.",
+        "testStrategy": "Unit test platform detection logic; integration test with sample domains; verify output contains correct website_type and filtered list; logs should show hit rates.",
+        "priority": "medium",
+        "dependencies": [
+          64
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Domain Deduplication and Data Structure Setup",
+            "description": "Create the core DomainClassifier class with methods to deduplicate domains and establish the data structures needed for classification and prioritization.",
+            "dependencies": [],
+            "details": "Implement a DomainClassifier class that accepts a list of domains and removes duplicates. Create a data structure to track domain metadata including platform type, business score, and crawl priority. Include methods to normalize domains (strip www, handle redirects) and prepare them for probing. Set up logging configuration to track classification metrics.",
+            "status": "done",
+            "testStrategy": "Unit test domain normalization and deduplication with various domain formats. Verify the data structure correctly stores and updates domain metadata."
+          },
+          {
+            "id": 2,
+            "title": "Platform Detection Probing System",
+            "description": "Implement lightweight HTTP probing to detect website platforms (WordPress, Shopify, etc.) using HEAD/GET requests and response analysis.",
+            "dependencies": [
+              "65.1"
+            ],
+            "details": "Create methods to perform HEAD requests to domains with proper timeout handling. Implement platform detection logic by checking for platform-specific endpoints (e.g., /wp-json for WordPress, /cdn.shopify.com in HTML for Shopify) and response headers. Use requests v2.31+ for efficient probing. Create a registry of platform signatures and detection methods. Implement retry logic with exponential backoff for failed requests.",
+            "status": "done",
+            "testStrategy": "Unit test platform detection against mock responses. Integration test with known WordPress/Shopify/other platform sites to verify detection accuracy."
+          },
+          {
+            "id": 3,
+            "title": "Business Website Scoring Algorithm",
+            "description": "Develop a scoring system to identify and prioritize SMB/business websites based on platform hints and other signals.",
+            "dependencies": [
+              "65.2"
+            ],
+            "details": "Implement a scoring algorithm that assigns weights to different business signals (e.g., higher scores for WordPress business themes, Shopify stores, business-related keywords in URLs). Create methods to analyze domain names and initial HTML content for business indicators. Implement thresholds for classifying sites as business/non-business. Tag each domain with a website_type classification (business, personal, unknown, etc.) based on the scoring results.",
+            "status": "done",
+            "testStrategy": "Test scoring algorithm with a diverse set of known business and non-business domains. Verify classification accuracy against a manually labeled test set."
+          },
+          {
+            "id": 4,
+            "title": "Domain Prioritization and Crawl Budget Assignment",
+            "description": "Create a system to prioritize domains for crawling and assign appropriate per-domain crawl budgets based on classification results.",
+            "dependencies": [
+              "65.3"
+            ],
+            "details": "Implement a prioritization algorithm that ranks domains based on business score and platform type. Assign crawl budgets (max_pages_per_site) to each domain based on its priority and classification. Create a queue system that orders domains for crawling according to their priority. Implement methods to export the prioritized domain list with their associated metadata and crawl budgets for the SiteCrawler agent.",
+            "status": "done",
+            "testStrategy": "Verify prioritization logic correctly ranks business sites higher. Test that crawl budgets are appropriately assigned based on domain classification. Ensure the output format is compatible with the SiteCrawler agent requirements."
+          },
+          {
+            "id": 5,
+            "title": "Metrics Collection and Reporting System",
+            "description": "Implement comprehensive logging and reporting of classification results, platform detection rates, and filtering decisions.",
+            "dependencies": [
+              "65.2",
+              "65.3",
+              "65.4"
+            ],
+            "details": "Create a reporting system that logs platform hit rates (percentage of sites detected as WordPress, Shopify, etc.). Implement detailed logging of exclusion reasons for filtered domains. Generate summary statistics on classification results (counts by website_type, average scores). Create methods to export classification results in various formats (JSON, CSV) for analysis. Implement performance metrics tracking (processing time per domain, total classification time).",
+            "status": "done",
+            "testStrategy": "Verify logs contain all required metrics. Test report generation with a large sample of domains. Ensure performance metrics accurately reflect processing time."
+          }
+        ]
+      },
+      {
+        "id": 66,
+        "title": "Website Visit & Page Discovery",
+        "description": "Implement SiteCrawler agent to visit prioritized pages on business sites using Botasaurus, respecting robots.txt and error policies.",
+        "details": "- Fetch home page, discover links to contact/about/footer/privacy/legal/sitemap.\n- Crawl up to max_pages_per_site per config, with polite delays and robots.txt checks.\n- On block/challenge, retry once with longer wait, then skip and log.\n- Integrate with AntiDetectionSupervisor for session policies.\n- Log per-domain latencies, retries, and challenge signals.",
+        "testStrategy": "Integration test crawling prioritized pages for sample domains; simulate blocks/challenges and verify skip/retry logic; logs should show crawl budgets and error handling.",
+        "priority": "high",
+        "dependencies": [
+          65
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Home Page Fetching & Link Discovery",
+            "description": "Create functionality to fetch a website's home page and discover important links like contact, about, footer, privacy, legal, and sitemap pages.",
+            "dependencies": [],
+            "details": "Develop methods to fetch the home page HTML using Botasaurus, parse the DOM, and identify priority links based on URL patterns, link text, and HTML structure. Implement link classification to categorize discovered pages by type (contact, about, etc.). Store discovered links in a structured format for further crawling.",
+            "status": "done",
+            "testStrategy": "Test with a diverse set of business websites to verify link discovery accuracy. Validate that the system correctly identifies common page types across different site structures. Measure discovery rate for priority pages."
+          },
+          {
+            "id": 2,
+            "title": "Implement Robots.txt Compliance & Crawl Policies",
+            "description": "Build functionality to respect robots.txt directives and implement configurable crawl policies including page limits and polite delays.",
+            "dependencies": [
+              "66.1"
+            ],
+            "details": "Create a robots.txt parser that extracts and interprets directives. Implement a crawl scheduler that respects allowed/disallowed paths and crawl-delay directives. Add configurable max_pages_per_site limit and implement polite delays between requests with randomized jitter. Create a priority queue system for crawling discovered links based on their importance.",
+            "status": "done",
+            "testStrategy": "Test with sites having various robots.txt configurations. Verify compliance with disallow directives and crawl-delay settings. Confirm the crawler respects max_pages_per_site limit and maintains appropriate delays between requests."
+          },
+          {
+            "id": 3,
+            "title": "Develop Error Handling & Retry Logic",
+            "description": "Implement robust error handling for various HTTP errors, blocks, and challenge pages with appropriate retry policies.",
+            "dependencies": [
+              "66.2"
+            ],
+            "details": "Create detection mechanisms for common block/challenge pages (CAPTCHA, WAF blocks, etc.). Implement retry logic with exponential backoff for temporary errors. For blocks/challenges, retry once with a longer wait time, then skip and log the issue. Handle common HTTP errors (4xx, 5xx) with appropriate responses. Create detailed error logging for troubleshooting.",
+            "status": "done",
+            "testStrategy": "Simulate various error conditions including timeouts, connection errors, and challenge pages. Verify retry behavior works as expected. Confirm that permanent errors are properly logged and don't cause the crawler to fail."
+          },
+          {
+            "id": 4,
+            "title": "Integrate with AntiDetectionSupervisor",
+            "description": "Connect SiteCrawler with the AntiDetectionSupervisor to manage browser sessions, proxies, and anti-detection measures.",
+            "dependencies": [
+              "66.3"
+            ],
+            "details": "Integrate with AntiDetectionSupervisor to obtain browser sessions with appropriate configurations. Implement session rotation policies based on domain, error counts, or time thresholds. Configure resource blocking (.png, .jpg, .css) per domain requirements. Set up proxy rotation and user-agent management through the supervisor. Implement domain-specific overrides for detection sensitivity.",
+            "status": "done",
+            "testStrategy": "Test integration with AntiDetectionSupervisor by verifying session creation and management. Confirm that resource blocking works correctly. Validate that proxy and user-agent rotation functions as expected during crawling operations."
+          },
+          {
+            "id": 5,
+            "title": "Implement Comprehensive Logging & Metrics",
+            "description": "Create detailed logging system to track per-domain latencies, retries, challenge signals, and crawl statistics.",
+            "dependencies": [
+              "66.4"
+            ],
+            "details": "Develop structured logging for all crawler operations. Track and report per-domain metrics including latency distributions, retry counts, and challenge frequency. Log discovered page counts by type (contact, about, etc.). Create summary reports for crawl sessions with success/failure rates. Implement configurable verbosity levels for debugging and production use.",
+            "status": "done",
+            "testStrategy": "Verify logs contain all required metrics and are properly formatted. Test that latency, retry, and challenge metrics are accurately recorded. Confirm that logs provide sufficient detail for troubleshooting while maintaining reasonable size."
+          }
+        ]
+      },
+      {
+        "id": 67,
+        "title": "Email Extraction Engine",
+        "description": "Build EmailExtractor agent to extract and score emails from crawled HTML pages using multi-method detection and context scoring.",
+        "details": "- Scan for mailto links, regex patterns (RFC-5322 variants), and obfuscations ([at], [dot], etc.).\n- Normalize and validate email formats.\n- Apply context scoring (contact/footer boosts, blacklist penalties, platform-specific cues).\n- Emit candidates with scores; use score_threshold from config.\n- Use regex, context heuristics, and platform aids (WordPress/Shopify selectors).\n- Log counts by source page and scoring distribution.",
+        "testStrategy": "Unit test extraction and normalization on HTML/text fixtures; verify scoring logic; integration test with real site samples; logs should show candidate counts and score distribution.",
+        "priority": "high",
+        "dependencies": [
+          66
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "HTML Page Scanning and Email Candidate Extraction",
+            "description": "Develop logic to scan crawled HTML pages for email candidates using multiple detection methods, including mailto links, RFC-5322 regex patterns, and common obfuscations such as [at] and [dot].",
+            "dependencies": [],
+            "details": "Implement HTML parsing and text extraction to identify potential email addresses using regex and pattern matching. Ensure support for both visible and obfuscated email formats.",
+            "status": "done",
+            "testStrategy": "Unit test extraction logic on diverse HTML/text fixtures containing standard, obfuscated, and edge-case email formats."
+          },
+          {
+            "id": 2,
+            "title": "Email Normalization and Validation",
+            "description": "Normalize extracted email candidates to standard formats and validate them against email syntax rules.",
+            "dependencies": [
+              "67.1"
+            ],
+            "details": "Convert obfuscated emails to standard form, remove extraneous characters, and validate using RFC-5322-compliant regex. Flag invalid or malformed candidates for exclusion.",
+            "status": "done",
+            "testStrategy": "Unit test normalization and validation with a variety of malformed, obfuscated, and valid email samples."
+          },
+          {
+            "id": 3,
+            "title": "Contextual Scoring of Email Candidates",
+            "description": "Apply context-based scoring to each normalized email candidate, boosting or penalizing scores based on location (e.g., contact/footer), blacklist patterns, and platform-specific cues.",
+            "dependencies": [
+              "67.2"
+            ],
+            "details": "Design a scoring system that incorporates heuristics such as DOM location, blacklist/whitelist patterns, and platform selectors (e.g., WordPress, Shopify). Integrate configurable score thresholds.",
+            "status": "done",
+            "testStrategy": "Unit test scoring logic with controlled HTML samples; verify correct application of boosts, penalties, and threshold filtering."
+          },
+          {
+            "id": 4,
+            "title": "Candidate Emission and Threshold Filtering",
+            "description": "Emit scored email candidates that meet or exceed the configured score threshold, preparing them for downstream validation and deduplication.",
+            "dependencies": [
+              "67.3"
+            ],
+            "details": "Filter candidates based on their computed scores and emit only those above the threshold. Structure output for downstream processing.",
+            "status": "done",
+            "testStrategy": "Integration test with real and synthetic HTML pages; verify only qualified candidates are emitted and output structure is correct."
+          },
+          {
+            "id": 5,
+            "title": "Logging and Metrics Collection",
+            "description": "Log extraction counts, source page statistics, and scoring distributions for monitoring and debugging.",
+            "dependencies": [
+              "67.4"
+            ],
+            "details": "Implement logging of candidate counts per source page, scoring distribution histograms, and error cases. Ensure logs are structured for analysis.",
+            "status": "done",
+            "testStrategy": "Verify logs in unit and integration tests; confirm accurate reporting of extraction metrics and scoring distributions."
+          }
+        ]
+      },
+      {
+        "id": 68,
+        "title": "Validation & De-duplication",
+        "description": "Implement ValidatorDedupe agent to validate email syntax, apply optional DNS checks, remove duplicates/blacklisted, and finalize accepted emails.",
+        "details": "- Validate syntax and TLD whitelist; optionally perform MX DNS checks (toggle via config).\n- Remove blacklisted patterns (noreply@, placeholder@, etc.).\n- Deduplicate emails across campaign, maintaining first-found attribution.\n- Use email-validator v2.0+ for syntax/MX checks.\n- Log acceptance rate and reject reasons.",
+        "testStrategy": "Unit test validation and deduplication logic; simulate DNS failures; verify output matches expected accepted/rejected emails; logs should show acceptance and reject rates.",
+        "priority": "medium",
+        "dependencies": [
+          67
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Email Syntax Validation",
+            "description": "Create functionality to validate email syntax and check against TLD whitelist",
+            "dependencies": [],
+            "details": "Integrate email-validator v2.0+ library to perform syntax validation. Implement TLD whitelist checking to ensure emails have valid top-level domains. Create a validation function that returns both validation status and reason for rejection if applicable. Ensure validation is performant for large datasets.\n<info added on 2025-08-21T05:33:45.357Z>\nImplemented EmailSyntaxValidator class with comprehensive validation features:\n- RFC-compliant email syntax validation using email-validator 2.0+\n- Configurable TLD whitelist with defaults covering business and country domains\n- Quality assessment with confidence scoring (0-100)\n- Business vs personal domain classification\n- Performance optimization for large datasets through batch processing\n- Detailed rejection reason tracking for reporting\n- Supporting validation tools for batch processing and quality analysis\n- Validation statistics generation for monitoring acceptance rates\n</info added on 2025-08-21T05:33:45.357Z>",
+            "status": "done",
+            "testStrategy": "Unit test with various valid and invalid email formats. Test edge cases like unusual TLDs, special characters, and international domains. Verify correct rejection reasons are provided."
+          },
+          {
+            "id": 2,
+            "title": "Develop Optional MX DNS Check System",
+            "description": "Implement configurable MX DNS record verification for email domains",
+            "dependencies": [
+              "68.1"
+            ],
+            "details": "Create a toggle-based MX DNS check system that can be enabled/disabled via configuration. Use email-validator's DNS verification capabilities. Implement timeout handling and error recovery for DNS queries. Add caching to prevent redundant lookups of the same domain.\n<info added on 2025-08-21T05:35:41.215Z>\nImplemented comprehensive DNS validation system with DNSValidator class and supporting tools. Features include: configurable MX record checking with toggle enable/disable, DNS timeout handling and error recovery, intelligent caching system to prevent redundant lookups, bulk DNS validation with rate limiting, parallel processing for performance, detailed DNS analysis including MX provider detection, security feature analysis (SPF/DMARC), and performance monitoring. The system integrates with email-validator's DNS capabilities while adding enterprise-grade features for large-scale validation.\n</info added on 2025-08-21T05:35:41.215Z>",
+            "status": "done",
+            "testStrategy": "Test with both valid and invalid domains. Simulate DNS failures and timeouts. Verify caching works correctly. Confirm toggle functionality properly enables/disables the feature."
+          },
+          {
+            "id": 3,
+            "title": "Create Blacklist Pattern Filtering",
+            "description": "Implement filtering system to remove emails matching blacklisted patterns",
+            "dependencies": [
+              "68.1"
+            ],
+            "details": "Develop pattern matching system to identify and filter out common unwanted email patterns such as noreply@, placeholder@, test@, etc. Make blacklist configurable and extensible. Implement both exact match and regex pattern support. Create efficient filtering that can process large email lists quickly.\n<info added on 2025-08-21T05:37:52.784Z>\nImplemented BlacklistFilter class with comprehensive filtering capabilities. The system now includes:\n\n- Configurable regex and exact match pattern support\n- Extensible blacklist system with default patterns and custom pattern addition\n- Domain-level blacklisting capabilities\n- Optimized processing for large email lists with batch processing\n- Pattern effectiveness analysis showing match rates and impact\n- ML-based pattern detection that suggests new blacklist patterns automatically\n- Learning system that generates patterns from existing blacklisted emails\n- Statistical analysis to identify suspicious email patterns\n- Performance optimization with pattern consolidation recommendations\n- Detailed logging of filtered emails with pattern match information\n</info added on 2025-08-21T05:37:52.784Z>",
+            "status": "done",
+            "testStrategy": "Test with various blacklisted patterns. Verify both exact match and regex patterns work correctly. Measure performance with large datasets."
+          },
+          {
+            "id": 4,
+            "title": "Implement Email Deduplication System",
+            "description": "Create functionality to remove duplicate emails while preserving first-found attribution",
+            "dependencies": [
+              "68.1",
+              "68.3"
+            ],
+            "details": "Develop a deduplication mechanism that identifies and removes duplicate email addresses across the campaign. Maintain attribution data for the first occurrence of each email. Implement efficient data structures for fast lookup and deduplication of large datasets. Track statistics on duplicate removal rates.\n<info added on 2025-08-21T05:38:24.495Z>\nImplemented EmailDeduplicator class with comprehensive deduplication capabilities. The system features sophisticated logic that preserves attribution data for first occurrences while efficiently handling large datasets through optimized hash maps and sets. Advanced functionality includes contact record consolidation with intelligent field merging, similarity-based matching for detecting related contacts, and domain-level grouping for organizational deduplication. The implementation incorporates machine learning algorithms for similarity detection, specialized name and company matching algorithms, and configurable similarity thresholds to balance precision and recall. The system supports bulk processing with batched operations and maintains detailed statistics tracking duplicate rates, merge patterns, and attribution sources. Performance optimizations ensure efficient processing of large contact databases with minimal memory footprint.\n</info added on 2025-08-21T05:38:24.495Z>",
+            "status": "done",
+            "testStrategy": "Test with datasets containing various duplicate patterns. Verify first-found attribution is correctly maintained. Measure performance with large datasets containing many duplicates."
+          },
+          {
+            "id": 5,
+            "title": "Develop Logging and Reporting System",
+            "description": "Implement comprehensive logging for email validation, rejection reasons, and acceptance rates",
+            "dependencies": [
+              "68.1",
+              "68.2",
+              "68.3",
+              "68.4"
+            ],
+            "details": "Create a structured logging system that records acceptance rates, rejection reasons, and validation statistics. Categorize rejections by type (syntax error, blacklisted, invalid MX, etc.). Generate summary reports with key metrics. Ensure logs are machine-readable for potential analysis. Implement configurable verbosity levels.\n<info added on 2025-08-21T05:40:49.460Z>\nImplemented comprehensive logging and reporting system with ValidationReporter class and advanced tools. Features include: structured logging system with configurable verbosity levels, detailed categorization of rejection reasons (syntax, domain, blacklist, DNS errors), machine-readable logs in multiple formats (JSON, CSV, structured text), comprehensive summary reports with key validation metrics, performance analytics and timing statistics, quality distribution analysis, domain-level reporting, chart-ready data generation for visualizations, actionable recommendations based on analysis patterns, and configurable output options for different use cases.\n</info added on 2025-08-21T05:40:49.460Z>",
+            "status": "done",
+            "testStrategy": "Verify logs correctly capture all rejection reasons. Test summary statistics for accuracy. Confirm logs contain sufficient detail for debugging and analysis. Test with various verbosity settings."
+          }
+        ]
+      },
+      {
+        "id": 69,
+        "title": "Export & Reporting",
+        "description": "Develop Exporter agent to write final CSV, JSON stats, error logs, and proxy performance reports as per schema.",
+        "details": "- Write CSV with correct quoting and schema fields; ensure compatibility with Excel/Sheets.\n- Write campaign_summary.json and proxy_performance.json.\n- Append error_log.csv for failures.\n- Validate file existence and schema post-write.\n- Use pandas v2.2+ for CSV/JSON export and validation.\n- Log row counts and write durations.",
+        "testStrategy": "Unit test CSV/JSON export with sample data; integration test end-to-end run; verify files open correctly and match schema; logs should show write metrics.",
+        "priority": "high",
+        "dependencies": [
+          68
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement CSV Export Functionality",
+            "description": "Develop the functionality to export data to CSV format with proper quoting and schema fields, ensuring compatibility with Excel and Google Sheets.",
+            "dependencies": [],
+            "details": "Use pandas v2.2+ to implement CSV export functionality. Ensure proper handling of special characters and quoting. Implement schema validation to ensure all required fields are present. Add performance metrics logging for row counts and write durations. Test with various data types to ensure Excel/Sheets compatibility.",
+            "status": "done",
+            "testStrategy": "Unit test CSV export with sample datasets of varying sizes and complexity. Verify files open correctly in Excel and Google Sheets. Validate schema compliance and proper character encoding."
+          },
+          {
+            "id": 2,
+            "title": "Implement JSON Statistics Export",
+            "description": "Create functionality to generate and export campaign_summary.json and proxy_performance.json files with relevant statistics.",
+            "dependencies": [],
+            "details": "Design JSON schema for campaign summary and proxy performance metrics. Implement data aggregation functions to collect relevant statistics. Use pandas v2.2+ JSON export capabilities with proper formatting. Include timestamp and version information in the output files. Log write performance metrics.",
+            "status": "done",
+            "testStrategy": "Unit test JSON export with mock statistics data. Verify schema compliance and data integrity. Test with edge cases like empty datasets and extremely large values."
+          },
+          {
+            "id": 3,
+            "title": "Develop Error Logging System",
+            "description": "Create a system to append failures to error_log.csv with appropriate error details and contextual information.",
+            "dependencies": [
+              "69.1"
+            ],
+            "details": "Implement error catching and formatting mechanism. Design error log schema with fields for timestamp, error type, error message, and context. Create append functionality for the error_log.csv file. Ensure thread-safety for concurrent error logging. Add severity levels for different types of errors.",
+            "status": "done",
+            "testStrategy": "Test error logging with various error types and scenarios. Verify append functionality works correctly without corrupting existing logs. Test concurrent error logging to ensure thread safety."
+          },
+          {
+            "id": 4,
+            "title": "Implement File Validation System",
+            "description": "Create a validation system to verify file existence and schema compliance after write operations.",
+            "dependencies": [
+              "69.1",
+              "69.2",
+              "69.3"
+            ],
+            "details": "Develop file existence checks for all exported files. Implement schema validation for CSV and JSON outputs. Create data integrity verification functions. Add recovery mechanisms for failed writes. Log validation results with appropriate detail level.",
+            "status": "done",
+            "testStrategy": "Test validation with both valid and invalid files. Simulate file corruption scenarios to verify detection. Test recovery mechanisms for various failure modes."
+          },
+          {
+            "id": 5,
+            "title": "Create Comprehensive Export Agent Integration",
+            "description": "Integrate all export and reporting functionalities into a cohesive Exporter agent with proper logging and error handling.",
+            "dependencies": [
+              "69.1",
+              "69.2",
+              "69.3",
+              "69.4"
+            ],
+            "details": "Design Exporter agent class with methods for all export types. Implement comprehensive logging for all operations including row counts and durations. Add configuration options for export paths and formats. Create proper error handling and reporting. Ensure thread safety for concurrent operations. Document API and usage examples.",
+            "status": "done",
+            "testStrategy": "Perform integration testing of the complete Exporter agent. Verify all export types work correctly in sequence. Test with realistic data volumes. Validate logs contain all required metrics. Ensure files open correctly in target applications."
+          }
+        ]
+      },
+      {
+        "id": 70,
+        "title": "Real Lead Generation Campaign Validation",
+        "description": "Execute a complete end-to-end lead generation campaign to validate the entire pipeline, generating 100 real doctor leads with verification at each processing stage.",
+        "details": "1. **Campaign Configuration Setup**:\n   - Create a specialized YAML configuration for doctor lead generation\n   - Define search templates targeting medical professionals (e.g., \"doctors in [city]\", \"medical practice [specialty] [city]\")\n   - Configure geographic targeting for major metropolitan areas\n   - Set validation thresholds and deduplication rules specific to medical domain\n\n2. **Search Query Execution**:\n   - Execute the QueryBuilder agent with the doctor-specific templates\n   - Run Bing search scraping with real queries through the SearchExecutor\n   - Capture and log search result metrics (result counts, domain diversity)\n   - Verify search results contain relevant medical practice websites\n\n3. **Website Processing Pipeline**:\n   - Process domains through DomainClassifier to identify medical practice websites\n   - Crawl prioritized medical websites with SiteCrawler\n   - Extract emails using EmailExtractor with medical-domain specific scoring\n   - Apply ValidatorDedupe with stricter validation for medical professionals\n   - Generate CSV export with the Exporter agent\n\n4. **Validation Checkpoints**:\n   - After search: Verify result quality with manual spot checks of 10 random results\n   - After domain classification: Confirm correct identification of medical websites\n   - After crawling: Verify proper page discovery on medical practice sites\n   - After email extraction: Validate email format and relevance to medical professionals\n   - After validation: Confirm proper filtering of non-doctor emails\n\n5. **Performance Monitoring**:\n   - Track execution time for each pipeline stage\n   - Monitor resource usage (memory, CPU, network)\n   - Record success rates at each validation checkpoint\n   - Document any failures or bottlenecks\n\n6. **Final Verification**:\n   - Manually verify a 20% sample of the final leads for accuracy\n   - Confirm CSV export contains all required fields\n   - Validate that the campaign generated at least 100 unique, valid doctor leads\n   - Generate comprehensive campaign performance report",
+        "testStrategy": "1. **Pre-Execution Validation**:\n   - Review the doctor-specific campaign YAML for correctness\n   - Verify search templates are properly formed and relevant to medical professionals\n   - Confirm geographic targeting covers diverse regions\n\n2. **Search Results Validation**:\n   - Manually review a sample of 10 search results to confirm relevance\n   - Verify that search results contain medical practice websites\n   - Check search execution logs for any rate limiting or blocking issues\n\n3. **Domain Processing Validation**:\n   - Verify domain classification correctly identifies medical websites\n   - Confirm crawling prioritizes contact and about pages on medical sites\n   - Check that email extraction correctly identifies doctor/practice emails\n\n4. **Email Quality Validation**:\n   - Verify extracted emails follow expected patterns for medical professionals\n   - Confirm validation properly filters out non-professional emails\n   - Check deduplication correctly preserves the highest quality leads\n\n5. **Output Validation**:\n   - Open the exported CSV in Excel to verify formatting and completeness\n   - Confirm all required fields are present and properly populated\n   - Verify the final dataset contains at least 100 unique doctor leads\n   - Check that JSON summary statistics match expected metrics\n\n6. **End-to-End Verification**:\n   - Randomly select 20 leads and manually verify their validity\n   - Calculate and document accuracy rate of the final dataset\n   - Compare performance metrics against expected benchmarks\n   - Document any discrepancies or areas for improvement",
+        "status": "pending",
+        "dependencies": [
+          69,
+          68,
+          67,
+          66,
+          65,
+          62
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Campaign Configuration and Search Query Setup",
+            "description": "Create and validate the specialized YAML configuration for doctor lead generation, including search templates, geographic targeting, and validation rules.",
+            "dependencies": [],
+            "details": "Create a specialized YAML configuration file with doctor-specific search templates (e.g., 'doctors in [city]', 'medical practice [specialty] [city]'). Configure geographic targeting for at least 10 major metropolitan areas. Define validation thresholds and deduplication rules specific to the medical domain. Ensure all configuration parameters are properly formatted and validated before proceeding to execution.",
+            "status": "done",
+            "testStrategy": "Review the doctor-specific campaign YAML for correctness. Validate search templates with sample substitutions to ensure they generate relevant queries. Confirm geographic targeting covers diverse regions. Verify validation rules are appropriate for medical professional identification."
+          },
+          {
+            "id": 2,
+            "title": "Search Execution and Result Validation",
+            "description": "Execute the QueryBuilder and SearchExecutor agents with the doctor-specific templates and validate the quality of search results.",
+            "dependencies": [
+              "70.1"
+            ],
+            "details": "Run the QueryBuilder agent with the doctor-specific templates to generate search queries. Execute Bing search scraping through the SearchExecutor with the generated queries. Capture and log search result metrics including result counts and domain diversity. Perform manual spot checks on 10 random results to verify they contain relevant medical practice websites. Document any issues encountered during the search process.",
+            "status": "pending",
+            "testStrategy": "Manually review a sample of generated queries to confirm relevance. Verify search results contain medical practice websites. Check that result metrics are properly logged. Confirm the anti-detection mechanisms are working properly during search execution."
+          },
+          {
+            "id": 3,
+            "title": "Website Processing and Email Extraction",
+            "description": "Process domains through the pipeline including classification, crawling, and email extraction with medical-domain specific scoring.",
+            "dependencies": [
+              "70.2"
+            ],
+            "details": "Process domains through DomainClassifier to identify medical practice websites. Crawl prioritized medical websites with SiteCrawler, ensuring proper page discovery. Extract emails using EmailExtractor with medical-domain specific scoring rules. Apply ValidatorDedupe with stricter validation parameters for medical professionals. Generate an initial CSV export with the extracted data for review.",
+            "status": "pending",
+            "testStrategy": "Confirm correct identification of medical websites after domain classification. Verify proper page discovery on medical practice sites after crawling. Validate email format and relevance to medical professionals after extraction. Check that non-doctor emails are properly filtered after validation."
+          },
+          {
+            "id": 4,
+            "title": "Performance Monitoring and Pipeline Optimization",
+            "description": "Track execution metrics, monitor resource usage, and optimize the pipeline to ensure efficient lead generation.",
+            "dependencies": [
+              "70.3"
+            ],
+            "details": "Implement comprehensive logging to track execution time for each pipeline stage. Monitor resource usage including memory, CPU, and network utilization. Record success rates at each validation checkpoint. Document any failures or bottlenecks encountered during execution. Make real-time adjustments to optimize performance based on monitoring data. Ensure the campaign is on track to generate at least 100 unique doctor leads.",
+            "status": "pending",
+            "testStrategy": "Verify that performance metrics are accurately captured for each pipeline stage. Check resource utilization stays within acceptable limits. Confirm that success rates are properly recorded at each checkpoint. Review optimization adjustments for effectiveness."
+          },
+          {
+            "id": 5,
+            "title": "Final Verification and Campaign Report Generation",
+            "description": "Perform final validation of generated leads and create a comprehensive campaign performance report.",
+            "dependencies": [
+              "70.4"
+            ],
+            "details": "Manually verify a 20% random sample of the final leads for accuracy and relevance to the medical domain. Confirm the final CSV export contains all required fields and at least 100 unique, valid doctor leads. Generate a comprehensive campaign performance report including metrics from all pipeline stages, validation checkpoint results, and recommendations for future campaigns. Document any lessons learned during the execution process.",
+            "status": "pending",
+            "testStrategy": "Verify that the final lead count meets or exceeds the 100 lead target. Confirm lead quality through manual review of the 20% sample. Check that the campaign report includes all required metrics and insights. Ensure all files open correctly and match the expected schema."
+          }
+        ]
+      },
+      {
+        "id": 71,
+        "title": "Remove Fake Data Generation and Implement Real Web Scraping",
+        "description": "Audit and eliminate all fake data generation from the codebase, replacing mock business generators and demo data with actual web scraping that extracts genuine business data from Google Maps.",
+        "details": "1. **Codebase Audit**:\n   - Perform a comprehensive search for all fake data generation code using grep/find tools\n   - Identify all instances of mock business generators, fake email creators, and demo data\n   - Document each instance with file path, function name, and purpose\n   - Create a migration plan for each component that requires replacement\n\n2. **Removal Strategy**:\n   - Systematically remove all fake data generation code\n   - Update unit tests that depend on fake data generators\n   - Ensure removal doesn't break existing functionality\n   - Document all removed code for reference\n\n3. **Google Maps Scraping Implementation**:\n   - Implement a robust Google Maps scraper using Botasaurus\n   - Configure proper request headers and user-agent rotation\n   - Implement rate limiting and proxy rotation to avoid IP blocks\n   - Add error handling for CAPTCHA challenges and temporary blocks\n   - Extract business name, address, phone, website, and other relevant data\n   - Store raw scraped data in structured format (JSON)\n\n4. **Data Processing Pipeline**:\n   - Create data cleaning and normalization functions\n   - Implement business entity validation\n   - Build email discovery from extracted website URLs\n   - Ensure compliance with Google Maps Terms of Service\n   - Add logging for scraping performance metrics\n\n5. **Integration with Existing Systems**:\n   - Update all code that previously used fake data to use the new scraping system\n   - Modify data schemas if necessary to accommodate real data structure\n   - Ensure backward compatibility with existing data processing pipelines\n   - Update configuration files to support real data acquisition\n\n6. **Performance Optimization**:\n   - Implement caching to reduce redundant scraping\n   - Add parallel processing for improved throughput\n   - Configure retry mechanisms with exponential backoff\n   - Monitor and optimize resource usage\n\n7. **Legal and Ethical Considerations**:\n   - Review and ensure compliance with Google's Terms of Service\n   - Implement respectful scraping practices (rate limiting, proper identification)\n   - Document legal compliance measures",
+        "testStrategy": "1. **Unit Testing**:\n   - Create unit tests for each component of the new scraping system\n   - Verify data extraction accuracy from sample Google Maps pages\n   - Test error handling and recovery mechanisms\n   - Validate data normalization and cleaning functions\n\n2. **Integration Testing**:\n   - Verify the scraping system integrates correctly with existing components\n   - Test the complete data flow from scraping to final data storage\n   - Ensure all dependencies are correctly resolved\n   - Validate that the system handles rate limiting and blocking scenarios\n\n3. **Regression Testing**:\n   - Run existing test suites to ensure no functionality is broken\n   - Compare output data structure with previous fake data to ensure compatibility\n   - Verify all dependent systems continue to function correctly\n\n4. **Performance Testing**:\n   - Measure scraping speed and resource usage\n   - Test system under various load conditions\n   - Verify proxy rotation and session management\n   - Benchmark against performance requirements\n\n5. **Manual Verification**:\n   - Manually review a sample of scraped data for accuracy\n   - Compare scraped data with actual Google Maps listings\n   - Verify business details are correctly extracted\n   - Check for any missing or incorrect data\n\n6. **Compliance Testing**:\n   - Verify the system respects rate limits\n   - Ensure proper handling of robots.txt\n   - Test proxy rotation and user-agent variation\n   - Confirm logging of all scraping activities for audit purposes\n\n7. **End-to-End Validation**:\n   - Execute a complete lead generation campaign using only real scraped data\n   - Verify 100 real business leads can be generated\n   - Compare quality metrics between previous fake data and new real data\n   - Document any discrepancies or improvements",
+        "status": "pending",
+        "dependencies": [
+          66,
+          67,
+          68,
+          69
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Audit and Document Fake Data Generation Code",
+            "description": "Perform a comprehensive audit of the codebase to identify and document all instances of fake data generation code.",
+            "dependencies": [],
+            "details": "Use grep/find tools to locate all mock business generators, fake email creators, and demo data in the codebase. Document each instance with file path, function name, and purpose. Create a detailed inventory spreadsheet with columns for file location, code function, data type generated, and replacement strategy. Identify dependencies between fake data components and create a migration priority list.",
+            "status": "in-progress",
+            "testStrategy": "Verify the completeness of the audit by cross-checking with known fake data implementations. Validate the documentation format ensures all necessary information for replacement is captured."
+          },
+          {
+            "id": 2,
+            "title": "Develop Google Maps Scraping Module Using Botasaurus",
+            "description": "Implement a robust Google Maps scraper leveraging Botasaurus to extract genuine business data.",
+            "dependencies": [
+              "71.1"
+            ],
+            "details": "Build a scraping module that extracts business name, address, phone, website, and other relevant data from Google Maps. Implement proper request headers and user-agent rotation using Botasaurus AntiDetectDriver. Configure rate limiting, proxy rotation, and error handling for CAPTCHA challenges. Ensure compliance with Google's Terms of Service through respectful scraping practices. Store raw scraped data in structured JSON format with appropriate metadata.",
+            "status": "pending",
+            "testStrategy": "Test the scraper against various business categories and locations to ensure consistent data extraction. Verify proper handling of rate limits, blocks, and error conditions. Measure extraction accuracy against manually collected samples."
+          },
+          {
+            "id": 3,
+            "title": "Create Data Processing and Normalization Pipeline",
+            "description": "Develop a pipeline to clean, normalize, and validate the scraped business data for system use.",
+            "dependencies": [
+              "71.2"
+            ],
+            "details": "Implement data cleaning functions to handle inconsistent formatting, special characters, and incomplete entries. Create normalization routines for addresses, phone numbers, and business names. Build email discovery functionality that extracts contact information from business websites. Add validation checks to ensure data quality and completeness. Implement logging for processing metrics and error tracking.",
+            "status": "pending",
+            "testStrategy": "Test with diverse data samples to verify normalization consistency. Validate email discovery accuracy against known business contacts. Ensure the pipeline correctly handles edge cases like missing fields or malformed data."
+          },
+          {
+            "id": 4,
+            "title": "Remove Fake Data Generation Code and Update Dependencies",
+            "description": "Systematically remove all fake data generation code and update dependent components to use the new scraping system.",
+            "dependencies": [
+              "71.1",
+              "71.2",
+              "71.3"
+            ],
+            "details": "Following the audit documentation, remove all identified fake data generation code. Update unit tests that depend on fake data generators to use either real data or appropriate test fixtures. Modify data schemas if necessary to accommodate real data structure. Ensure backward compatibility with existing data processing pipelines. Update configuration files to support real data acquisition parameters.",
+            "status": "pending",
+            "testStrategy": "Run comprehensive regression tests after each removal to ensure system functionality remains intact. Verify that all components previously using fake data now correctly integrate with the real data pipeline."
+          },
+          {
+            "id": 5,
+            "title": "Optimize Scraping Performance and Implement Caching",
+            "description": "Enhance the scraping system with performance optimizations and caching to improve efficiency and reduce redundant operations.",
+            "dependencies": [
+              "71.2",
+              "71.3",
+              "71.4"
+            ],
+            "details": "Implement a caching layer to store previously scraped data and reduce redundant requests. Add parallel processing capabilities for improved throughput when scraping multiple businesses. Configure retry mechanisms with exponential backoff for handling temporary failures. Implement resource monitoring to track scraping performance, success rates, and system resource usage. Create a configuration interface for tuning performance parameters based on operational needs.",
+            "status": "pending",
+            "testStrategy": "Benchmark scraping performance before and after optimizations. Test cache hit rates and verify data freshness policies. Simulate various failure scenarios to confirm retry mechanisms function correctly. Monitor resource usage under load to identify potential bottlenecks."
+          }
+        ]
+      },
+      {
+        "id": 72,
+        "title": "Fix Broken Logger in src/utils/logger.py",
+        "description": "Repair the broken logger module in src/utils/logger.py to ensure proper CLI functionality and enable consistent logging across the application.",
+        "details": "1. **Analyze Current Logger Issues**:\n   - Examine the existing logger implementation in src/utils/logger.py\n   - Identify specific failure points causing CLI breakage\n   - Document current logging patterns and expected behavior\n\n2. **Implement Fixes**:\n   - Correct import statements and dependency issues\n   - Fix configuration loading if applicable\n   - Ensure proper log level handling (DEBUG, INFO, WARNING, ERROR)\n   - Implement proper file and console handlers\n   - Add rotation policy for log files to prevent excessive growth\n   - Ensure thread-safety for concurrent operations\n\n3. **Standardize Logger Interface**:\n   - Create consistent logging methods (log_info, log_error, log_debug, etc.)\n   - Add context parameters for component/module identification\n   - Implement structured logging with JSON format option\n   - Add timestamp and severity level standardization\n\n4. **Integration with Botasaurus**:\n   - Ensure compatibility with Botasaurus logging mechanisms\n   - Implement proper log capture from Botasaurus operations\n   - Create appropriate log filtering for Botasaurus verbose output\n\n5. **Error Handling**:\n   - Add graceful fallbacks if logging initialization fails\n   - Implement log buffering for high-volume operations\n   - Add error reporting for logging failures\n\n6. **Documentation**:\n   - Add docstrings explaining logger usage\n   - Include examples for different logging scenarios\n   - Document configuration options",
+        "testStrategy": "1. **Unit Testing**:\n   - Create unit tests for each logger method\n   - Verify correct log level filtering\n   - Test file and console output formatting\n   - Validate rotation policies work correctly\n   - Test thread-safety with concurrent logging\n\n2. **Integration Testing**:\n   - Run CLI commands that use the logger and verify output\n   - Test integration with Botasaurus operations\n   - Verify logs are properly captured during scraping operations\n   - Check error scenarios are properly logged\n\n3. **Manual Verification**:\n   - Execute the CLI with various commands and confirm logs appear correctly\n   - Verify log files are created in the expected location\n   - Check log format is consistent and readable\n   - Confirm timestamps and severity levels are accurate\n\n4. **Regression Testing**:\n   - Run existing automated tests to ensure logging changes don't break functionality\n   - Verify all components that depend on the logger still function correctly\n\n5. **Performance Testing**:\n   - Measure logging overhead to ensure it doesn't significantly impact performance\n   - Test with high-volume logging to verify system stability",
+        "status": "done",
+        "dependencies": [
+          60,
+          63
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Quarantine fake generators",
+            "description": "Move clearly fake/synthetic generators to cleanup/deleted_fake_generators/ (keep history)",
+            "details": "Move files present: real_business_scraper.py, generate_100_doctor_leads.py.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 72
+          },
+          {
+            "id": 2,
+            "title": "Fix logger syntax in src/utils/logger.py",
+            "description": "Repair corrupted newline block causing SyntaxError and restore handlers/structlog section",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 72
+          },
+          {
+            "id": 3,
+            "title": "Add real Google Maps scraper",
+            "description": "Create src/scrapers/google_maps_scraper.py per cleanup plan with @browser decorator and extraction",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 72
+          },
+          {
+            "id": 4,
+            "title": "Add real website email extractor",
+            "description": "Create src/scrapers/email_extractor.py per cleanup plan with @browser decorator and regex extraction",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 72
+          }
+        ]
+      },
+      {
+        "id": 73,
+        "title": "Botasaurus Integration and Smoke Test",
+        "description": "Integrate existing scrapers with Botasaurus by correcting decorator arguments, providing driver method shims for nonstandard helpers, and create a minimal runner to verify end-to-end lead extraction functionality.",
+        "details": "1. **Analyze Existing Scrapers**:\n   - Audit all scraper modules to identify Botasaurus decorator usage patterns\n   - Document nonstandard helper methods that need compatibility shims\n   - Create inventory of required fixes for each scraper\n\n2. **Fix Botasaurus Decorator Arguments**:\n   - Update all `@browser` and related decorators with correct argument syntax\n   - Ensure proper configuration of headless mode, proxy settings, and timeout parameters\n   - Standardize error handling and retry logic across scrapers\n   - Example fix:\n     ```python\n     # Before\n     @browser(...)\n     def scrape_business(query):\n         # implementation\n     \n     # After\n     @browser(\n         headless=True, \n         proxy=ProxyConfig.from_env(),\n         timeout=30,\n         retry_count=2\n     )\n     def scrape_business(query):\n         # implementation\n     ```\n\n3. **Implement Driver Method Shims**:\n   - Create compatibility layer for nonstandard helper methods\n   - Implement shims for common operations like:\n     ```python\n     def wait_for_element(driver, selector, timeout=10):\n         \"\"\"Compatibility shim for older wait_for_element implementations\"\"\"\n         return WebDriverWait(driver, timeout).until(\n             EC.presence_of_element_located((By.CSS_SELECTOR, selector))\n         )\n     ```\n   - Add logging to shim methods to identify usage patterns for future refactoring\n\n4. **Create Minimal Runner**:\n   - Develop a simple CLI runner that executes the full pipeline:\n     ```python\n     def run_smoke_test(query_count=3, max_results=5):\n         \"\"\"Execute minimal end-to-end test with real scrapers\"\"\"\n         # Initialize components\n         # Execute search queries\n         # Process results through extraction pipeline\n         # Return statistics\n     ```\n   - Ensure runner uses real scrapers but with limited scope (few queries/results)\n   - Add detailed logging at each pipeline stage\n\n5. **Type Checking and Compilation Verification**:\n   - Run mypy static type checking across the codebase\n   - Fix any TypeErrors identified during compilation\n   - Add type annotations where missing to prevent future errors\n   - Verify imports and module dependencies are correctly resolved",
+        "testStrategy": "1. **Unit Testing**:\n   - Create unit tests for each fixed scraper to verify decorator arguments work correctly\n   - Test each compatibility shim method with various inputs\n   - Verify type annotations with mypy in strict mode\n\n2. **Integration Testing**:\n   - Run the minimal runner with a set of predefined test queries\n   - Verify each stage of the pipeline executes without errors\n   - Confirm data flows correctly between components\n   - Check that extracted leads match expected format and contain valid data\n\n3. **Smoke Testing**:\n   - Execute end-to-end test with 3-5 real queries\n   - Verify leads are extracted and processed through all pipeline stages\n   - Confirm final output contains valid business data and emails\n   - Check logs for any warnings or errors\n\n4. **Compilation Verification**:\n   - Run `mypy --strict` on the entire codebase\n   - Verify no TypeErrors are reported\n   - Check import resolution works correctly\n   - Confirm no runtime type errors occur during execution\n\n5. **Documentation Testing**:\n   - Review updated docstrings for accuracy\n   - Verify example code in documentation compiles and runs\n   - Ensure compatibility notes are included for any breaking changes",
+        "status": "done",
+        "dependencies": [
+          63,
+          67,
+          68,
+          69,
+          72
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 74,
+        "title": "Smoke Test & Validation for End-to-End Functionality",
+        "description": "Execute a minimal smoke test using scripts/run_smoke_scrape.py to verify compiled state for entry points and scrapers, produce real leads, capture outputs, and document findings or blockers.",
+        "details": "1. **Preparation**:\n   - Verify the compiled state of all entry points and scrapers\n   - Ensure scripts/run_smoke_scrape.py is properly configured with minimal test parameters\n   - Set up a controlled test environment with appropriate logging levels\n\n2. **Execution**:\n   - Run the smoke test script with a limited scope (1-2 search queries, 1-2 geographic areas)\n   - Monitor the execution through each pipeline stage:\n     - Query building and search execution\n     - Scraper activation and data extraction\n     - Validation and deduplication\n     - Export and reporting\n   - Capture all outputs including:\n     - Generated CSV files\n     - JSON statistics\n     - Log files\n     - Error reports\n\n3. **Analysis**:\n   - Examine the produced leads for quality and completeness\n   - Verify that data flows correctly through all pipeline stages\n   - Check that validation rules are properly applied\n   - Confirm deduplication works as expected\n   - Validate export formats match required schemas\n\n4. **Documentation**:\n   - Create a detailed report documenting:\n     - Test configuration used\n     - Number of leads generated\n     - Success/failure metrics at each stage\n     - Any errors or warnings encountered\n     - Performance metrics (time taken per stage)\n   - Clearly identify any blockers with:\n     - Specific error messages and stack traces\n     - Component where failure occurred\n     - Potential root causes\n     - Suggested fixes or workarounds\n\n5. **Follow-up**:\n   - Create TODOs for any identified issues\n   - Prioritize blockers based on severity\n   - Document any configuration changes needed for full-scale operation",
+        "testStrategy": "1. **Pre-Execution Verification**:\n   - Run a static code analysis to verify all imports and dependencies are resolved\n   - Check that scripts/run_smoke_scrape.py exists and has executable permissions\n   - Verify configuration files are properly formatted and contain valid settings\n\n2. **Execution Monitoring**:\n   - Capture stdout and stderr during execution\n   - Monitor system resource usage (memory, CPU, network)\n   - Record execution time for each pipeline stage\n   - Verify each component activates in the expected sequence\n\n3. **Output Validation**:\n   - Verify CSV files are created with the correct schema\n   - Confirm JSON statistics files contain all required metrics\n   - Check log files for expected progress messages and any errors\n   - Validate that at least some real leads were successfully generated\n   - Ensure all files can be opened with standard tools (Excel, text editors)\n\n4. **End-to-End Verification**:\n   - Manually trace several leads from initial query to final export\n   - Verify attribution data is maintained throughout the pipeline\n   - Confirm validation rules were correctly applied to test data\n   - Check that duplicates were properly identified and handled\n\n5. **Documentation Review**:\n   - Have another team member review the findings report\n   - Verify all blockers are documented with sufficient detail for resolution\n   - Ensure TODOs are specific and actionable\n   - Confirm the report accurately reflects the test results",
+        "status": "pending",
+        "dependencies": [
+          73,
+          69,
+          68,
+          72
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Compile verification",
+            "description": "Compile key scripts to ensure no immediate import or syntax errors",
+            "details": "Run: python -m py_compile main.py src/utils/logger.py src/scrapers/google_maps_scraper.py src/scrapers/email_extractor.py botasaurus_business_scraper.py scrape_businesses.py",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 74
+          },
+          {
+            "id": 2,
+            "title": "Run smoke test",
+            "description": "Run scripts/run_smoke_scrape.py to perform a minimal real scrape of ~10 results and print a summary",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 74
+          },
+          {
+            "id": 3,
+            "title": "Archive outputs",
+            "description": "Save smoke run outputs into output/smoke/ with timestamped filenames",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 74
+          }
+        ]
+      },
+      {
+        "id": 75,
+        "title": "Standardize Botasaurus Usage Across Codebase",
+        "description": "Standardize the implementation of Botasaurus across the codebase by establishing consistent patterns for decorators, configuration, and helper methods to ensure maintainable and reliable scraping functionality.",
+        "details": "1. **Audit Current Botasaurus Implementation**:\n   - Review all files using Botasaurus to identify inconsistencies in usage patterns\n   - Document variations in decorator arguments, configuration approaches, and helper methods\n   - Identify best practices from existing implementations (particularly from Task 73)\n   - Create an inventory of required standardization changes\n\n2. **Create Standardization Guidelines**:\n   - Define standard decorator usage patterns with proper typing\n   - Establish consistent configuration structure for browser settings, proxies, and timeouts\n   - Document required error handling patterns and retry logic\n   - Create templates for common scraping patterns (pagination, element extraction, etc.)\n   - Define logging standards specific to Botasaurus operations\n\n3. **Implement Standardization**:\n   - Update all Botasaurus decorator usages to follow the standard pattern\n   - Refactor configuration loading to use a consistent approach\n   - Normalize helper methods across scrapers\n   - Implement shared utility functions for common Botasaurus operations\n   - Ensure consistent error handling and retry mechanisms\n   - Add appropriate type hints to all Botasaurus-related functions\n\n4. **Documentation**:\n   - Create developer documentation for Botasaurus usage in the project\n   - Add inline comments explaining the standardized patterns\n   - Update README or wiki with examples of correct Botasaurus implementation\n   - Document any custom extensions or utilities built on top of Botasaurus",
+        "testStrategy": "1. **Static Analysis**:\n   - Run mypy with strict mode on all Botasaurus-related code to verify type consistency\n   - Use pylint or flake8 to check adherence to coding standards\n   - Verify import consistency across modules\n\n2. **Unit Testing**:\n   - Create unit tests for standardized helper functions\n   - Test configuration loading with various inputs\n   - Verify error handling behaves consistently across implementations\n\n3. **Integration Testing**:\n   - Execute each scraper with the standardized Botasaurus implementation\n   - Verify that all scrapers still function correctly after standardization\n   - Test with different configuration settings to ensure flexibility is maintained\n   - Measure performance metrics to ensure standardization hasn't introduced overhead\n\n4. **Documentation Verification**:\n   - Review documentation for clarity and completeness\n   - Have another developer attempt to implement a new scraper using only the documentation\n   - Verify that all standardized patterns are properly documented",
+        "status": "pending",
+        "dependencies": [
+          73,
+          72,
+          60,
+          63
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Quarantine fake generators",
+            "description": "Move fake/synthetic generators to cleanup/deleted_fake_generators/",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 75
+          },
+          {
+            "id": 2,
+            "title": "Fix logger syntax",
+            "description": "Repair src/utils/logger.py broken block; verify with py_compile",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 75
+          },
+          {
+            "id": 3,
+            "title": "Standardize Botasaurus usage",
+            "description": "Correct imports/decorators; add driver selection shims; compile check",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 75
+          }
+        ]
+      },
+      {
+        "id": 76,
+        "title": "Implement Google Maps Scraper and Email Extractor",
+        "description": "Develop specialized scrapers for Google Maps and email extraction, create a minimal runner for testing, and document selector strategies and fallback behaviors.",
+        "details": "1. **Google Maps Scraper Implementation**:\n   - Create a new `google_maps_scraper.py` module using Botasaurus decorators\n   - Implement functions to:\n     - Search for businesses by query and location\n     - Extract business details (name, address, phone, website, hours, reviews)\n     - Handle pagination and \"Show more results\" interactions\n     - Normalize output data structure\n   - Add robust selector strategy with primary/fallback selectors for each data point\n   - Implement anti-detection measures specific to Google Maps (scroll delays, random clicks)\n   - Document rate limiting considerations specific to Google Maps\n\n2. **Email Extractor Enhancements**:\n   - Create a standalone `email_extractor.py` module that builds on Task 67\n   - Add specialized extraction for common obfuscation patterns:\n     - Image-based emails (OCR integration option)\n     - JavaScript-rendered emails\n     - Contact forms with hidden email fields\n   - Implement scoring system for email quality/relevance\n   - Add context-aware extraction based on surrounding text\n\n3. **Minimal Runner Implementation**:\n   - Create `scripts/run_maps_scrape.py` for testing Google Maps scraper\n   - Create `scripts/run_email_extract.py` for testing email extraction\n   - Ensure proper configuration loading and command-line arguments\n   - Add sample queries and test cases\n\n4. **Selector Documentation**:\n   - Create a `docs/selectors/` directory with markdown files:\n     - `google_maps_selectors.md`: Document all selectors with screenshots\n     - `email_extraction_patterns.md`: Document regex patterns and heuristics\n   - Include version history of selector changes for maintenance\n   - Document known selector fragility and update frequency\n\n5. **Fallback Behavior Documentation**:\n   - Define clear fallback strategies when primary selectors fail\n   - Implement graceful degradation for partial data extraction\n   - Document recovery procedures for different failure scenarios\n   - Add logging for selector hits/misses to identify drift",
+        "testStrategy": "1. **Unit Testing**:\n   - Create unit tests for each scraper component with mock HTML responses\n   - Test selector robustness with intentionally modified HTML structures\n   - Verify email pattern matching against a test corpus of various formats\n   - Test fallback behavior by injecting selector failures\n\n2. **Integration Testing**:\n   - Run Google Maps scraper against 5-10 diverse business categories and locations\n   - Verify extraction of all expected data fields with >90% success rate\n   - Test email extractor against 20+ websites with known email formats\n   - Measure and document extraction success rates by pattern type\n\n3. **Performance Testing**:\n   - Benchmark scraping speed and resource usage\n   - Test with various concurrency settings to find optimal throughput\n   - Verify rate limiting compliance under sustained operation\n\n4. **Validation Testing**:\n   - Manually verify a sample of extracted data for accuracy\n   - Compare extraction results with known ground truth for test sites\n   - Document precision and recall metrics for email extraction\n   - Verify correct handling of edge cases (international characters, unusual formats)\n\n5. **Documentation Verification**:\n   - Review selector documentation for completeness and accuracy\n   - Verify all fallback behaviors are properly documented\n   - Test documentation examples for correctness",
+        "status": "pending",
+        "dependencies": [
+          60,
+          67,
+          73,
+          75
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add google_maps_scraper",
+            "description": "Create src/scrapers/google_maps_scraper.py with real extraction; compile verified",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 76
+          },
+          {
+            "id": 2,
+            "title": "Add email_extractor",
+            "description": "Create src/scrapers/email_extractor.py with real extraction; compile verified",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 76
+          },
+          {
+            "id": 3,
+            "title": "Add smoke runner",
+            "description": "Create scripts/run_smoke_scrape.py to exercise new scrapers",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 76
+          }
+        ]
+      },
+      {
+        "id": 77,
+        "title": "Execute Minimal Real Scrape and Archive Results",
+        "description": "Execute a minimal real scraping operation to validate the entire pipeline functionality in production conditions, and archive the results for future reference and analysis.",
+        "details": "1. **Preparation**:\n   - Create a new script `scripts/execute_real_scrape.py` that configures a minimal but realistic scraping operation\n   - Set up parameters for a limited scope (3-5 search queries across 2-3 geographic areas)\n   - Configure the script to use all production-ready components of the pipeline\n   - Ensure proper error handling and logging throughout the execution\n\n2. **Execution Configuration**:\n   - Define a dedicated YAML configuration file for this real scrape with:\n     - Limited but diverse search templates\n     - Geographic targeting for 2-3 different regions\n     - Realistic validation thresholds\n     - All necessary proxy and rate-limiting settings\n\n3. **Pipeline Execution**:\n   - Run the complete pipeline from query building through export\n   - Monitor and log performance metrics at each stage\n   - Capture timing information for each component\n   - Record resource utilization (memory, CPU, network)\n\n4. **Results Archiving**:\n   - Create a dedicated directory structure for archiving results: `archive/real_scrapes/YYYY-MM-DD/`\n   - Store all output files (CSVs, JSONs, logs) in this directory\n   - Generate a summary report with key metrics:\n     - Number of queries executed\n     - Number of pages scraped\n     - Number of raw leads found\n     - Number of validated leads after processing\n     - Processing time for each pipeline stage\n     - Overall success rate\n\n5. **Documentation**:\n   - Document any issues encountered during execution\n   - Note any performance bottlenecks or optimization opportunities\n   - Create recommendations for production deployment based on findings\n   - Update project documentation with real-world performance expectations",
+        "testStrategy": "1. **Pre-Execution Verification**:\n   - Review the execution script and configuration for correctness\n   - Verify all dependencies are properly installed and accessible\n   - Ensure the archive directory structure exists and has proper permissions\n   - Confirm logging is properly configured to capture all relevant information\n\n2. **Execution Monitoring**:\n   - Monitor the execution in real-time, watching for any errors or warnings\n   - Verify each stage of the pipeline completes successfully\n   - Check resource utilization to ensure the system remains stable\n   - Confirm rate limiting and proxy rotation are functioning correctly\n\n3. **Results Validation**:\n   - Manually review a sample of the generated leads to verify quality\n   - Verify all expected output files are created with correct formats\n   - Check that the summary report contains accurate metrics\n   - Compare results against expected benchmarks (if available)\n\n4. **Archive Verification**:\n   - Confirm all files are properly stored in the archive directory\n   - Verify the integrity of archived files (no corruption or truncation)\n   - Ensure the archive is properly documented for future reference\n   - Test retrieval of archived data to confirm accessibility\n\n5. **Documentation Review**:\n   - Review the generated documentation for clarity and completeness\n   - Verify that all encountered issues are properly documented\n   - Confirm that performance metrics are accurately recorded\n   - Ensure recommendations for production deployment are practical and actionable",
+        "status": "pending",
+        "dependencies": [
+          73,
+          74,
+          69,
+          68
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Run smoke script",
+            "description": "Execute scripts/run_smoke_scrape.py and capture stdout/stderr",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 77
+          },
+          {
+            "id": 2,
+            "title": "Archive outputs",
+            "description": "Save results to output/smoke/<timestamp>.log and JSON/CSV if produced",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 77
+          }
+        ]
+      },
+      {
+        "id": 78,
+        "title": "Implement CLI Command for Google Maps and Email Extraction with CSV Export",
+        "description": "Create a CLI command that combines Google Maps scraping with website email extraction functionality and exports the results to CSV format, providing a streamlined interface for lead generation.",
+        "details": "1. **CLI Command Structure**:\n   - Create a new module `cli/commands/scrape_maps_emails.py` that implements a command for the existing CLI framework\n   - Define command structure: `leadfinder scrape-maps --query \"search term\" --location \"city, state\" --limit 50 --output results.csv`\n   - Implement optional flags for customization:\n     - `--headless/--no-headless`: Control browser visibility\n     - `--proxy`: Specify proxy settings\n     - `--email-threshold`: Minimum confidence score for email extraction\n     - `--max-pages-per-site`: Limit of pages to crawl per business website\n\n2. **Integration with Existing Scrapers**:\n   - Import and utilize the Google Maps scraper from Task 76\n   - Connect the output of the Maps scraper to the email extraction pipeline\n   - Implement a processing pipeline that:\n     1. Searches Google Maps for businesses matching query/location\n     2. Extracts business details (name, address, phone, website)\n     3. For each business website, runs the email extractor\n     4. Combines all data into a unified result set\n\n3. **CSV Export Implementation**:\n   - Utilize the Exporter agent from Task 69 for CSV generation\n   - Ensure proper field mapping from scraped data to CSV columns\n   - Include all relevant business fields:\n     - Business name, address, phone, website URL\n     - Extracted email(s) with confidence scores\n     - Google Maps rating and review count\n     - Business category/type\n   - Handle special characters and encoding properly for international results\n   - Implement progress indicators during scraping and export\n\n4. **Error Handling and Resilience**:\n   - Implement graceful error handling for network issues, blocks, or timeouts\n   - Add retry logic with exponential backoff for failed requests\n   - Provide clear error messages and suggestions for resolution\n   - Ensure partial results are saved if the process is interrupted\n\n5. **Performance Optimization**:\n   - Implement concurrent processing where appropriate\n   - Add caching to prevent redundant scraping of the same websites\n   - Optimize resource usage based on system capabilities\n   - Include a \"dry run\" option to estimate time required for full execution",
+        "testStrategy": "1. **Unit Testing**:\n   - Create unit tests for the CLI command parser and argument validation\n   - Test the integration points between Maps scraper and email extractor\n   - Verify CSV output format with various input data scenarios\n   - Test error handling with simulated failures\n\n2. **Integration Testing**:\n   - Execute the command with small test queries (2-3 businesses)\n   - Verify end-to-end functionality from search to CSV export\n   - Test with various combinations of command-line options\n   - Validate the structure and content of the exported CSV\n\n3. **Performance Testing**:\n   - Measure execution time with different batch sizes\n   - Test memory usage during extended runs\n   - Verify resource cleanup after command completion\n\n4. **Manual Verification**:\n   - Execute the command with real search queries\n   - Open the resulting CSV in Excel/Google Sheets to verify formatting\n   - Manually verify a sample of extracted emails against source websites\n   - Test the command's behavior when interrupted and resumed\n\n5. **Documentation Testing**:\n   - Verify help text and documentation accuracy\n   - Ensure examples in documentation match actual command behavior\n   - Test the command with the exact examples provided in documentation",
+        "status": "pending",
+        "dependencies": [
+          76,
+          73,
+          69,
+          67
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add quick CLI command",
+            "description": "Implement `quick` subcommand in main.py to run new scrapers for a small query list and export CSV",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 78
+          },
+          {
+            "id": 2,
+            "title": "Run quick CLI smoke",
+            "description": "Execute `python main.py quick --fallback-only --max 10 --query \"coffee shops in Seattle\"` with timeout and archive log",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 78
+          },
+          {
+            "id": 3,
+            "title": "Make logging deps optional",
+            "description": "Update src/utils/logger.py to gracefully handle missing structlog/coloredlogs and fall back to basic logging",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 78
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-23T04:10:31.050Z",
+      "updated": "2025-08-23T11:00:42.600Z",
+      "description": "Comprehensive cleanup and refactor initiative (Phases 1–4), full Taskmaster-driven execution."
     }
   }
 }

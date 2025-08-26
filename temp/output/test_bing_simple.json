@@ -1,0 +1,6 @@
+{
+    "title": "New Tab",
+    "url": "chrome://new-tab-page/",
+    "query": "test query",
+    "success": true
+}

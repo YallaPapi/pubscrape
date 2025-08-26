@@ -1,0 +1,20 @@
+{
+  "campaign_id": "test_campaign_001",
+  "topic": "AI and Machine Learning Technology",
+  "total_contacts": 3,
+  "high_quality_contacts": 1,
+  "medium_quality_contacts": 1,
+  "low_quality_contacts": 1,
+  "email_contacts": 1,
+  "website_contacts": 1,
+  "social_contacts": 1,
+  "validation_success_rate": 0.6666666666666666,
+  "avg_confidence_score": 61.23333333333334,
+  "platform_distribution": {
+    "Apple Podcasts": 1,
+    "Spotify": 1,
+    "YouTube": 1
+  },
+  "export_timestamp": "2025-08-21T01:56:02.170603",
+  "processing_duration_minutes": 45.2
+}

@@ -1,0 +1,49 @@
+# Task ID: 60
+# Title: Implement Anti-Detection Engine (Botasaurus Integration)
+# Status: done
+# Dependencies: 59
+# Priority: high
+# Description: Develop anti-detection mechanisms to minimize blocks and bans during scraping, leveraging Botasaurus features.
+# Details:
+- Integrate Botasaurus AntiDetectDriver for browser sessions (headless/headful as needed).
+- Implement user-agent rotation, profile isolation, and resource blocking (.png, .jpg, .css, etc.) per config.
+- Set up proxy rotation using a provider pool, supporting per-session and per-request modes.
+- Add human-like delays (base + jitter, per-action micro-delays) using config values.
+- Allow per-domain overrides for resource blocking and headful mode.
+- Log UA, proxy, and session changes for observability.
+- Use Botasaurus v1.7+ for latest anti-detection features.
+
+# Test Strategy:
+Unit test UA/proxy rotation and resource blocking; simulate block events and verify rotation/backoff; confirm block rate stays below threshold in integration tests; inspect logs for correct session policies.
+
+# Subtasks:
+## 1. Integrate Botasaurus AntiDetectDriver for Browser Sessions [done]
+### Dependencies: None
+### Description: Set up Botasaurus AntiDetectDriver to manage browser sessions, supporting both headless and headful modes as required by configuration.
+### Details:
+Utilize the @browser decorator and AntiDetectDriver to automate browser session creation and configuration, ensuring anti-detection features are enabled for all scraping tasks.
+
+## 2. Implement User-Agent Rotation, Profile Isolation, and Resource Blocking [done]
+### Dependencies: 60.1
+### Description: Develop mechanisms for rotating user-agents, isolating browser profiles, and blocking specified resources (e.g., .png, .jpg, .css) according to configuration.
+### Details:
+Configure Botasaurus to rotate user-agents and browser profiles per session. Set up resource blocking using the block_resources parameter to minimize fingerprinting and detection.
+
+## 3. Set Up Proxy Rotation with Provider Pool [done]
+### Dependencies: 60.2
+### Description: Integrate proxy rotation using a pool of providers, supporting both per-session and per-request proxy assignment.
+### Details:
+Configure Botasaurus to use authenticated proxies, rotating them as specified in the configuration. Ensure compatibility with major proxy providers and support for both session-level and request-level proxy changes.
+
+## 4. Add Human-like Delays and Per-Action Micro-Delays [done]
+### Dependencies: 60.3
+### Description: Implement configurable human-like delays, including base delays with jitter and micro-delays for individual actions, to mimic real user behavior.
+### Details:
+Use configuration values to introduce randomized delays between actions and requests, reducing the likelihood of detection by anti-bot systems.
+
+## 5. Enable Per-Domain Overrides and Logging for Observability [done]
+### Dependencies: 60.4
+### Description: Allow per-domain overrides for resource blocking and headful mode, and implement logging of user-agent, proxy, and session changes for monitoring and debugging.
+### Details:
+Extend configuration to support domain-specific settings. Implement comprehensive logging to track changes in user-agent, proxy, and session parameters for each scraping event.
+
